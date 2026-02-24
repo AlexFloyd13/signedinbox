@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const ALLOWED_EMAIL = process.env.ALLOWED_EMAIL;
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -30,6 +32,18 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Boot any authenticated user whose email isn't on the allowlist
+  if (
+    user &&
+    ALLOWED_EMAIL &&
+    user.email?.toLowerCase() !== ALLOWED_EMAIL.toLowerCase()
+  ) {
+    await supabase.auth.signOut();
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
 
   if (!user && pathname.startsWith("/dashboard")) {
     const url = request.nextUrl.clone();
