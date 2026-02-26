@@ -29,11 +29,11 @@ export default function ResetPasswordPage() {
       <div className="mb-8 text-center">
         <Link href="/" className="inline-flex items-center gap-2.5">
           <svg width="28" height="28" viewBox="0 0 128 128" fill="none">
-            <circle cx="64" cy="64" r="64" fill="#15803d" />
+            <circle cx="64" cy="64" r="64" fill="#3d6b52" />
             <circle cx="64" cy="64" r="55" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
             <path d="M64 18 L92 58 L64 96 L36 58 Z" fill="rgba(255,255,255,0.96)" />
-            <path d="M64 46 L64 96" stroke="#14532d" strokeWidth="5" strokeLinecap="round" />
-            <ellipse cx="64" cy="48" rx="10" ry="7" fill="#14532d" />
+            <path d="M64 46 L64 96" stroke="#2d5040" strokeWidth="5" strokeLinecap="round" />
+            <ellipse cx="64" cy="48" rx="10" ry="7" fill="#2d5040" />
           </svg>
           <span className="font-bold text-[16px] text-[#1a1917]">SignedInbox</span>
         </Link>
@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-sm bg-white border border-[#e5e2d8] rounded-2xl p-8 shadow-sm">
         {submitted ? (
           <div className="text-center py-2">
-            <div className="w-12 h-12 rounded-full bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full bg-[#f0f7f3] border border-[#b8d4c0] flex items-center justify-center mx-auto mb-4">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M4 10l4.5 4.5L16 5" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -53,7 +53,7 @@ export default function ResetPasswordPage() {
             </p>
             <Link
               href="/login"
-              className="block w-full text-center bg-[#15803d] hover:bg-[#14532d] text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors"
+              className="block w-full text-center bg-[#3d6b52] hover:bg-[#2d5040] text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors"
             >
               Back to sign in
             </Link>
@@ -72,20 +72,20 @@ export default function ResetPasswordPage() {
                   onChange={e => setEmail(e.target.value)}
                   required
                   placeholder="you@example.com"
-                  className="w-full border border-[#e5e2d8] focus:border-green-600 rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] placeholder:text-[#c5c0b8] outline-none transition-colors bg-white"
+                  className="w-full border border-[#e5e2d8] focus:border-[#3d6b52] rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] placeholder:text-[#c5c0b8] outline-none transition-colors bg-white"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#15803d] hover:bg-[#14532d] disabled:opacity-50 text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors"
+                className="w-full bg-[#3d6b52] hover:bg-[#2d5040] disabled:opacity-50 text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors"
               >
                 {loading ? "Sending…" : "Send reset link"}
               </button>
             </form>
 
             <div className="mt-6 pt-5 border-t border-[#f0ede6] text-center">
-              <Link href="/login" className="text-[13px] text-green-700 hover:text-green-800 transition-colors">
+              <Link href="/login" className="text-[13px] text-[#3d6b52] hover:text-[#2d5040] transition-colors">
                 ← Back to sign in
               </Link>
             </div>
