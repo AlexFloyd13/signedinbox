@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
 import { authedFetch } from "@/lib/supabase/authed-fetch";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -67,9 +66,7 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function DashboardPageInner() {
-  const searchParams = useSearchParams();
-  const tab = (searchParams.get("tab") ?? "history") as "history" | "settings";
+export default function DashboardPage() {
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [senders, setSenders] = useState<Sender[]>([]);
@@ -102,6 +99,8 @@ function DashboardPageInner() {
 
   const [emailBodyText, setEmailBodyText] = useState("");
   const [localContentHash, setLocalContentHash] = useState<string | null>(null);
+  const [isMassSend, setIsMassSend] = useState(false);
+  const [declaredRecipientCount, setDeclaredRecipientCount] = useState("");
 
   const [verifyingCode, setVerifyingCode] = useState<string | null>(null);
   const [verificationCode, setVerificationCode] = useState("");
@@ -184,7 +183,9 @@ function DashboardPageInner() {
   useEffect(() => {
     fetchSenders();
     fetchStats();
-  }, [fetchSenders, fetchStats]);
+    fetchStamps();
+    fetchApiKeys();
+  }, [fetchSenders, fetchStats, fetchStamps, fetchApiKeys]);
 
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
@@ -192,11 +193,6 @@ function DashboardPageInner() {
   useEffect(() => {
     if (!siteKey) setTurnstileToken("dev-token");
   }, [siteKey]);
-
-  useEffect(() => {
-    if (tab === "history") fetchStamps();
-    if (tab === "settings") { fetchSenders(); fetchApiKeys(); }
-  }, [tab, fetchStamps, fetchSenders, fetchApiKeys]);
 
   async function computeContentHash(): Promise<string | null> {
     if (!emailBodyText.trim()) return null;
@@ -217,14 +213,19 @@ function DashboardPageInner() {
     try {
       const hash = await computeContentHash();
       setLocalContentHash(hash);
-      const body: Record<string, string> = {
+      const body: Record<string, unknown> = {
         sender_id: selectedSender,
         turnstile_token: token,
         client_type: "web",
+        is_mass_send: isMassSend,
       };
       if (recipientEmail.trim()) body.recipient_email = recipientEmail.trim();
       if (subjectHint.trim()) body.subject_hint = subjectHint.trim();
       if (hash) body.content_hash = hash;
+      if (isMassSend && declaredRecipientCount.trim()) {
+        const n = parseInt(declaredRecipientCount.trim(), 10);
+        if (!isNaN(n) && n > 0) body.declared_recipient_count = n;
+      }
 
       const res = await authedFetch("/api/v1/stamps", {
         method: "POST",
@@ -412,10 +413,7 @@ function DashboardPageInner() {
         {senders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 gap-3 text-[#b5b0a6] bg-white border border-[#e5e2d8] rounded-xl">
             <span className="text-4xl">✉️</span>
-            <p className="text-sm">No senders yet — add one in Settings</p>
-            <a href="/dashboard?tab=settings" className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors">
-              Go to Settings
-            </a>
+            <p className="text-sm">No senders yet — add one below</p>
           </div>
         ) : (
             <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
@@ -572,6 +570,41 @@ function DashboardPageInner() {
                   )}
                 </div>
 
+                {/* Mass send toggle */}
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2.5 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={isMassSend}
+                      onChange={(e) => { setIsMassSend(e.target.checked); if (!e.target.checked) setDeclaredRecipientCount(""); }}
+                      className="w-4 h-4 rounded border-[#c5c0b8] accent-[#5a9471]"
+                    />
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm text-[#1a1917]">Mass email</span>
+                      <div className="group/tip relative">
+                        <span className="text-[#b5b0a6] cursor-help text-xs">ⓘ</span>
+                        <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+                          Check this if you&apos;re sending this stamp to multiple recipients. Multiple verifications are expected for mass emails and won&apos;t trigger a reuse warning. <span className="text-amber-300 font-medium">If you use a single-recipient stamp as a mass email without checking this, your sender account will be flagged.</span>
+                          <div className="absolute top-full left-4 border-4 border-transparent border-t-[#1a1917]" />
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                  {isMassSend && (
+                    <div className="flex flex-col gap-1 pl-6">
+                      <label className="text-xs text-[#9a958e]">Number of recipients (optional)</label>
+                      <input
+                        type="number"
+                        min="2"
+                        className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471] w-40"
+                        placeholder="e.g. 500"
+                        value={declaredRecipientCount}
+                        onChange={(e) => setDeclaredRecipientCount(e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 {siteKey && (
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-[#9a958e]">Human Verification *</label>
@@ -637,6 +670,100 @@ function DashboardPageInner() {
           )}
       </div>
 
+      {/* Sender Profiles */}
+      <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
+        <div>
+          <h2 className="font-serif text-base font-semibold text-[#1a1917]">Sender Profiles</h2>
+          <p className="text-xs text-[#9a958e] mt-1">Add the email addresses you send from. Each must be verified.</p>
+        </div>
+        {senderError && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm text-red-400">{senderError}</div>
+        )}
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+            placeholder="Display name *"
+            value={newSenderName}
+            onChange={(e) => setNewSenderName(e.target.value)}
+          />
+          <input
+            className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+            placeholder="email@example.com *"
+            type="email"
+            value={newSenderEmail}
+            onChange={(e) => setNewSenderEmail(e.target.value)}
+          />
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={addSender}
+            disabled={!newSenderName.trim() || !newSenderEmail.trim() || addingSender}
+            className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
+          >
+            {addingSender ? "Adding…" : "Add Sender"}
+          </button>
+        </div>
+        {senders.length > 0 && (
+          <div className="flex flex-col gap-2 border-t border-[#e5e2d8] pt-3">
+            {senders.map((s) => (
+              <div key={s.id} className="flex flex-col gap-2 py-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#1a1917] text-sm">{s.display_name}</span>
+                      {s.verified_email ? (
+                        <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#5a9471] border border-[#b8d4c0]">✓ Verified</span>
+                      ) : (
+                        <span className="text-xs px-1.5 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">Unverified</span>
+                      )}
+                    </div>
+                    <span className="text-xs text-[#9a958e]">{s.email} · {s.total_stamps} stamps</span>
+                  </div>
+                  {!s.verified_email && verifyingCode !== s.id && (
+                    <button
+                      onClick={() => sendVerificationCode(s.id)}
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-white/5 transition-colors"
+                    >
+                      Verify Email
+                    </button>
+                  )}
+                </div>
+                {verifyingCode === s.id && (
+                  <div className="flex flex-col gap-2">
+                    {verifyEmailError && <p className="text-xs text-red-400">{verifyEmailError}</p>}
+                    {verificationCode && (
+                      <p className="text-xs text-amber-400 font-mono">Dev mode — code: {verificationCode}</p>
+                    )}
+                    <div className="flex gap-2">
+                      <input
+                        className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-1.5 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                        placeholder="Enter 6-digit code"
+                        maxLength={6}
+                        value={verificationCodeInput}
+                        onChange={(e) => setVerificationCodeInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      />
+                      <button
+                        onClick={() => submitVerificationCode(s.id)}
+                        disabled={verificationCodeInput.length !== 6 || verifyingEmail}
+                        className="text-sm px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
+                      >
+                        {verifyingEmail ? "…" : "Confirm"}
+                      </button>
+                      <button
+                        onClick={() => { setVerifyingCode(null); setVerificationCode(""); setVerificationCodeInput(""); }}
+                        className="text-sm px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#6b6560] hover:bg-white/5 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
@@ -652,235 +779,116 @@ function DashboardPageInner() {
         ))}
       </div>
 
-      {/* History Tab */}
-      {tab === "history" && (
-        <div className="flex flex-col gap-3">
-          {stampsLoading ? (
-            <div className="flex items-center justify-center py-16 text-[#b5b0a6] text-sm">Loading…</div>
-          ) : stamps.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-2 text-[#b5b0a6]">
-              <span className="text-4xl">✉️</span>
-              <p className="text-sm">No stamps yet</p>
-            </div>
-          ) : (
-            <>
-              <p className="text-xs text-[#b5b0a6]">{stampsTotal} total stamps</p>
-              {stamps.map((stamp) => (
-                <div key={stamp.id} className="bg-white border border-[#e5e2d8] rounded-xl p-4 flex items-start justify-between gap-4">
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono text-[#6b6560]">{stamp.id.slice(0, 8)}…</span>
-                      {stamp.revoked ? (
-                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-red-400 bg-red-400/10 border-red-400/20">Revoked</span>
-                      ) : new Date(stamp.expires_at) < new Date() ? (
-                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#6b6560] bg-zinc-400/10 border-zinc-400/20">Expired</span>
-                      ) : (
-                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#5a9471] bg-[#f0f7f3] border-[#b8d4c0]">Valid</span>
-                      )}
-                      <span className="text-xs text-[#b5b0a6]">{stamp.client_type}</span>
-                    </div>
-                    {stamp.recipient_email && <p className="text-xs text-[#9a958e]">To: {stamp.recipient_email}</p>}
-                    {stamp.subject_hint && <p className="text-xs text-[#9a958e]">Re: {stamp.subject_hint}</p>}
-                    <p className="text-xs text-[#b5b0a6]">Created {timeAgo(stamp.created_at)} · Expires {formatDate(stamp.expires_at)}</p>
+      {/* History */}
+      <div className="flex flex-col gap-3">
+        {stampsLoading ? (
+          <div className="flex items-center justify-center py-16 text-[#b5b0a6] text-sm">Loading…</div>
+        ) : stamps.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-2 text-[#b5b0a6]">
+            <span className="text-4xl">✉️</span>
+            <p className="text-sm">No stamps yet</p>
+          </div>
+        ) : (
+          <>
+            <p className="text-xs text-[#b5b0a6]">{stampsTotal} total stamps</p>
+            {stamps.map((stamp) => (
+              <div key={stamp.id} className="bg-white border border-[#e5e2d8] rounded-xl p-4 flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-mono text-[#6b6560]">{stamp.id.slice(0, 8)}…</span>
+                    {stamp.revoked ? (
+                      <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-red-400 bg-red-400/10 border-red-400/20">Revoked</span>
+                    ) : new Date(stamp.expires_at) < new Date() ? (
+                      <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#6b6560] bg-zinc-400/10 border-zinc-400/20">Expired</span>
+                    ) : (
+                      <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#5a9471] bg-[#f0f7f3] border-[#b8d4c0]">Valid</span>
+                    )}
+                    <span className="text-xs text-[#b5b0a6]">{stamp.client_type}</span>
                   </div>
-                  {!stamp.revoked && new Date(stamp.expires_at) > new Date() && (
-                    <button
-                      onClick={() => revokeStamp(stamp.id)}
-                      disabled={revoking === stamp.id}
-                      className="shrink-0 text-xs px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                    >
-                      {revoking === stamp.id ? "…" : "Revoke"}
-                    </button>
-                  )}
+                  {stamp.recipient_email && <p className="text-xs text-[#9a958e]">To: {stamp.recipient_email}</p>}
+                  {stamp.subject_hint && <p className="text-xs text-[#9a958e]">Re: {stamp.subject_hint}</p>}
+                  <p className="text-xs text-[#b5b0a6]">Created {timeAgo(stamp.created_at)} · Expires {formatDate(stamp.expires_at)}</p>
                 </div>
-              ))}
-            </>
-          )}
-        </div>
-      )}
+                {!stamp.revoked && new Date(stamp.expires_at) > new Date() && (
+                  <button
+                    onClick={() => revokeStamp(stamp.id)}
+                    disabled={revoking === stamp.id}
+                    className="shrink-0 text-xs px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                  >
+                    {revoking === stamp.id ? "…" : "Revoke"}
+                  </button>
+                )}
+              </div>
+            ))}
+          </>
+        )}
+      </div>
 
-      {/* Settings Tab */}
-      {tab === "settings" && (
-        <div className="flex flex-col gap-6">
-          {/* Senders */}
-          <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
-            <div>
-              <h2 className="font-serif text-base font-semibold text-[#1a1917]">Sender Profiles</h2>
-              <p className="text-xs text-[#9a958e] mt-1">Add the email addresses you send from. Each must be verified.</p>
+      {/* Chrome Extension */}
+      {keyError && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm text-red-400">{keyError}</div>
+      )}
+      {(() => {
+        const existing = apiKeys.find((k) => k.name === "Chrome Extension");
+        const isActive = activeIntegration === "chrome";
+        const revealed = isActive && integrationKeyValue;
+        return (
+          <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">🧩</div>
+                <div>
+                  <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Chrome Extension</p>
+                  <p className="text-xs text-[#9a958e] mt-0.5">Stamp emails from Gmail or Outlook without leaving your browser.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {existing && <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#5a9471] border border-[#b8d4c0]">Connected</span>}
+                <button
+                  onClick={() => { setActiveIntegration(isActive ? null : "chrome"); setIntegrationKeyValue(null); setKeyError(null); }}
+                  className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-[#f5f3ef] transition-colors"
+                >
+                  {isActive ? "Close" : existing ? "View setup" : "Connect"}
+                </button>
+              </div>
             </div>
-            {senderError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm text-red-400">{senderError}</div>
-            )}
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
-                placeholder="Display name *"
-                value={newSenderName}
-                onChange={(e) => setNewSenderName(e.target.value)}
-              />
-              <input
-                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
-                placeholder="email@example.com *"
-                type="email"
-                value={newSenderEmail}
-                onChange={(e) => setNewSenderEmail(e.target.value)}
-              />
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={addSender}
-                disabled={!newSenderName.trim() || !newSenderEmail.trim() || addingSender}
-                className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
-              >
-                {addingSender ? "Adding…" : "Add Sender"}
-              </button>
-            </div>
-            {senders.length > 0 && (
-              <div className="flex flex-col gap-2 border-t border-[#e5e2d8] pt-3">
-                {senders.map((s) => (
-                  <div key={s.id} className="flex flex-col gap-2 py-1">
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col gap-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[#1a1917] text-sm">{s.display_name}</span>
-                          {s.verified_email ? (
-                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#5a9471] border border-[#b8d4c0]">✓ Verified</span>
-                          ) : (
-                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">Unverified</span>
-                          )}
-                        </div>
-                        <span className="text-xs text-[#9a958e]">{s.email} · {s.total_stamps} stamps</span>
-                      </div>
-                      {!s.verified_email && verifyingCode !== s.id && (
-                        <button
-                          onClick={() => sendVerificationCode(s.id)}
-                          className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-white/5 transition-colors"
-                        >
-                          Verify Email
+            {isActive && (
+              <div className="flex flex-col gap-3 border-t border-[#e5e2d8] pt-3">
+                {!existing && !revealed && (
+                  <button onClick={() => setupIntegration("Chrome Extension")} disabled={addingKey}
+                    className="self-start text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
+                    {addingKey ? "Generating…" : "Generate API key"}
+                  </button>
+                )}
+                {(revealed || existing) && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs text-[#9a958e]">
+                      {revealed ? "Copy this key — it won't be shown again. Paste it in the extension's Settings page." : "Your extension is connected. Regenerate if you need a new key."}
+                    </p>
+                    {revealed ? (
+                      <div className="flex items-center gap-2 bg-[#f0f7f3] border border-[#b8d4c0] rounded-lg px-3 py-2">
+                        <code className="text-xs text-[#1a1917] font-mono break-all flex-1">{integrationKeyValue}</code>
+                        <button onClick={() => copyToClipboard(integrationKeyValue!, "chrome-key")} className="shrink-0 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
+                          {copiedField === "chrome-key" ? "Copied!" : "Copy"}
                         </button>
-                      )}
-                    </div>
-                    {verifyingCode === s.id && (
-                      <div className="flex flex-col gap-2">
-                        {verifyEmailError && <p className="text-xs text-red-400">{verifyEmailError}</p>}
-                        {verificationCode && (
-                          <p className="text-xs text-amber-400 font-mono">Dev mode — code: {verificationCode}</p>
-                        )}
-                        <div className="flex gap-2">
-                          <input
-                            className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-1.5 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
-                            placeholder="Enter 6-digit code"
-                            maxLength={6}
-                            value={verificationCodeInput}
-                            onChange={(e) => setVerificationCodeInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                          />
-                          <button
-                            onClick={() => submitVerificationCode(s.id)}
-                            disabled={verificationCodeInput.length !== 6 || verifyingEmail}
-                            className="text-sm px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
-                          >
-                            {verifyingEmail ? "…" : "Confirm"}
-                          </button>
-                          <button
-                            onClick={() => { setVerifyingCode(null); setVerificationCode(""); setVerificationCodeInput(""); }}
-                            className="text-sm px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#6b6560] hover:bg-white/5 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 bg-[#f5f3ef] border border-[#e5e2d8] rounded-lg px-3 py-2">
+                        <code className="text-xs text-[#9a958e] font-mono">{existing!.key_prefix}…</code>
+                        <span className="text-xs text-[#b5b0a6] ml-auto">{existing!.last_used_at ? `Last used ${timeAgo(existing!.last_used_at)}` : "Never used"}</span>
                       </div>
                     )}
+                    <a href="https://chromewebstore.google.com/detail/signedinbox" target="_blank" rel="noopener noreferrer"
+                      className="self-start text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-[#f5f3ef] transition-colors">
+                      Get extension →
+                    </a>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>
-
-          {/* Integrations */}
-          <div className="flex flex-col gap-3">
-            <div>
-              <h2 className="font-serif text-base font-semibold text-[#1a1917]">Integrations</h2>
-              <p className="text-xs text-[#9a958e] mt-1">Connect signedinbox to your tools.</p>
-            </div>
-
-            {keyError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm text-red-400">{keyError}</div>
-            )}
-
-            {/* Chrome Extension */}
-            {(() => {
-              const existing = apiKeys.find((k) => k.name === "Chrome Extension");
-              const isActive = activeIntegration === "chrome";
-              const revealed = isActive && integrationKeyValue;
-              return (
-                <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">🧩</div>
-                      <div>
-                        <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Chrome Extension</p>
-                        <p className="text-xs text-[#9a958e] mt-0.5">Stamp emails from Gmail or Outlook without leaving your browser.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {existing && <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#5a9471] border border-[#b8d4c0]">Connected</span>}
-                      <button
-                        onClick={() => { setActiveIntegration(isActive ? null : "chrome"); setIntegrationKeyValue(null); setKeyError(null); }}
-                        className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-[#f5f3ef] transition-colors"
-                      >
-                        {isActive ? "Close" : existing ? "View setup" : "Connect"}
-                      </button>
-                    </div>
-                  </div>
-                  {isActive && (
-                    <div className="flex flex-col gap-3 border-t border-[#e5e2d8] pt-3">
-                      {!existing && !revealed && (
-                        <button onClick={() => setupIntegration("Chrome Extension")} disabled={addingKey}
-                          className="self-start text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
-                          {addingKey ? "Generating…" : "Generate API key"}
-                        </button>
-                      )}
-                      {(revealed || existing) && (
-                        <div className="flex flex-col gap-2">
-                          <p className="text-xs text-[#9a958e]">
-                            {revealed ? "Copy this key — it won't be shown again. Paste it in the extension's Settings page." : "Your extension is connected. Regenerate if you need a new key."}
-                          </p>
-                          {revealed ? (
-                            <div className="flex items-center gap-2 bg-[#f0f7f3] border border-[#b8d4c0] rounded-lg px-3 py-2">
-                              <code className="text-xs text-[#1a1917] font-mono break-all flex-1">{integrationKeyValue}</code>
-                              <button onClick={() => copyToClipboard(integrationKeyValue!, "chrome-key")} className="shrink-0 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
-                                {copiedField === "chrome-key" ? "Copied!" : "Copy"}
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2 bg-[#f5f3ef] border border-[#e5e2d8] rounded-lg px-3 py-2">
-                              <code className="text-xs text-[#9a958e] font-mono">{existing!.key_prefix}…</code>
-                              <span className="text-xs text-[#b5b0a6] ml-auto">{existing!.last_used_at ? `Last used ${timeAgo(existing!.last_used_at)}` : "Never used"}</span>
-                            </div>
-                          )}
-                          <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener noreferrer"
-                            className="self-start text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-[#f5f3ef] transition-colors">
-                            Get extension →
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
-  );
-}
-
-export default function DashboardPage() {
-  return (
-    <Suspense>
-      <DashboardPageInner />
-    </Suspense>
   );
 }

@@ -10,7 +10,7 @@ export default async function VerifyPage({
 }) {
   const { stampId } = await params;
 
-  const result = stampId === "demo" ? {
+  const result: import("@/lib/signedinbox/types").StampValidationResult = stampId === "demo" ? {
     valid: true,
     stamp: {
       id: "demo",
@@ -20,6 +20,8 @@ export default async function VerifyPage({
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       content_hash: null,
+      is_mass_send: false,
+      declared_recipient_count: null,
     },
     signature_verified: true,
     failure_reason: null,
@@ -34,6 +36,8 @@ export default async function VerifyPage({
   const contentHash = stamp?.content_hash ?? null;
   const validationCount = (result?.validation_count ?? 0) + 1; // +1 to include current visit
   const recipientEmailHash = result?.recipient_email_hash ?? null;
+  const isMassSend = stamp?.is_mass_send ?? false;
+  const declaredRecipientCount = stamp?.declared_recipient_count ?? null;
 
   function failureMessage(reason: string | null): string {
     switch (reason) {
@@ -127,6 +131,12 @@ export default async function VerifyPage({
                     value: contentHash ? "✓ Bound to email content" : "⚠ Not content-bound",
                     colored: contentHash ? "text-[#5a9471]" : "text-amber-600",
                   },
+                  ...(isMassSend ? [{
+                    label: "Send type",
+                    value: `Mass email${declaredRecipientCount ? ` · ${declaredRecipientCount} recipients` : ""}`,
+                    colored: "text-[#9a958e]",
+                    tooltip: "The sender declared this as a mass email. Multiple verifications are expected.",
+                  }] : []),
                   {
                     label: "Created",
                     value: formatDate(stamp.created_at),
@@ -165,16 +175,18 @@ export default async function VerifyPage({
                     <div className="group relative">
                       <span className="text-[#b5b0a6] cursor-help text-xs">ⓘ</span>
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
-                        {validationCount === 1
+                        {isMassSend
+                          ? "This is a mass email stamp — multiple verifications are expected and normal."
+                          : validationCount === 1
                           ? "You're the first to verify this stamp — good sign it hasn't been forwarded or reused."
-                          : "This stamp has been verified more than once. It was either sent to a group and others verified it too, or it was copied and reused. If the stamp creation time doesn't match when you received this email, it was likely reused."}
+                          : "This stamp has been verified more than once. It was either sent to a group and others verified it too, or it was copied and reused. If the stamp creation time doesn't match when you received this email, it was likely reused. Senders who use stamps this way without declaring mass send will be flagged."}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1a1917]" />
                       </div>
                     </div>
                   </div>
-                  <span className={`font-medium tabular-nums ${validationCount > 1 ? "text-red-500" : "text-[#5a9471]"}`}>
+                  <span className={`font-medium tabular-nums ${isMassSend ? "text-[#9a958e]" : validationCount > 1 ? "text-red-500" : "text-[#5a9471]"}`}>
                     {validationCount}
-                    {validationCount > 1 && " ⚠"}
+                    {!isMassSend && validationCount > 1 && " ⚠"}
                   </span>
                 </div>
               </div>

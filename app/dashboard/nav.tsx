@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function DashboardNav() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") ?? "";
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -40,19 +38,6 @@ export default function DashboardNav() {
       </Link>
 
       <div className="flex items-center gap-1">
-        {(["history", "settings"] as const).map((t) => (
-          <Link
-            key={t}
-            href={`/dashboard?tab=${t}`}
-            className={`text-[13px] transition-colors px-3 py-1.5 rounded-lg capitalize ${
-              activeTab === t
-                ? "text-[#1a1917] bg-[#eae8e2] font-medium"
-                : "text-[#9a958e] hover:text-[#1a1917] hover:bg-[#eae8e2]"
-            }`}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </Link>
-        ))}
         <button
           onClick={handleSignOut}
           className="text-[13px] text-[#9a958e] hover:text-[#1a1917] transition-colors px-3 py-1.5 rounded-lg hover:bg-[#eae8e2]"
