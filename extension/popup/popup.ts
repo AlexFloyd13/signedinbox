@@ -30,10 +30,29 @@ function sendMsg<T>(msg: object): Promise<T> {
 
 // ─── Login view ───────────────────────────────────────────────────────────────
 
+const LOGO_SVG = `<svg width="24" height="24" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pBg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6b9e7e" />
+      <stop offset="100%" stop-color="#477857" />
+    </linearGradient>
+    <linearGradient id="pNib" x1="64" y1="25" x2="64" y2="113" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.98)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0.88)" />
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="url(#pBg)" />
+  <circle cx="64" cy="64" r="55" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" />
+  <path d="M64 25 L92 69 L64 113 L36 69 Z" fill="url(#pNib)" />
+  <path d="M64 49 L64 113" stroke="#477857" stroke-width="5" stroke-linecap="round" />
+  <ellipse cx="64" cy="51" rx="10" ry="7" fill="#477857" />
+  <path d="M44 83 Q54 91 64 93 Q74 91 84 83" stroke="rgba(255,255,255,0.22)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+</svg>`;
+
 function renderLogin(errorMsg = '') {
   app.innerHTML = `
     <div class="header">
-      <span class="header-logo">✍️</span>
+      <span class="header-logo">${LOGO_SVG}</span>
       <div>
         <div class="header-title">signedinbox</div>
         <div class="header-subtitle">Sign in to stamp emails</div>
@@ -74,7 +93,7 @@ function renderLogin(errorMsg = '') {
 async function renderMain() {
   app.innerHTML = `
     <div class="header">
-      <span class="header-logo">✍️</span>
+      <span class="header-logo">${LOGO_SVG}</span>
       <div>
         <div class="header-title">signedinbox</div>
         <div class="header-subtitle">Ready to stamp</div>

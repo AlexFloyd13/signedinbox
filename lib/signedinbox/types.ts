@@ -88,4 +88,6 @@ export interface StampValidationResult {
   } | null;
   signature_verified: boolean;
   failure_reason: string | null;
+  validation_count: number;
+  recipient_email_hash: string | null;
 }

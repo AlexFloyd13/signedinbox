@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
+import { createHash } from 'crypto';
 import { buildStampPayload, signStamp, verifyStamp, hashIp, maskEmail, generateSigningKeyPair, canonicalize } from './crypto';
 import { verifyTurnstileToken } from './turnstile';
 import {
   getActiveSigningKey, getSigningKey, storeSigningKey,
-  createStampRecord, getStampWithSender, logValidation,
+  createStampRecord, getStampWithSender, logValidation, getValidationCount,
   getSender,
 } from './supabase';
 import type { StampPayload, StampResponse, StampValidationResult } from './types';
@@ -111,10 +112,16 @@ export async function validateStamp(
 
   if (!result) {
     await logValidation(stampId, false, 'not_found', ipHash, userAgent, referrer).catch(() => {});
-    return { valid: false, stamp: null, signature_verified: false, failure_reason: 'not_found' };
+    return { valid: false, stamp: null, signature_verified: false, failure_reason: 'not_found', validation_count: 0, recipient_email_hash: null };
   }
 
   const { stamp, sender } = result;
+
+  // Fetch prior count before logging this visit
+  const validation_count = await getValidationCount(stampId);
+  const recipient_email_hash = stamp.recipient_email
+    ? createHash('sha256').update(stamp.recipient_email.toLowerCase().trim()).digest('hex')
+    : null;
 
   const stampInfo = {
     id: stamp.id,
@@ -128,23 +135,23 @@ export async function validateStamp(
 
   if (stamp.revoked) {
     await logValidation(stampId, false, 'revoked', ipHash, userAgent, referrer);
-    return { valid: false, stamp: stampInfo, signature_verified: false, failure_reason: 'revoked' };
+    return { valid: false, stamp: stampInfo, signature_verified: false, failure_reason: 'revoked', validation_count, recipient_email_hash };
   }
 
   if (new Date(stamp.expires_at) < new Date()) {
     await logValidation(stampId, false, 'expired', ipHash, userAgent, referrer);
-    return { valid: false, stamp: stampInfo, signature_verified: false, failure_reason: 'expired' };
+    return { valid: false, stamp: stampInfo, signature_verified: false, failure_reason: 'expired', validation_count, recipient_email_hash };
   }
 
   if (!stamp.canonical_payload) {
     await logValidation(stampId, true, null, ipHash, userAgent, referrer);
-    return { valid: true, stamp: stampInfo, signature_verified: false, failure_reason: null };
+    return { valid: true, stamp: stampInfo, signature_verified: false, failure_reason: null, validation_count, recipient_email_hash };
   }
 
   const signingKey = await getSigningKey(stamp.public_key_id);
   if (!signingKey) {
     await logValidation(stampId, false, 'key_not_found', ipHash, userAgent, referrer);
-    return { valid: false, stamp: null, signature_verified: false, failure_reason: 'key_not_found' };
+    return { valid: false, stamp: null, signature_verified: false, failure_reason: 'key_not_found', validation_count, recipient_email_hash };
   }
 
   let parsedPayload: StampPayload;
@@ -152,15 +159,15 @@ export async function validateStamp(
     parsedPayload = JSON.parse(stamp.canonical_payload) as StampPayload;
   } catch {
     await logValidation(stampId, false, 'payload_invalid', ipHash, userAgent, referrer);
-    return { valid: false, stamp: null, signature_verified: false, failure_reason: 'payload_invalid' };
+    return { valid: false, stamp: null, signature_verified: false, failure_reason: 'payload_invalid', validation_count, recipient_email_hash };
   }
 
   const signatureValid = verifyStamp(parsedPayload, stamp.signature, signingKey.public_key);
   if (!signatureValid) {
     await logValidation(stampId, false, 'signature_invalid', ipHash, userAgent, referrer);
-    return { valid: false, stamp: stampInfo, signature_verified: false, failure_reason: 'signature_invalid' };
+    return { valid: false, stamp: stampInfo, signature_verified: false, failure_reason: 'signature_invalid', validation_count, recipient_email_hash };
   }
 
   await logValidation(stampId, true, null, ipHash, userAgent, referrer);
-  return { valid: true, stamp: stampInfo, signature_verified: true, failure_reason: null };
+  return { valid: true, stamp: stampInfo, signature_verified: true, failure_reason: null, validation_count, recipient_email_hash };
 }

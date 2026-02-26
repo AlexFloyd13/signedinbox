@@ -140,6 +140,12 @@ export async function revokeStamp(stampId: string, userId: string): Promise<bool
 
 // ─── Validations ─────────────────────────────────────────────────────────────
 
+export async function getValidationCount(stampId: string): Promise<number> {
+  const db = getSupabaseAdmin();
+  const { count } = await db.from('signedinbox_validations').select('*', { count: 'exact', head: true }).eq('stamp_id', stampId).eq('is_valid', true);
+  return count ?? 0;
+}
+
 export async function logValidation(
   stampId: string,
   isValid: boolean,

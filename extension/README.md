@@ -1,46 +1,104 @@
-# SignedInbox Chrome Extension
+# signedinbox Chrome Extension
 
-Manifest V3 extension that injects a "Stamp" button into Gmail compose windows.
+Manifest V3 extension that injects a **Stamp** button into Gmail compose windows. When clicked, it calls the signedinbox API (with Cloudflare Turnstile verification) and inserts a signed HTML badge into the email body.
+
+## Project layout
+
+```
+extension/
+├── background/
+│   └── background.ts       Service worker — auth, API calls, Turnstile coordination
+├── content/
+│   ├── gmail-content.ts    Injects Stamp button into Gmail compose windows
+│   └── gmail-content.css   Button styles (signedinbox brand palette)
+├── lib/
+│   ├── api.ts              Typed signedinbox API client
+│   ├── auth.ts             Supabase REST auth (no SDK — service worker safe)
+│   └── storage.ts          chrome.storage helpers
+├── offscreen/
+│   ├── turnstile.html      Offscreen document for Cloudflare Turnstile
+│   └── turnstile.ts        Turnstile token handler
+├── popup/
+│   ├── popup.html          Extension popup shell
+│   ├── popup.css           Popup styles (signedinbox brand palette)
+│   └── popup.ts            Login view + sender selector
+├── icons/
+│   └── generate.js         Generates icon PNGs from the SVG source
+├── build.js                esbuild bundler script
+├── manifest.json           Extension manifest (MV3)
+└── tsconfig.json
+```
 
 ## Prerequisites
 
 - Node.js 20+
-- A Cloudflare Turnstile site configured for your extension's Chrome ID
-  (add the extension ID to allowed hostnames in the Turnstile dashboard)
+- A Cloudflare Turnstile **Managed** widget configured for your extension's Chrome ID
+  (after you get your extension ID, add `chrome-extension://<ID>` to the Turnstile site's allowed hostnames)
+
+## Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `SUPABASE_URL` | Your Supabase project URL (e.g. `https://abcxyz.supabase.co`) |
+| `SUPABASE_ANON_KEY` | Supabase anon key |
+| `TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key |
+
+These are baked into the bundle at build time via esbuild `define`. They are not runtime env vars — set them in your shell or CI environment before running `npm run build`.
 
 ## Build
 
 ```bash
 cd extension
 npm install
+
+# Development build (with sourcemaps, no minification, auto-rebuild on changes)
+SUPABASE_URL=https://your-project.supabase.co \
+SUPABASE_ANON_KEY=your-anon-key \
+TURNSTILE_SITE_KEY=your-site-key \
+npm run dev
+
+# Production build (minified, no sourcemaps)
+NODE_ENV=production \
 SUPABASE_URL=https://your-project.supabase.co \
 SUPABASE_ANON_KEY=your-anon-key \
 TURNSTILE_SITE_KEY=your-site-key \
 npm run build
 ```
 
-Output lands in `dist/`. For development with auto-rebuild:
+Output lands in `dist/`.
+
+## Generate icons
 
 ```bash
-... npm run dev
+npm run icons
 ```
 
-## Install in Chrome
+Requires the `sharp` package (already in devDependencies). Generates `icons/icon16.png`, `icons/icon48.png`, and `icons/icon128.png` from the SVG source and copies them to `dist/icons/`.
+
+## Load in Chrome (development)
 
 1. Open `chrome://extensions`
-2. Enable **Developer mode**
-3. Click **Load unpacked** and select the `dist/` folder
-4. Note your extension ID — add it to the Turnstile site's allowed hostnames
-5. Open Gmail, compose a new email, and click **✍️ Stamp** in the toolbar
+2. Enable **Developer mode** (top-right toggle)
+3. Click **Load unpacked** → select the `dist/` folder
+4. Copy the extension ID shown on the card (e.g. `abcdefghijklmnopabcdefghijklmnop`)
+5. Add `chrome-extension://<your-extension-id>` to the Turnstile site's **allowed hostnames** in the Cloudflare dashboard
+6. Open Gmail, compose a new email — the **Stamp** button appears in the compose toolbar
 
-## Architecture
+## How it works
 
 ```
-popup.ts          → login/sender selector UI
-background.ts     → service worker: API calls, auth, Turnstile coordination
-gmail-content.ts  → Gmail compose detection + badge injection
-offscreen/        → Cloudflare Turnstile rendering (offscreen document)
-lib/              → typed API client, Supabase REST auth, storage helpers
+User clicks Stamp
+  └─ gmail-content.ts
+       └─ chrome.runtime.sendMessage(CREATE_STAMP)
+            └─ background.ts (service worker)
+                 ├─ refreshSession()     — get fresh Supabase JWT
+                 ├─ getTurnstileToken()  — render Turnstile in offscreen document
+                 └─ createStamp()        — POST /api/v1/stamps
+                      └─ badge_html injected into Gmail compose body
 ```
 
-The extension never skips Turnstile — stamps always require human verification.
+The extension never skips Turnstile — every stamp requires human verification.
+
+## Deployment
+
+See [DEPLOY.md](./DEPLOY.md) for the step-by-step Chrome Web Store submission guide.

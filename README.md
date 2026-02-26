@@ -112,9 +112,10 @@ Send `{ "action": "<action>", ... }` in the request body.
 
 ## Chrome Extension
 
-The `extension/` directory contains a Manifest V3 Chrome extension for Gmail. It injects a "Stamp" button into Gmail compose windows, handles Turnstile verification via an offscreen document, and inserts the badge HTML directly into the email body.
+The `extension/` directory contains a Manifest V3 Chrome extension for Gmail. It injects a **Stamp** button into Gmail compose windows, handles Cloudflare Turnstile verification via an offscreen document, and inserts the signed badge HTML directly into the email body.
 
-See `extension/README.md` for build and installation instructions.
+- `extension/README.md` — build and local development instructions
+- `extension/DEPLOY.md` — Chrome Web Store submission guide
 
 ## Tech Stack
 
