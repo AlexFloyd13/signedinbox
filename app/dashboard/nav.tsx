@@ -39,7 +39,7 @@ export default function DashboardNav() {
 
       <div className="flex items-center gap-1">
         <Link
-          href="/"
+          href="/dashboard"
           className="text-[13px] text-[#9a958e] hover:text-[#1a1917] transition-colors px-3 py-1.5 rounded-lg hover:bg-[#eae8e2]"
         >
           Home
