@@ -85,8 +85,8 @@ export async function createVerifiedStamp(opts: {
     hour: 'numeric', minute: '2-digit',
     timeZone: 'UTC', timeZoneName: 'short',
   });
-  const badgeHtml = `<a href="${stampUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:#6366f1;color:#fff;font-size:12px;font-family:system-ui,sans-serif;text-decoration:none;">&#x270D; SignedInbox Verified &middot; ${stampDateLabel}</a>`;
-  const badgeText = `[SignedInbox Verified · ${stampDateLabel} - Click to verify: ${stampUrl}]`;
+  const badgeHtml = `<a href="${stampUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:#6366f1;color:#fff;font-size:12px;font-family:system-ui,sans-serif;text-decoration:none;">&#x270D; signedinbox Verified &middot; ${stampDateLabel}</a>`;
+  const badgeText = `[signedinbox Verified · ${stampDateLabel} - Click to verify: ${stampUrl}]`;
 
   return {
     stamp_id: stampId,

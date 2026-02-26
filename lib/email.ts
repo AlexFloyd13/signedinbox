@@ -21,15 +21,15 @@ export async function sendVerificationEmail(to: string, code: string): Promise<v
     body: JSON.stringify({
       personalizations: [{ to: [{ email: to }] }],
       from: { email: from },
-      subject: 'Your SignedInbox verification code',
+      subject: 'Your signedinbox verification code',
       content: [
         {
           type: 'text/plain',
-          value: `Your SignedInbox verification code is: ${code}\n\nThis code expires in 15 minutes.`,
+          value: `Your signedinbox verification code is: ${code}\n\nThis code expires in 15 minutes.`,
         },
         {
           type: 'text/html',
-          value: `<p>Your SignedInbox verification code is:</p><p style="font-size:2rem;font-weight:bold;letter-spacing:0.2em">${code}</p><p>This code expires in 15 minutes.</p>`,
+          value: `<p>Your signedinbox verification code is:</p><p style="font-size:2rem;font-weight:bold;letter-spacing:0.2em">${code}</p><p>This code expires in 15 minutes.</p>`,
         },
       ],
     }),

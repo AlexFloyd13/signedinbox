@@ -431,7 +431,7 @@ function DashboardPageInner() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-serif text-2xl font-bold text-[#1a1917] tracking-tight">SignedInbox</h1>
+        <h1 className="font-serif text-2xl font-bold text-[#1a1917] tracking-tight">signedinbox</h1>
         <p className="text-[#9a958e] text-sm mt-1">
           Cryptographic stamps for your emails — prove you&apos;re a real human sender.
         </p>
@@ -648,7 +648,7 @@ function DashboardPageInner() {
                       rel="noopener noreferrer"
                       style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", borderRadius: "6px", background: "#5a9471", color: "#fff", fontSize: "12px", fontFamily: "system-ui, sans-serif", textDecoration: "none" }}
                     >
-                      ✍ SignedInbox Verified
+                      ✍ signedinbox Verified
                     </a>
                   </div>
                 </div>
@@ -820,7 +820,7 @@ function DashboardPageInner() {
           <div className="flex flex-col gap-3">
             <div>
               <h2 className="font-serif text-base font-semibold text-[#1a1917]">Integrations</h2>
-              <p className="text-xs text-[#9a958e] mt-1">Connect SignedInbox to your tools.</p>
+              <p className="text-xs text-[#9a958e] mt-1">Connect signedinbox to your tools.</p>
             </div>
 
             {keyError && (

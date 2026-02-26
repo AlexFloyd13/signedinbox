@@ -27,7 +27,7 @@ export default async function VerifyPage({
         <nav className="flex items-center justify-between px-8 py-4 border-b border-white/10">
           <Link href="/" className="flex items-center gap-2">
             <span>✍️</span>
-            <span className="font-bold text-indigo-400">SignedInbox</span>
+            <span className="font-bold text-indigo-400">signedinbox</span>
           </Link>
         </nav>
         <main className="flex-1 flex items-center justify-center px-4 py-16">
@@ -35,7 +35,7 @@ export default async function VerifyPage({
             <div className="rounded-2xl border bg-indigo-500/5 border-indigo-500/20 p-8 flex flex-col items-center gap-4 text-center">
               <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-indigo-500/15">✓</div>
               <div>
-                <h1 className="text-xl font-bold text-indigo-400">SignedInbox Verified</h1>
+                <h1 className="text-xl font-bold text-indigo-400">signedinbox Verified</h1>
                 <p className="text-sm text-zinc-400 mt-1">This is a demo of what a verified stamp looks like.</p>
               </div>
             </div>
@@ -82,7 +82,7 @@ export default async function VerifyPage({
       <nav className="flex items-center justify-between px-8 py-4 border-b border-white/10">
         <Link href="/" className="flex items-center gap-2">
           <span>✍️</span>
-          <span className="font-bold text-indigo-400">SignedInbox</span>
+          <span className="font-bold text-indigo-400">signedinbox</span>
         </Link>
         <Link href="/dashboard" className="text-sm text-zinc-400 hover:text-white transition-colors">
           Dashboard
@@ -102,7 +102,7 @@ export default async function VerifyPage({
             </div>
             <div className="flex flex-col gap-1">
               <h1 className={`text-xl font-bold ${valid ? "text-indigo-400" : "text-red-400"}`}>
-                {valid ? "SignedInbox Verified" : "Verification Failed"}
+                {valid ? "signedinbox Verified" : "Verification Failed"}
               </h1>
               <p className="text-sm text-zinc-400">
                 {valid
@@ -197,7 +197,7 @@ export default async function VerifyPage({
             <p className="text-xs text-zinc-600">
               Powered by{" "}
               <Link href="/" className="text-zinc-400 hover:text-white transition-colors">
-                SignedInbox
+                signedinbox
               </Link>
               {" "}— cryptographic email verification
             </p>

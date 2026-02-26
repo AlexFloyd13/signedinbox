@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "SignedInbox",
+  "name": "signedinbox",
   "version": "0.1.0",
   "description": "Attach cryptographic proof-of-humanity stamps to your Gmail emails.",
   "permissions": [

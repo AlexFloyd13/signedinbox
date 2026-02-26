@@ -29,7 +29,7 @@ export default function Home() {
       <header className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-[#e5e2d8]">
         <div className="flex items-center gap-2.5">
           <SealIcon size={26} />
-          <span className="font-bold text-[15px] tracking-tight text-[#1a1917]">SignedInbox</span>
+          <span className="font-bold text-[15px] tracking-tight text-[#1a1917]">signedinbox</span>
         </div>
         <div className="flex items-center gap-2">
           <Link
@@ -109,7 +109,7 @@ export default function Home() {
                 </svg>
               </div>
               <div className="min-w-0">
-                <div className="text-[13px] font-semibold text-[#1e4533]">Verified by SignedInbox</div>
+                <div className="text-[13px] font-semibold text-[#1e4533]">Verified by signedinbox</div>
                 <div className="text-[11px] text-[#5a9471] truncate">alex@floyd.dev · Stamp valid until Mar 28</div>
               </div>
               <span className="text-[11px] text-[#4d7c63] shrink-0 border border-[#b8d4c0] rounded-md px-2 py-0.5 ml-auto">
@@ -164,7 +164,7 @@ export default function Home() {
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-[13px] text-[#9a958e] leading-relaxed">
             <span className="font-semibold text-[#6b6560]">A note on what this is (and isn&apos;t).</span>{" "}
-            SignedInbox makes it meaningfully harder for bots and impersonators to fake your identity,
+            signedinbox makes it meaningfully harder for bots and impersonators to fake your identity,
             and adds a genuine signal of care and sincerity to your emails. It is not an absolute
             guarantee — determined attackers have workarounds for most verification systems. Think of it
             like a wax seal on an envelope: it doesn&apos;t make the letter invulnerable, but breaking it
@@ -197,7 +197,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-[#e5e2d8] py-6 px-6 sm:px-10 flex items-center justify-between">
-        <span className="text-[12px] text-[#b5b0a6]">© 2026 SignedInbox · MIT licensed</span>
+        <span className="text-[12px] text-[#b5b0a6]">© 2026 signedinbox · MIT licensed</span>
         <div className="flex items-center gap-4">
           <Link href="/login" className="text-[12px] text-[#b5b0a6] hover:text-[#1a1917] transition-colors">Sign in</Link>
           <Link href="/signup" className="text-[12px] text-[#b5b0a6] hover:text-[#1a1917] transition-colors">Sign up</Link>

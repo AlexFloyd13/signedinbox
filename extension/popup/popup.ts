@@ -35,7 +35,7 @@ function renderLogin(errorMsg = '') {
     <div class="header">
       <span class="header-logo">✍️</span>
       <div>
-        <div class="header-title">SignedInbox</div>
+        <div class="header-title">signedinbox</div>
         <div class="header-subtitle">Sign in to stamp emails</div>
       </div>
     </div>
@@ -76,7 +76,7 @@ async function renderMain() {
     <div class="header">
       <span class="header-logo">✍️</span>
       <div>
-        <div class="header-title">SignedInbox</div>
+        <div class="header-title">signedinbox</div>
         <div class="header-subtitle">Ready to stamp</div>
       </div>
     </div>

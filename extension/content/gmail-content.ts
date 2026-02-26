@@ -31,7 +31,7 @@ function injectStampButton(compose: Element) {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'si-stamp-btn';
-  btn.title = 'Add SignedInbox stamp';
+  btn.title = 'Add signedinbox stamp';
   btn.textContent = '✍️ Stamp';
 
   btn.addEventListener('click', async () => {
@@ -41,7 +41,7 @@ function injectStampButton(compose: Element) {
     try {
       const senderId = await getActiveSenderId();
       if (!senderId) {
-        alert('SignedInbox: No sender selected. Open the extension popup to select one.');
+        alert('signedinbox: No sender selected. Open the extension popup to select one.');
         return;
       }
 
@@ -56,7 +56,7 @@ function injectStampButton(compose: Element) {
       });
 
       if (response.error) {
-        alert(`SignedInbox error: ${response.error}`);
+        alert(`signedinbox error: ${response.error}`);
         return;
       }
 
@@ -67,7 +67,7 @@ function injectStampButton(compose: Element) {
         btn.disabled = false;
       }, 3000);
     } catch (err) {
-      alert(`SignedInbox: ${err instanceof Error ? err.message : String(err)}`);
+      alert(`signedinbox: ${err instanceof Error ? err.message : String(err)}`);
       btn.textContent = '✍️ Stamp';
       btn.disabled = false;
     }

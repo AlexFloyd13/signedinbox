@@ -49,7 +49,7 @@ export default function LoginPage() {
             <ellipse cx="64" cy="51" rx="10" ry="7" fill="#477857" />
             <path d="M44 83 Q54 91 64 93 Q74 91 84 83" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
           </svg>
-          <span className="font-bold text-[16px] text-[#1a1917]">SignedInbox</span>
+          <span className="font-bold text-[16px] text-[#1a1917]">signedinbox</span>
         </Link>
       </div>
 
