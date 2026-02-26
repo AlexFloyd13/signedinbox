@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
       const senderId = body.sender_id as string;
       if (!senderId) return NextResponse.json({ error: 'sender_id required' }, { status: 400, headers: sec.headers });
       // TODO: Send via email (Resend/SendGrid) when configured
-      const { code } = await createEmailVerification(senderId);
-      return NextResponse.json({ message: 'Verification code generated', code }, { status: 200, headers: sec.headers });
+      await createEmailVerification(senderId);
+      return NextResponse.json({ message: 'Verification code sent' }, { status: 200, headers: sec.headers });
     }
 
     if (action === 'verify-email') {
