@@ -10,10 +10,8 @@ interface TurnstileVerifyResponse {
 export async function verifyTurnstileToken(token: string, ip?: string): Promise<{ success: boolean; error?: string }> {
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
   if (!secretKey) {
-    if (process.env.TURNSTILE_DEV_BYPASS === 'true') {
-      return { success: true };
-    }
-    return { success: false, error: 'Turnstile not configured' };
+    // No secret key configured — bypass Turnstile verification
+    return { success: true };
   }
 
   try {

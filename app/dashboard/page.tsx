@@ -209,7 +209,8 @@ function DashboardPageInner() {
   }
 
   async function generateStamp() {
-    if (!selectedSender || !turnstileToken) return;
+    if (!selectedSender) return;
+    const token = turnstileToken || "bypass";
     setGenerating(true);
     setGenerateError(null);
     setStampResult(null);
@@ -218,7 +219,7 @@ function DashboardPageInner() {
       setLocalContentHash(hash);
       const body: Record<string, string> = {
         sender_id: selectedSender,
-        turnstile_token: turnstileToken,
+        turnstile_token: token,
         client_type: "web",
       };
       if (recipientEmail.trim()) body.recipient_email = recipientEmail.trim();
@@ -603,8 +604,8 @@ function DashboardPageInner() {
                 <div className="flex justify-end">
                   <button
                     onClick={generateStamp}
-                    disabled={!selectedSender || (!turnstileToken && !!siteKey) || generating}
-                    className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
+                    disabled={!selectedSender || (siteKey && !turnstileToken) || generating}
+                    className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
                   >
                     {generating ? "Generating…" : "Generate Stamp"}
                   </button>
@@ -749,7 +750,7 @@ function DashboardPageInner() {
               <button
                 onClick={addSender}
                 disabled={!newSenderName.trim() || !newSenderEmail.trim() || addingSender}
-                className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
+                className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
               >
                 {addingSender ? "Adding…" : "Add Sender"}
               </button>
@@ -796,7 +797,7 @@ function DashboardPageInner() {
                           <button
                             onClick={() => submitVerificationCode(s.id)}
                             disabled={verificationCodeInput.length !== 6 || verifyingEmail}
-                            className="text-sm px-3 py-1.5 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
+                            className="text-sm px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
                           >
                             {verifyingEmail ? "…" : "Confirm"}
                           </button>
@@ -855,7 +856,7 @@ function DashboardPageInner() {
                     <div className="flex flex-col gap-3 border-t border-[#e5e2d8] pt-3">
                       {!existing && !revealed && (
                         <button onClick={() => setupIntegration("Chrome Extension")} disabled={addingKey}
-                          className="self-start text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
+                          className="self-start text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
                           {addingKey ? "Generating…" : "Generate API key"}
                         </button>
                       )}
@@ -922,7 +923,7 @@ function DashboardPageInner() {
                         <>
                           <p className="text-xs text-[#9a958e]">Generate an API key, then add the config to your Claude desktop <code className="text-[#5a9471]">claude_desktop_config.json</code>.</p>
                           <button onClick={() => setupIntegration("Claude MCP")} disabled={addingKey}
-                            className="self-start text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
+                            className="self-start text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
                             {addingKey ? "Generating…" : "Generate API key"}
                           </button>
                         </>
@@ -989,7 +990,7 @@ function DashboardPageInner() {
                           onChange={(e) => setNewKeyName(e.target.value)}
                         />
                         <button onClick={addApiKey} disabled={!newKeyName.trim() || addingKey}
-                          className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
+                          className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
                           {addingKey ? "Creating…" : "Create"}
                         </button>
                       </div>
