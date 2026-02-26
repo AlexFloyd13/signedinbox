@@ -32,11 +32,11 @@ export default function LoginPage() {
       <div className="mb-8 text-center">
         <Link href="/" className="inline-flex items-center gap-2.5 mb-3">
           <svg width="28" height="28" viewBox="0 0 128 128" fill="none">
-            <circle cx="64" cy="64" r="64" fill="#4338ca" />
+            <circle cx="64" cy="64" r="64" fill="#15803d" />
             <circle cx="64" cy="64" r="55" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
             <path d="M64 18 L92 58 L64 96 L36 58 Z" fill="rgba(255,255,255,0.96)" />
-            <path d="M64 46 L64 96" stroke="#3730a3" strokeWidth="5" strokeLinecap="round" />
-            <ellipse cx="64" cy="48" rx="10" ry="7" fill="#3730a3" />
+            <path d="M64 46 L64 96" stroke="#14532d" strokeWidth="5" strokeLinecap="round" />
+            <ellipse cx="64" cy="48" rx="10" ry="7" fill="#14532d" />
           </svg>
           <span className="font-bold text-[16px] text-[#1a1917]">SignedInbox</span>
         </Link>
@@ -55,13 +55,13 @@ export default function LoginPage() {
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full border border-[#e5e2d8] focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] placeholder:text-[#c5c0b8] outline-none transition-colors bg-white"
+              className="w-full border border-[#e5e2d8] focus:border-green-600 rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] placeholder:text-[#c5c0b8] outline-none transition-colors bg-white"
             />
           </div>
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-[13px] font-medium text-[#3a3830]">Password</label>
-              <Link href="/reset-password" className="text-[12px] text-indigo-600 hover:text-indigo-800 transition-colors">
+              <Link href="/reset-password" className="text-[12px] text-green-700 hover:text-green-800 transition-colors">
                 Forgot password?
               </Link>
             </div>
@@ -70,7 +70,7 @@ export default function LoginPage() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
-              className="w-full border border-[#e5e2d8] focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
+              className="w-full border border-[#e5e2d8] focus:border-green-600 rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
             />
           </div>
 
@@ -79,7 +79,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#4338ca] hover:bg-[#3730a3] disabled:opacity-50 text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors mt-1"
+            className="w-full bg-[#15803d] hover:bg-[#14532d] disabled:opacity-50 text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors mt-1"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
@@ -87,7 +87,7 @@ export default function LoginPage() {
 
         <div className="mt-6 pt-5 border-t border-[#f0ede6] text-center text-[13px] text-[#9a958e]">
           No account?{" "}
-          <Link href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
+          <Link href="/signup" className="text-green-700 hover:text-green-800 font-medium transition-colors">
             Create one free
           </Link>
         </div>

@@ -17,11 +17,11 @@ export default function DashboardNav() {
     <nav className="flex items-center justify-between px-6 h-14 border-b border-white/8 bg-[#0f0f14]">
       <Link href="/dashboard" className="flex items-center gap-2">
         <svg width="22" height="22" viewBox="0 0 128 128" fill="none">
-          <circle cx="64" cy="64" r="64" fill="#4338ca" />
+          <circle cx="64" cy="64" r="64" fill="#15803d" />
           <circle cx="64" cy="64" r="55" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
           <path d="M64 18 L92 58 L64 96 L36 58 Z" fill="rgba(255,255,255,0.96)" />
-          <path d="M64 46 L64 96" stroke="#3730a3" strokeWidth="5" strokeLinecap="round" />
-          <ellipse cx="64" cy="48" rx="10" ry="7" fill="#3730a3" />
+          <path d="M64 46 L64 96" stroke="#14532d" strokeWidth="5" strokeLinecap="round" />
+          <ellipse cx="64" cy="48" rx="10" ry="7" fill="#14532d" />
         </svg>
         <span className="font-bold text-[15px] text-white">SignedInbox</span>
       </Link>

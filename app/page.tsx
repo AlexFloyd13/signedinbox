@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const SealIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 128 128" fill="none">
-    <circle cx="64" cy="64" r="64" fill="#4338ca" />
+    <circle cx="64" cy="64" r="64" fill="#15803d" />
     <circle cx="64" cy="64" r="55" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
     <path d="M64 18 L92 58 L64 96 L36 58 Z" fill="rgba(255,255,255,0.96)" />
-    <path d="M64 46 L64 96" stroke="#3730a3" strokeWidth="5" strokeLinecap="round" />
-    <ellipse cx="64" cy="48" rx="10" ry="7" fill="#3730a3" />
+    <path d="M64 46 L64 96" stroke="#14532d" strokeWidth="5" strokeLinecap="round" />
+    <ellipse cx="64" cy="48" rx="10" ry="7" fill="#14532d" />
   </svg>
 );
 
@@ -29,7 +29,7 @@ export default function Home() {
           </Link>
           <Link
             href="/signup"
-            className="text-[14px] font-medium bg-[#4338ca] text-white px-4 py-2 rounded-lg hover:bg-[#3730a3] transition-colors"
+            className="text-[14px] font-medium bg-[#15803d] text-white px-4 py-2 rounded-lg hover:bg-[#166534] transition-colors"
           >
             Get started
           </Link>
@@ -38,11 +38,6 @@ export default function Home() {
 
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center text-center px-6 pt-20 pb-24">
-
-        <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-medium px-3 py-1.5 rounded-full mb-8">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-          Open source · Free forever
-        </div>
 
         <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-[#1a1917] leading-[1.08] tracking-tight max-w-2xl mb-6">
           Prove it&apos;s really you.
@@ -56,7 +51,7 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row items-center gap-3 mb-16">
           <Link
             href="/signup"
-            className="bg-[#4338ca] hover:bg-[#3730a3] text-white text-[15px] font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center"
+            className="bg-[#15803d] hover:bg-[#166534] text-white text-[15px] font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center"
           >
             Create free account
           </Link>
@@ -96,17 +91,17 @@ export default function Home() {
               <div className="h-2 bg-[#f0ede6] rounded-full w-[68%]" />
             </div>
             {/* The stamp badge */}
-            <div className="mx-5 mb-5 rounded-xl border border-indigo-100 bg-indigo-50 p-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center shrink-0">
+            <div className="mx-5 mb-5 rounded-xl border border-green-200 bg-green-50 p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center shrink-0">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M2 7l3.5 3.5L12 2.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="min-w-0">
-                <div className="text-[13px] font-semibold text-indigo-900">Verified by SignedInbox</div>
-                <div className="text-[11px] text-indigo-500 truncate">alex@floyd.dev · Stamp valid until Mar 28</div>
+                <div className="text-[13px] font-semibold text-green-900">Verified by SignedInbox</div>
+                <div className="text-[11px] text-green-700 truncate">alex@floyd.dev · Stamp valid until Mar 28</div>
               </div>
-              <span className="text-[11px] text-indigo-400 shrink-0 border border-indigo-200 rounded-md px-2 py-0.5 ml-auto">
+              <span className="text-[11px] text-green-600 shrink-0 border border-green-200 rounded-md px-2 py-0.5 ml-auto">
                 Verify →
               </span>
             </div>
@@ -142,7 +137,7 @@ export default function Home() {
               },
             ].map(({ n, title, body }) => (
               <div key={n} className="flex flex-col gap-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-[14px] font-bold flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-green-700 text-white text-[14px] font-bold flex items-center justify-center">
                   {n}
                 </div>
                 <h3 className="font-semibold text-[16px] text-[#1a1917]">{title}</h3>
@@ -153,16 +148,30 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Honest disclaimer */}
+      <section className="border-t border-[#e5e2d8] bg-[#faf9f6] py-14 px-6 sm:px-10">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-[13px] text-[#9a958e] leading-relaxed">
+            <span className="font-semibold text-[#6b6560]">A note on what this is (and isn&apos;t).</span>{" "}
+            SignedInbox makes it meaningfully harder for bots and impersonators to fake your identity,
+            and adds a genuine signal of care and sincerity to your emails. It is not an absolute
+            guarantee — determined attackers have workarounds for most verification systems. Think of it
+            like a wax seal on an envelope: it doesn&apos;t make the letter invulnerable, but breaking it
+            is obvious, and that matters.
+          </p>
+        </div>
+      </section>
+
       {/* Bottom CTA */}
       <section className="py-20 px-6 text-center border-t border-[#e5e2d8]">
         <h2 className="font-serif text-4xl font-bold text-[#1a1917] mb-4">
           Ready to start?
         </h2>
-        <p className="text-[15px] text-[#6b6560] mb-8">Free, open source, and takes two minutes to set up.</p>
+        <p className="text-[15px] text-[#6b6560] mb-8">Takes two minutes to set up.</p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/signup"
-            className="bg-[#4338ca] hover:bg-[#3730a3] text-white text-[15px] font-medium px-7 py-3 rounded-xl transition-colors"
+            className="bg-[#15803d] hover:bg-[#166534] text-white text-[15px] font-medium px-7 py-3 rounded-xl transition-colors"
           >
             Create free account
           </Link>
