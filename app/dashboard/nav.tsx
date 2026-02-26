@@ -14,7 +14,7 @@ export default function DashboardNav() {
   }
 
   return (
-    <nav className="flex items-center justify-between px-6 h-14 border-b border-white/8 bg-[#0f0f14]">
+    <nav className="flex items-center justify-between px-6 h-14 border-b border-[#e5e2d8] bg-white">
       <Link href="/dashboard" className="flex items-center gap-2">
         <svg width="22" height="22" viewBox="0 0 128 128" fill="none">
           <defs>
@@ -34,19 +34,19 @@ export default function DashboardNav() {
           <ellipse cx="64" cy="51" rx="10" ry="7" fill="#2d5040" />
           <path d="M44 83 Q54 91 64 93 Q74 91 84 83" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
         </svg>
-        <span className="font-bold text-[15px] text-white">SignedInbox</span>
+        <span className="font-bold text-[15px] text-[#1a1917]">SignedInbox</span>
       </Link>
 
       <div className="flex items-center gap-1">
         <Link
           href="/"
-          className="text-[13px] text-zinc-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
+          className="text-[13px] text-[#9a958e] hover:text-[#1a1917] transition-colors px-3 py-1.5 rounded-lg hover:bg-[#eae8e2]"
         >
           Home
         </Link>
         <button
           onClick={handleSignOut}
-          className="text-[13px] text-zinc-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
+          className="text-[13px] text-[#9a958e] hover:text-[#1a1917] transition-colors px-3 py-1.5 rounded-lg hover:bg-[#eae8e2]"
         >
           Sign out
         </button>

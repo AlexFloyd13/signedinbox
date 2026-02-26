@@ -319,8 +319,8 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">SignedInbox</h1>
-        <p className="text-zinc-500 text-sm mt-1">
+        <h1 className="font-serif text-2xl font-bold text-[#1a1917] tracking-tight">SignedInbox</h1>
+        <p className="text-[#9a958e] text-sm mt-1">
           Cryptographic stamps for your emails — prove you&apos;re a real human sender.
         </p>
       </div>
@@ -333,21 +333,21 @@ export default function DashboardPage() {
           { label: "Total Verifications", value: stats ? String(stats.total_validations) : "—" },
           { label: "Verifications (30d)", value: stats ? String(stats.validations_this_period) : "—" },
         ].map((s) => (
-          <div key={s.label} className="bg-zinc-950 border border-white/10 rounded-xl p-5 flex flex-col gap-1">
-            <span className="text-xs text-zinc-500">{s.label}</span>
+          <div key={s.label} className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-1">
+            <span className="text-xs text-[#9a958e]">{s.label}</span>
             <span className="text-xl font-semibold tabular-nums">{s.value}</span>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-white/10">
+      <div className="flex gap-1 border-b border-[#e5e2d8]">
         {(["stamp", "history", "settings"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-              tab === t ? "border-indigo-400 text-white" : "border-transparent text-zinc-500 hover:text-zinc-300"
+              tab === t ? "border-[#3d6b52] text-white" : "border-transparent text-[#9a958e] hover:text-[#3a3830]"
             }`}
           >
             {t === "stamp" ? "New Stamp" : t.charAt(0).toUpperCase() + t.slice(1)}
@@ -359,18 +359,18 @@ export default function DashboardPage() {
       {tab === "stamp" && (
         <div className="flex flex-col gap-4">
           {senders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-600">
+            <div className="flex flex-col items-center justify-center py-16 gap-3 text-[#b5b0a6]">
               <span className="text-4xl">✉️</span>
               <p className="text-sm">No senders yet — add one in Settings</p>
-              <button onClick={() => setTab("settings")} className="text-sm px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors">
+              <button onClick={() => setTab("settings")} className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors">
                 Go to Settings
               </button>
             </div>
           ) : (
-            <div className="bg-zinc-950 border border-white/10 rounded-xl p-5 flex flex-col gap-4">
+            <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
               <div>
-                <h2 className="text-sm font-semibold text-white">Generate Verification Stamp</h2>
-                <p className="text-xs text-zinc-500 mt-1">Complete the CAPTCHA, then paste the badge into your email.</p>
+                <h2 className="text-sm font-semibold text-[#1a1917]">Generate Verification Stamp</h2>
+                <p className="text-xs text-[#9a958e] mt-1">Complete the CAPTCHA, then paste the badge into your email.</p>
               </div>
 
               {generateError && (
@@ -381,9 +381,9 @@ export default function DashboardPage() {
 
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-zinc-500">Sender *</label>
+                  <label className="text-xs text-[#9a958e]">Sender *</label>
                   <select
-                    className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/20"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#3d6b52]"
                     value={selectedSender}
                     onChange={(e) => setSelectedSender(e.target.value)}
                   >
@@ -396,9 +396,9 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-zinc-500">Recipient Email (optional)</label>
+                  <label className="text-xs text-[#9a958e]">Recipient Email (optional)</label>
                   <input
-                    className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/20"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
                     placeholder="recipient@example.com"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
@@ -406,9 +406,9 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-zinc-500">Subject Hint (optional)</label>
+                  <label className="text-xs text-[#9a958e]">Subject Hint (optional)</label>
                   <input
-                    className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/20"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
                     placeholder="e.g. Job application, Invoice #1234"
                     maxLength={100}
                     value={subjectHint}
@@ -417,32 +417,32 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-zinc-500">Email Body (optional — cryptographically binds stamp to this content)</label>
+                  <label className="text-xs text-[#9a958e]">Email Body (optional — cryptographically binds stamp to this content)</label>
                   <textarea
-                    className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/20 min-h-[80px] resize-y"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52] min-h-[80px] resize-y"
                     placeholder="Paste your email body text to bind this stamp to the exact content…"
                     value={emailBodyText}
                     onChange={(e) => setEmailBodyText(e.target.value)}
                   />
                   {emailBodyText && (
-                    <p className="text-xs text-zinc-600">Content hash will be included in the Ed25519 signature.</p>
+                    <p className="text-xs text-[#b5b0a6]">Content hash will be included in the Ed25519 signature.</p>
                   )}
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-zinc-500">Human Verification *</label>
+                  <label className="text-xs text-[#9a958e]">Human Verification *</label>
                   {siteKey ? (
                     <Turnstile
                       siteKey={siteKey}
                       onSuccess={(token) => setTurnstileToken(token)}
                       onError={() => setTurnstileToken(null)}
                       onExpire={() => setTurnstileToken(null)}
-                      options={{ theme: "dark" }}
+                      options={{ theme: "light" }}
                     />
                   ) : (
-                    <div className="text-xs text-zinc-500 bg-black/40 border border-white/10 rounded-lg px-3 py-2">
+                    <div className="text-xs text-[#9a958e] bg-white border border-[#e5e2d8] rounded-lg px-3 py-2">
                       Turnstile not configured — dev mode
-                      <button className="ml-2 text-indigo-400 underline" onClick={() => setTurnstileToken("dev-token")}>
+                      <button className="ml-2 text-[#3d6b52] underline" onClick={() => setTurnstileToken("dev-token")}>
                         Use dev token
                       </button>
                     </div>
@@ -453,7 +453,7 @@ export default function DashboardPage() {
                   <button
                     onClick={generateStamp}
                     disabled={!selectedSender || (!turnstileToken && !!siteKey) || generating}
-                    className="text-sm px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors disabled:opacity-40"
+                    className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
                   >
                     {generating ? "Generating…" : "Generate Stamp"}
                   </button>
@@ -461,12 +461,12 @@ export default function DashboardPage() {
               </div>
 
               {stampResult && (
-                <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
+                <div className="border-t border-[#e5e2d8] pt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-indigo-400 bg-indigo-400/10 border-indigo-400/20 px-2 py-0.5 rounded-full text-xs border">✓ Stamp Created</span>
-                    <span className="text-xs text-zinc-500">Expires {formatDate(stampResult.expires_at)}</span>
+                    <span className="text-[#3d6b52] bg-[#f0f7f3] border-[#b8d4c0] px-2 py-0.5 rounded-full text-xs border">✓ Stamp Created</span>
+                    <span className="text-xs text-[#9a958e]">Expires {formatDate(stampResult.expires_at)}</span>
                     {localContentHash && (
-                      <span className="text-xs text-zinc-500 font-mono">Content hash: {localContentHash.slice(0, 16)}…</span>
+                      <span className="text-xs text-[#9a958e] font-mono">Content hash: {localContentHash.slice(0, 16)}…</span>
                     )}
                   </div>
 
@@ -477,24 +477,24 @@ export default function DashboardPage() {
                   ].map(({ label, value, field }) => (
                     <div key={field} className="flex flex-col gap-1">
                       <div className="flex items-center justify-between">
-                        <label className="text-xs text-zinc-500">{label}</label>
-                        <button onClick={() => copyToClipboard(value, field)} className="text-xs text-zinc-400 hover:text-white transition-colors">
+                        <label className="text-xs text-[#9a958e]">{label}</label>
+                        <button onClick={() => copyToClipboard(value, field)} className="text-xs text-[#6b6560] hover:text-white transition-colors">
                           {copiedField === field ? "Copied!" : "Copy"}
                         </button>
                       </div>
-                      <div className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-zinc-400 break-all font-mono overflow-x-auto">
+                      <div className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-xs text-[#6b6560] break-all font-mono overflow-x-auto">
                         {value}
                       </div>
                     </div>
                   ))}
 
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-600">Preview:</span>
+                    <span className="text-xs text-[#b5b0a6]">Preview:</span>
                     <a
                       href={stampResult.stamp_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", borderRadius: "6px", background: "#6366f1", color: "#fff", fontSize: "12px", fontFamily: "system-ui, sans-serif", textDecoration: "none" }}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", borderRadius: "6px", background: "#3d6b52", color: "#fff", fontSize: "12px", fontFamily: "system-ui, sans-serif", textDecoration: "none" }}
                     >
                       ✍ SignedInbox Verified
                     </a>
@@ -510,32 +510,32 @@ export default function DashboardPage() {
       {tab === "history" && (
         <div className="flex flex-col gap-3">
           {stampsLoading ? (
-            <div className="flex items-center justify-center py-16 text-zinc-600 text-sm">Loading…</div>
+            <div className="flex items-center justify-center py-16 text-[#b5b0a6] text-sm">Loading…</div>
           ) : stamps.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-2 text-zinc-600">
+            <div className="flex flex-col items-center justify-center py-16 gap-2 text-[#b5b0a6]">
               <span className="text-4xl">✉️</span>
               <p className="text-sm">No stamps yet</p>
             </div>
           ) : (
             <>
-              <p className="text-xs text-zinc-600">{stampsTotal} total stamps</p>
+              <p className="text-xs text-[#b5b0a6]">{stampsTotal} total stamps</p>
               {stamps.map((stamp) => (
-                <div key={stamp.id} className="bg-zinc-950 border border-white/10 rounded-xl p-4 flex items-start justify-between gap-4">
+                <div key={stamp.id} className="bg-white border border-[#e5e2d8] rounded-xl p-4 flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono text-zinc-400">{stamp.id.slice(0, 8)}…</span>
+                      <span className="text-xs font-mono text-[#6b6560]">{stamp.id.slice(0, 8)}…</span>
                       {stamp.revoked ? (
                         <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-red-400 bg-red-400/10 border-red-400/20">Revoked</span>
                       ) : new Date(stamp.expires_at) < new Date() ? (
-                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-zinc-400 bg-zinc-400/10 border-zinc-400/20">Expired</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#6b6560] bg-zinc-400/10 border-zinc-400/20">Expired</span>
                       ) : (
-                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-indigo-400 bg-indigo-400/10 border-indigo-400/20">Valid</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#3d6b52] bg-[#f0f7f3] border-[#b8d4c0]">Valid</span>
                       )}
-                      <span className="text-xs text-zinc-600">{stamp.client_type}</span>
+                      <span className="text-xs text-[#b5b0a6]">{stamp.client_type}</span>
                     </div>
-                    {stamp.recipient_email && <p className="text-xs text-zinc-500">To: {stamp.recipient_email}</p>}
-                    {stamp.subject_hint && <p className="text-xs text-zinc-500">Re: {stamp.subject_hint}</p>}
-                    <p className="text-xs text-zinc-600">Created {timeAgo(stamp.created_at)} · Expires {formatDate(stamp.expires_at)}</p>
+                    {stamp.recipient_email && <p className="text-xs text-[#9a958e]">To: {stamp.recipient_email}</p>}
+                    {stamp.subject_hint && <p className="text-xs text-[#9a958e]">Re: {stamp.subject_hint}</p>}
+                    <p className="text-xs text-[#b5b0a6]">Created {timeAgo(stamp.created_at)} · Expires {formatDate(stamp.expires_at)}</p>
                   </div>
                   {!stamp.revoked && new Date(stamp.expires_at) > new Date() && (
                     <button
@@ -557,23 +557,23 @@ export default function DashboardPage() {
       {tab === "settings" && (
         <div className="flex flex-col gap-6">
           {/* Senders */}
-          <div className="bg-zinc-950 border border-white/10 rounded-xl p-5 flex flex-col gap-4">
+          <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
             <div>
-              <h2 className="text-sm font-semibold text-white">Sender Profiles</h2>
-              <p className="text-xs text-zinc-500 mt-1">Add the email addresses you send from. Each must be verified.</p>
+              <h2 className="text-sm font-semibold text-[#1a1917]">Sender Profiles</h2>
+              <p className="text-xs text-[#9a958e] mt-1">Add the email addresses you send from. Each must be verified.</p>
             </div>
             {senderError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm text-red-400">{senderError}</div>
             )}
             <div className="grid grid-cols-2 gap-3">
               <input
-                className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/20"
+                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
                 placeholder="Display name *"
                 value={newSenderName}
                 onChange={(e) => setNewSenderName(e.target.value)}
               />
               <input
-                className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/20"
+                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
                 placeholder="email@example.com *"
                 type="email"
                 value={newSenderEmail}
@@ -584,31 +584,31 @@ export default function DashboardPage() {
               <button
                 onClick={addSender}
                 disabled={!newSenderName.trim() || !newSenderEmail.trim() || addingSender}
-                className="text-sm px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors disabled:opacity-40"
+                className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
               >
                 {addingSender ? "Adding…" : "Add Sender"}
               </button>
             </div>
             {senders.length > 0 && (
-              <div className="flex flex-col gap-2 border-t border-white/10 pt-3">
+              <div className="flex flex-col gap-2 border-t border-[#e5e2d8] pt-3">
                 {senders.map((s) => (
                   <div key={s.id} className="flex flex-col gap-2 py-1">
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-white text-sm">{s.display_name}</span>
+                          <span className="text-[#1a1917] text-sm">{s.display_name}</span>
                           {s.verified_email ? (
-                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-indigo-400/10 text-indigo-400 border border-indigo-400/20">✓ Verified</span>
+                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#3d6b52] border border-[#b8d4c0]">✓ Verified</span>
                           ) : (
                             <span className="text-xs px-1.5 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">Unverified</span>
                           )}
                         </div>
-                        <span className="text-xs text-zinc-500">{s.email} · {s.total_stamps} stamps</span>
+                        <span className="text-xs text-[#9a958e]">{s.email} · {s.total_stamps} stamps</span>
                       </div>
                       {!s.verified_email && verifyingCode !== s.id && (
                         <button
                           onClick={() => sendVerificationCode(s.id)}
-                          className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-zinc-300 hover:bg-white/5 transition-colors"
+                          className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-white/5 transition-colors"
                         >
                           Verify Email
                         </button>
@@ -622,7 +622,7 @@ export default function DashboardPage() {
                         )}
                         <div className="flex gap-2">
                           <input
-                            className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/20"
+                            className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
                             placeholder="Enter 6-digit code"
                             maxLength={6}
                             value={verificationCodeInput}
@@ -631,13 +631,13 @@ export default function DashboardPage() {
                           <button
                             onClick={() => submitVerificationCode(s.id)}
                             disabled={verificationCodeInput.length !== 6 || verifyingEmail}
-                            className="text-sm px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors disabled:opacity-40"
+                            className="text-sm px-3 py-1.5 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
                           >
                             {verifyingEmail ? "…" : "Confirm"}
                           </button>
                           <button
                             onClick={() => { setVerifyingCode(null); setVerificationCode(""); setVerificationCodeInput(""); }}
-                            className="text-sm px-3 py-1.5 rounded-lg border border-white/10 text-zinc-400 hover:bg-white/5 transition-colors"
+                            className="text-sm px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#6b6560] hover:bg-white/5 transition-colors"
                           >
                             Cancel
                           </button>
@@ -651,20 +651,20 @@ export default function DashboardPage() {
           </div>
 
           {/* API Keys */}
-          <div className="bg-zinc-950 border border-white/10 rounded-xl p-5 flex flex-col gap-4">
+          <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
             <div>
-              <h2 className="text-sm font-semibold text-white">API Keys</h2>
-              <p className="text-xs text-zinc-500 mt-1">For programmatic access. Keys are prefixed with <code className="text-indigo-400">si_live_</code> and shown once.</p>
+              <h2 className="text-sm font-semibold text-[#1a1917]">API Keys</h2>
+              <p className="text-xs text-[#9a958e] mt-1">For programmatic access. Keys are prefixed with <code className="text-[#3d6b52]">si_live_</code> and shown once.</p>
             </div>
             {keyError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm text-red-400">{keyError}</div>
             )}
             {newKeyValue && (
-              <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg px-4 py-3 flex flex-col gap-2">
-                <p className="text-xs text-indigo-400 font-medium">Key created — copy it now, it won&apos;t be shown again</p>
+              <div className="bg-[#f0f7f3] border border-[#b8d4c0] rounded-lg px-4 py-3 flex flex-col gap-2">
+                <p className="text-xs text-[#3d6b52] font-medium">Key created — copy it now, it won&apos;t be shown again</p>
                 <div className="flex items-center gap-2">
                   <code className="text-xs text-white font-mono break-all flex-1">{newKeyValue}</code>
-                  <button onClick={() => copyToClipboard(newKeyValue, "new-key")} className="shrink-0 text-xs text-zinc-400 hover:text-white transition-colors">
+                  <button onClick={() => copyToClipboard(newKeyValue, "new-key")} className="shrink-0 text-xs text-[#6b6560] hover:text-white transition-colors">
                     {copiedField === "new-key" ? "Copied!" : "Copy"}
                   </button>
                 </div>
@@ -672,7 +672,7 @@ export default function DashboardPage() {
             )}
             <div className="flex gap-3">
               <input
-                className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/20"
+                className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
                 placeholder="Key name (e.g. Chrome Extension)"
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
@@ -680,21 +680,21 @@ export default function DashboardPage() {
               <button
                 onClick={addApiKey}
                 disabled={!newKeyName.trim() || addingKey}
-                className="text-sm px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors disabled:opacity-40"
+                className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
               >
                 {addingKey ? "Creating…" : "Create Key"}
               </button>
             </div>
             {apiKeysLoading ? (
-              <div className="text-center text-zinc-600 text-sm py-4">Loading…</div>
+              <div className="text-center text-[#b5b0a6] text-sm py-4">Loading…</div>
             ) : apiKeys.length > 0 && (
-              <div className="flex flex-col gap-2 border-t border-white/10 pt-3">
+              <div className="flex flex-col gap-2 border-t border-[#e5e2d8] pt-3">
                 {apiKeys.map((k) => (
                   <div key={k.id} className="flex items-center justify-between text-sm">
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-white">{k.name}</span>
-                      <span className="text-xs text-zinc-500 font-mono">{k.key_prefix}… · {k.scopes.join(", ")}</span>
-                      <span className="text-xs text-zinc-600">
+                      <span className="text-[#1a1917]">{k.name}</span>
+                      <span className="text-xs text-[#9a958e] font-mono">{k.key_prefix}… · {k.scopes.join(", ")}</span>
+                      <span className="text-xs text-[#b5b0a6]">
                         {k.last_used_at ? `Last used ${timeAgo(k.last_used_at)}` : "Never used"} · Created {formatDate(k.created_at)}
                       </span>
                     </div>
