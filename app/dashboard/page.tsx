@@ -581,23 +581,10 @@ function DashboardPageInner() {
                   )}
                 </div>
 
-                {siteKey && (
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-[#9a958e]">Human Verification *</label>
-                    <Turnstile
-                      siteKey={siteKey}
-                      onSuccess={(token) => setTurnstileToken(token)}
-                      onError={() => setTurnstileToken(null)}
-                      onExpire={() => setTurnstileToken(null)}
-                      options={{ theme: "light" }}
-                    />
-                  </div>
-                )}
-
                 <div className="flex justify-end">
                   <button
                     onClick={generateStamp}
-                    disabled={!selectedSender || (siteKey && !turnstileToken) || generating}
+                    disabled={!selectedSender || generating}
                     className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
                   >
                     {generating ? "Generating…" : "Generate Stamp"}
