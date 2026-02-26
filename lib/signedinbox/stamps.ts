@@ -80,8 +80,13 @@ export async function createVerifiedStamp(opts: {
   });
 
   const stampUrl = `${APP_URL}/verify/${stampId}`;
-  const badgeHtml = `<a href="${stampUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;background:#6366f1;color:#fff;font-size:12px;font-family:system-ui,sans-serif;text-decoration:none;">&#x270D; SignedInbox Verified</a>`;
-  const badgeText = `[SignedInbox Verified - Click to verify: ${stampUrl}]`;
+  const stampDateLabel = new Date(now * 1000).toLocaleString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit',
+    timeZone: 'UTC', timeZoneName: 'short',
+  });
+  const badgeHtml = `<a href="${stampUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:#6366f1;color:#fff;font-size:12px;font-family:system-ui,sans-serif;text-decoration:none;">&#x270D; SignedInbox Verified &middot; ${stampDateLabel}</a>`;
+  const badgeText = `[SignedInbox Verified · ${stampDateLabel} - Click to verify: ${stampUrl}]`;
 
   return {
     stamp_id: stampId,

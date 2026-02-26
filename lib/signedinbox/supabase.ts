@@ -38,7 +38,7 @@ export async function createSender(userId: string, displayName: string, email: s
     user_id: userId,
     display_name: displayName,
     email,
-    verified_email: false,
+    verified_email: true,
   }).select('*').single();
   if (error) throw error;
   return data;
