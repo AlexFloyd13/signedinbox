@@ -407,7 +407,7 @@ export default function DashboardPage() {
           ) : (
             <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
               <div>
-                <h2 className="text-sm font-semibold text-[#1a1917]">Generate Verification Stamp</h2>
+                <h2 className="font-serif text-base font-semibold text-[#1a1917]">Generate Verification Stamp</h2>
                 <p className="text-xs text-[#9a958e] mt-1">Complete the CAPTCHA, then paste the badge into your email.</p>
               </div>
 
@@ -421,7 +421,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Sender *</label>
                   <select
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#5a9471]"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] focus:outline-none focus:border-[#5a9471]"
                     value={selectedSender}
                     onChange={(e) => setSelectedSender(e.target.value)}
                   >
@@ -436,7 +436,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Recipient Email (optional)</label>
                   <input
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                     placeholder="recipient@example.com"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
@@ -446,7 +446,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Subject Hint (optional)</label>
                   <input
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                     placeholder="e.g. Job application, Invoice #1234"
                     maxLength={100}
                     value={subjectHint}
@@ -457,7 +457,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Email Body (optional — cryptographically binds stamp to this content)</label>
                   <textarea
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471] min-h-[80px] resize-y"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471] min-h-[80px] resize-y"
                     placeholder="Paste your email body text to bind this stamp to the exact content…"
                     value={emailBodyText}
                     onChange={(e) => setEmailBodyText(e.target.value)}
@@ -516,7 +516,7 @@ export default function DashboardPage() {
                     <div key={field} className="flex flex-col gap-1">
                       <div className="flex items-center justify-between">
                         <label className="text-xs text-[#9a958e]">{label}</label>
-                        <button onClick={() => copyToClipboard(value, field)} className="text-xs text-[#6b6560] hover:text-white transition-colors">
+                        <button onClick={() => copyToClipboard(value, field)} className="text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
                           {copiedField === field ? "Copied!" : "Copy"}
                         </button>
                       </div>
@@ -597,7 +597,7 @@ export default function DashboardPage() {
           {/* Senders */}
           <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
             <div>
-              <h2 className="text-sm font-semibold text-[#1a1917]">Sender Profiles</h2>
+              <h2 className="font-serif text-base font-semibold text-[#1a1917]">Sender Profiles</h2>
               <p className="text-xs text-[#9a958e] mt-1">Add the email addresses you send from. Each must be verified.</p>
             </div>
             {senderError && (
@@ -605,13 +605,13 @@ export default function DashboardPage() {
             )}
             <div className="grid grid-cols-2 gap-3">
               <input
-                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                 placeholder="Display name *"
                 value={newSenderName}
                 onChange={(e) => setNewSenderName(e.target.value)}
               />
               <input
-                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                 placeholder="email@example.com *"
                 type="email"
                 value={newSenderEmail}
@@ -660,7 +660,7 @@ export default function DashboardPage() {
                         )}
                         <div className="flex gap-2">
                           <input
-                            className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                            className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-1.5 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                             placeholder="Enter 6-digit code"
                             maxLength={6}
                             value={verificationCodeInput}
@@ -691,7 +691,7 @@ export default function DashboardPage() {
           {/* Integrations */}
           <div className="flex flex-col gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-[#1a1917]">Integrations</h2>
+              <h2 className="font-serif text-base font-semibold text-[#1a1917]">Integrations</h2>
               <p className="text-xs text-[#9a958e] mt-1">Connect SignedInbox to your tools.</p>
             </div>
 
@@ -710,7 +710,7 @@ export default function DashboardPage() {
                     <div className="flex items-start gap-3">
                       <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">🧩</div>
                       <div>
-                        <p className="text-sm font-medium text-[#1a1917]">Chrome Extension</p>
+                        <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Chrome Extension</p>
                         <p className="text-xs text-[#9a958e] mt-0.5">Stamp emails from Gmail or Outlook without leaving your browser.</p>
                       </div>
                     </div>
@@ -775,7 +775,7 @@ export default function DashboardPage() {
                     <div className="flex items-start gap-3">
                       <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">🤖</div>
                       <div>
-                        <p className="text-sm font-medium text-[#1a1917]">Claude MCP</p>
+                        <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Claude MCP</p>
                         <p className="text-xs text-[#9a958e] mt-0.5">Let Claude stamp emails on your behalf from any MCP-compatible AI client.</p>
                       </div>
                     </div>
@@ -835,7 +835,7 @@ export default function DashboardPage() {
                     <div className="flex items-start gap-3">
                       <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">⚙️</div>
                       <div>
-                        <p className="text-sm font-medium text-[#1a1917]">Developer API</p>
+                        <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Developer API</p>
                         <p className="text-xs text-[#9a958e] mt-0.5">Create a raw API key for custom scripts or integrations.</p>
                       </div>
                     </div>
