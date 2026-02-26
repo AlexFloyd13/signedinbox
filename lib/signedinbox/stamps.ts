@@ -62,6 +62,7 @@ export async function createVerifiedStamp(opts: {
   const canonicalPayload = canonicalize(payload);
 
   await createStampRecord({
+    id: stampId,
     sender_id: opts.senderId,
     user_id: opts.userId,
     recipient_email: opts.recipientEmail || null,

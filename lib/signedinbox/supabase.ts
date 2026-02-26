@@ -100,7 +100,7 @@ export async function verifyEmailCode(senderId: string, code: string): Promise<b
 
 // ─── Stamps ──────────────────────────────────────────────────────────────────
 
-export async function createStampRecord(stamp: Omit<SignedInboxStamp, 'id' | 'created_at'>): Promise<SignedInboxStamp> {
+export async function createStampRecord(stamp: Omit<SignedInboxStamp, 'created_at'>): Promise<SignedInboxStamp> {
   const db = getSupabaseAdmin();
   const { data, error } = await db.from('signedinbox_stamps').insert(stamp).select('*').single();
   if (error) throw error;

@@ -631,48 +631,30 @@ function DashboardPageInner() {
                     <span className="text-xs text-[#9a958e]">Expires {formatDate(stampResult.expires_at)}</span>
                   </div>
 
-                  {/* Badge preview */}
-                  <div className="flex flex-col gap-2">
-                    <p className="text-xs text-[#9a958e]">Badge preview — place this at the bottom of your email or signature:</p>
-                    <div className="bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-4 py-4 flex items-center justify-between gap-4">
-                      <a
-                        href={stampResult.stamp_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ display: "inline-block", backgroundColor: "#5a9471", color: "#ffffff", fontFamily: "Arial, Helvetica, sans-serif", fontSize: "12px", fontWeight: 600, textDecoration: "none", padding: "6px 14px", borderRadius: "20px", lineHeight: 1.5 }}
-                      >
-                        ✓&nbsp;Verified by signedinbox
-                      </a>
-                      <button
-                        onClick={() => copyToClipboard(stampResult.badge_html, "html")}
-                        className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors"
-                      >
-                        {copiedField === "html" ? "Copied!" : "Copy HTML"}
-                      </button>
+                  {/* Copy Link — primary action */}
+                  <div className="flex items-center justify-between bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-4 py-3 gap-4">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className="text-xs font-medium text-[#3a3830]">Verification link</span>
+                      <span className="text-xs text-[#9a958e] font-mono truncate">{stampResult.stamp_url}</span>
                     </div>
-                    <p className="text-xs text-[#b5b0a6]">Paste the HTML into your email client's signature editor or directly into an HTML email.</p>
+                    <button
+                      onClick={() => copyToClipboard(stampResult.stamp_url, "url")}
+                      className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors"
+                    >
+                      {copiedField === "url" ? "Copied!" : "Copy Link"}
+                    </button>
                   </div>
+                  <p className="text-xs text-[#b5b0a6]">Paste this link at the bottom of your email. Works in Gmail and any email client.</p>
 
-                  {/* Secondary actions */}
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between bg-white border border-[#e5e2d8] rounded-lg px-3 py-2.5">
-                      <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-xs font-medium text-[#3a3830]">Verification link</span>
-                        <span className="text-xs text-[#9a958e] font-mono truncate">{stampResult.stamp_url}</span>
-                      </div>
-                      <button onClick={() => copyToClipboard(stampResult.stamp_url, "url")} className="shrink-0 ml-3 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
-                        {copiedField === "url" ? "Copied!" : "Copy"}
-                      </button>
+                  {/* HTML badge — secondary, for Outlook/signatures */}
+                  <div className="flex items-center justify-between bg-white border border-[#e5e2d8] rounded-lg px-3 py-2.5">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className="text-xs font-medium text-[#3a3830]">HTML badge</span>
+                      <span className="text-xs text-[#b5b0a6]">For Outlook, Apple Mail, or email signatures</span>
                     </div>
-                    <div className="flex items-center justify-between bg-white border border-[#e5e2d8] rounded-lg px-3 py-2.5">
-                      <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-xs font-medium text-[#3a3830]">Plain text (for plain-text emails)</span>
-                        <span className="text-xs text-[#9a958e] truncate">{stampResult.badge_text.split('\n')[0]}</span>
-                      </div>
-                      <button onClick={() => copyToClipboard(stampResult.badge_text, "text")} className="shrink-0 ml-3 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
-                        {copiedField === "text" ? "Copied!" : "Copy"}
-                      </button>
-                    </div>
+                    <button onClick={() => copyToClipboard(stampResult.badge_html, "html")} className="shrink-0 ml-3 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
+                      {copiedField === "html" ? "Copied!" : "Copy HTML"}
+                    </button>
                   </div>
                 </div>
               )}
