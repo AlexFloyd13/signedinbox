@@ -433,36 +433,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          { label: "Total Stamps", value: stats ? String(stats.total_stamps) : "—" },
-          { label: "Stamps (30d)", value: stats ? String(stats.stamps_this_period) : "—" },
-          { label: "Total Verifications", value: stats ? String(stats.total_validations) : "—" },
-          { label: "Verifications (30d)", value: stats ? String(stats.validations_this_period) : "—" },
-        ].map((s) => (
-          <div key={s.label} className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-1">
-            <span className="text-xs text-[#9a958e]">{s.label}</span>
-            <span className="text-xl font-semibold tabular-nums">{s.value}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-[#e5e2d8]">
-        {(["history", "settings"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-              tab === t ? "border-[#5a9471] text-[#1a1917]" : "border-transparent text-[#9a958e] hover:text-[#3a3830]"
-            }`}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
-        ))}
-      </div>
-
       {/* Generate Stamp */}
       <div className="flex flex-col gap-4">
         {senders.length === 0 ? (
@@ -681,6 +651,36 @@ export default function DashboardPage() {
               )}
             </div>
           )}
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[
+          { label: "Total Stamps", value: stats ? String(stats.total_stamps) : "—" },
+          { label: "Stamps (30d)", value: stats ? String(stats.stamps_this_period) : "—" },
+          { label: "Total Verifications", value: stats ? String(stats.total_validations) : "—" },
+          { label: "Verifications (30d)", value: stats ? String(stats.validations_this_period) : "—" },
+        ].map((s) => (
+          <div key={s.label} className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-1">
+            <span className="text-xs text-[#9a958e]">{s.label}</span>
+            <span className="text-xl font-semibold tabular-nums">{s.value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-[#e5e2d8]">
+        {(["history", "settings"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
+              tab === t ? "border-[#5a9471] text-[#1a1917]" : "border-transparent text-[#9a958e] hover:text-[#3a3830]"
+            }`}
+          >
+            {t.charAt(0).toUpperCase() + t.slice(1)}
+          </button>
+        ))}
       </div>
 
       {/* History Tab */}
