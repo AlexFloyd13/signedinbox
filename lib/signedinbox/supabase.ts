@@ -44,6 +44,13 @@ export async function createSender(userId: string, displayName: string, email: s
   return data;
 }
 
+export async function markSenderVerified(senderId: string): Promise<void> {
+  const db = getSupabaseAdmin();
+  await db.from('signedinbox_senders')
+    .update({ verified_email: true, updated_at: new Date().toISOString() })
+    .eq('id', senderId);
+}
+
 // ─── Email Verification ───────────────────────────────────────────────────────
 
 export async function createEmailVerification(senderId: string): Promise<{ code: string }> {

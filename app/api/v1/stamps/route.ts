@@ -5,7 +5,7 @@ import { authenticateUser, AuthError } from '@/lib/auth';
 import { CreateStampSchema, CreateSenderSchema, CreateApiKeySchema, VerifyEmailSchema } from '@/lib/signedinbox/validation';
 import { createVerifiedStamp } from '@/lib/signedinbox/stamps';
 import {
-  getSendersByUser, getSender, createSender, listStamps, getStats, listApiKeys,
+  getSendersByUser, getSender, createSender, markSenderVerified, listStamps, getStats, listApiKeys,
   createApiKeyRecord, getApiKeyByHash, createEmailVerification, verifyEmailCode,
 } from '@/lib/signedinbox/supabase';
 import { sendVerificationEmail } from '@/lib/email';
@@ -47,6 +47,25 @@ export async function POST(request: NextRequest) {
       if (!parsed.success) return NextResponse.json({ error: 'Invalid request', details: parsed.error.issues }, { status: 400, headers: sec.headers });
       const sender = await createSender(userId, parsed.data.display_name, parsed.data.email);
       return NextResponse.json({ sender }, { status: 201, headers: sec.headers });
+    }
+
+    if (action === 'claim-auth-email') {
+      // Requires Supabase JWT — email is already verified by auth provider
+      const authUser = await authenticateUser(request);
+      if (!authUser?.email) return NextResponse.json({ error: 'Supabase JWT required' }, { status: 401, headers: sec.headers });
+
+      const prefix = authUser.email.split('@')[0];
+      const displayName = prefix.replace(/[._\-+]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()).trim() || authUser.email;
+
+      const existing = (await getSendersByUser(authUser.id)).find((s) => s.email === authUser.email);
+      if (existing) {
+        if (!existing.verified_email) await markSenderVerified(existing.id);
+        return NextResponse.json({ sender: { ...existing, verified_email: true } }, { headers: sec.headers });
+      }
+
+      const sender = await createSender(authUser.id, displayName, authUser.email);
+      await markSenderVerified(sender.id);
+      return NextResponse.json({ sender: { ...sender, verified_email: true } }, { status: 201, headers: sec.headers });
     }
 
     if (action === 'send-verification') {
