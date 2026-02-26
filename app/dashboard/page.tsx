@@ -184,6 +184,8 @@ export default function DashboardPage() {
     fetchStats();
   }, [fetchSenders, fetchStats]);
 
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+
   // In dev mode (no Turnstile configured), auto-apply token so no manual click needed
   useEffect(() => {
     if (!siteKey) setTurnstileToken("dev-token");
@@ -422,7 +424,6 @@ export default function DashboardPage() {
     } catch { /* ignore */ }
   }
 
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
   return (
     <div className="flex flex-col gap-6">
