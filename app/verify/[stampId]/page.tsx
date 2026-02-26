@@ -23,7 +23,7 @@ export default async function VerifyPage({
     },
     signature_verified: true,
     failure_reason: null,
-    validation_count: 1,
+    validation_count: 0,
     recipient_email_hash: null,
   } : await validateStamp(stampId, null, null, null);
 
@@ -32,7 +32,7 @@ export default async function VerifyPage({
   const failureReason = result?.failure_reason ?? null;
   const signatureVerified = result?.signature_verified === true;
   const contentHash = stamp?.content_hash ?? null;
-  const validationCount = result?.validation_count ?? 0;
+  const validationCount = (result?.validation_count ?? 0) + 1; // +1 to include current visit
   const recipientEmailHash = result?.recipient_email_hash ?? null;
 
   function failureMessage(reason: string | null): string {
@@ -127,16 +127,31 @@ export default async function VerifyPage({
                     value: contentHash ? "✓ Bound to email content" : "⚠ Not content-bound",
                     colored: contentHash ? "text-[#5a9471]" : "text-amber-600",
                   },
-                  { label: "Created", value: formatDate(stamp.created_at) },
+                  {
+                    label: "Created",
+                    value: formatDate(stamp.created_at),
+                    tooltip: "When the sender generated this stamp. If this time doesn't match when you received the email, the stamp may have been reused.",
+                  },
                   {
                     label: "Expires",
                     value: formatDate(stamp.expires_at),
                     colored: new Date(stamp.expires_at) < new Date() ? "text-red-500" : undefined,
                   },
                   { label: "Stamp ID", value: `${stamp.id.slice(0, 8)}…`, mono: true, muted: true },
-                ].map(({ label, value, mono, capitalize, colored, muted }) => (
+                ].map(({ label, value, mono, capitalize, colored, muted, tooltip }) => (
                   <div key={label} className="flex justify-between items-center text-sm gap-4">
-                    <span className="text-[#9a958e] shrink-0">{label}</span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="text-[#9a958e]">{label}</span>
+                      {tooltip && (
+                        <div className="group relative">
+                          <span className="text-[#b5b0a6] cursor-help text-xs">ⓘ</span>
+                          <div className="absolute bottom-full left-0 mb-2 w-64 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+                            {tooltip}
+                            <div className="absolute top-full left-4 border-4 border-transparent border-t-[#1a1917]" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <span className={`text-right ${colored ?? (muted ? "text-[#b5b0a6]" : "text-[#1a1917]")} ${mono ? "font-mono text-xs" : ""} ${capitalize ? "capitalize" : ""}`}>
                       {value}
                     </span>
@@ -149,19 +164,17 @@ export default async function VerifyPage({
                     <span className="text-[#9a958e] shrink-0">Times verified</span>
                     <div className="group relative">
                       <span className="text-[#b5b0a6] cursor-help text-xs">ⓘ</span>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
-                        {validationCount <= 2
-                          ? "Normal — this stamp has been verified a small number of times."
-                          : validationCount <= 10
-                          ? "This stamp has been verified several times. It may have been forwarded."
-                          : "This stamp has been verified many times. It was likely reused across multiple emails — treat with caution."}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+                        {validationCount === 1
+                          ? "You're the first to verify this stamp — good sign it hasn't been forwarded or reused."
+                          : "This stamp has been verified more than once. It was either sent to a group and others verified it too, or it was copied and reused. If the stamp creation time doesn't match when you received this email, it was likely reused."}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1a1917]" />
                       </div>
                     </div>
                   </div>
-                  <span className={`font-medium tabular-nums ${validationCount > 10 ? "text-amber-600" : validationCount > 2 ? "text-[#9a958e]" : "text-[#1a1917]"}`}>
+                  <span className={`font-medium tabular-nums ${validationCount > 1 ? "text-red-500" : "text-[#5a9471]"}`}>
                     {validationCount}
-                    {validationCount > 10 && " ⚠"}
+                    {validationCount > 1 && " ⚠"}
                   </span>
                 </div>
               </div>
