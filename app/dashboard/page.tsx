@@ -74,6 +74,7 @@ function DashboardPageInner() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [senders, setSenders] = useState<Sender[]>([]);
   const [selectedSender, setSelectedSender] = useState<string>("");
+  const [bindExpanded, setBindExpanded] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [subjectHint, setSubjectHint] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -547,37 +548,51 @@ function DashboardPageInner() {
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs text-[#9a958e]">Recipient Email (optional)</label>
-                  <input
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
-                    placeholder="recipient@example.com"
-                    value={recipientEmail}
-                    onChange={(e) => setRecipientEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs text-[#9a958e]">Subject Hint (optional)</label>
-                  <input
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
-                    placeholder="e.g. Job application, Invoice #1234"
-                    maxLength={100}
-                    value={subjectHint}
-                    onChange={(e) => setSubjectHint(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs text-[#9a958e]">Email Body (optional — cryptographically binds stamp to this content)</label>
-                  <textarea
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471] min-h-[80px] resize-y"
-                    placeholder="Paste your email body text to bind this stamp to the exact content…"
-                    value={emailBodyText}
-                    onChange={(e) => setEmailBodyText(e.target.value)}
-                  />
-                  {emailBodyText && (
-                    <p className="text-xs text-[#b5b0a6]">Content hash will be included in the Ed25519 signature.</p>
+                {/* Bind to content — collapsed by default */}
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setBindExpanded(!bindExpanded)}
+                    className="flex items-center gap-1.5 text-xs text-[#9a958e] hover:text-[#3a3830] transition-colors self-start"
+                  >
+                    <span className={`transition-transform ${bindExpanded ? "rotate-90" : ""}`}>▶</span>
+                    Bind to email content
+                    {(recipientEmail || subjectHint || emailBodyText) && (
+                      <span className="text-[#5a9471] font-medium">✓</span>
+                    )}
+                  </button>
+                  {bindExpanded && (
+                    <div className="flex flex-col gap-3 pl-4 border-l-2 border-[#e5e2d8]">
+                      <p className="text-xs text-[#b5b0a6]">Cryptographically ties this stamp to the specific email — recipient, subject, and body. Recipients can verify the content hasn&apos;t been altered.</p>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-[#9a958e]">Recipient email</label>
+                        <input
+                          className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                          placeholder="recipient@example.com"
+                          value={recipientEmail}
+                          onChange={(e) => setRecipientEmail(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-[#9a958e]">Subject</label>
+                        <input
+                          className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                          placeholder="e.g. Job application, Invoice #1234"
+                          maxLength={100}
+                          value={subjectHint}
+                          onChange={(e) => setSubjectHint(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-[#9a958e]">Email body</label>
+                        <textarea
+                          className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471] min-h-[80px] resize-y"
+                          placeholder="Paste your email body text…"
+                          value={emailBodyText}
+                          onChange={(e) => setEmailBodyText(e.target.value)}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
 

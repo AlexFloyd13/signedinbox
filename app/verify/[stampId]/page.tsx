@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { validateStamp } from "@/lib/signedinbox/stamps";
+import FurtherVerify from "./further-verify";
 
 export default async function VerifyPage({
   params,
@@ -140,21 +141,8 @@ export default async function VerifyPage({
             </div>
           )}
 
-          {/* Content hash */}
-          {contentHash && (
-            <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-3">
-              <h2 className="text-xs font-semibold text-[#b5b0a6] uppercase tracking-wider">Verify Email Content</h2>
-              <p className="text-xs text-[#9a958e]">
-                This stamp was cryptographically bound to specific email content. Paste the email details below to confirm the content hasn&apos;t been altered.
-              </p>
-              <div className="bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-3 py-2 text-xs text-[#6b6560] font-mono break-all">
-                {contentHash}
-              </div>
-              <p className="text-xs text-[#b5b0a6]">
-                Compute SHA-256 of <code className="text-[#5a9471]">recipient_email_lowercase|subject|body_text_trimmed</code> and compare.
-              </p>
-            </div>
-          )}
+          {/* Further verify — only shown if content-bound */}
+          {contentHash && <FurtherVerify contentHash={contentHash} />}
 
           {/* Independent verification */}
           <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-2">
