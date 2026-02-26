@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { authedFetch } from "@/lib/supabase/authed-fetch";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -67,7 +68,8 @@ function formatDate(iso: string) {
 }
 
 export default function DashboardPage() {
-  const [tab, setTab] = useState<"history" | "settings">("history");
+  const searchParams = useSearchParams();
+  const tab = (searchParams.get("tab") ?? "history") as "history" | "settings";
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [senders, setSenders] = useState<Sender[]>([]);
@@ -440,9 +442,9 @@ export default function DashboardPage() {
           <div className="flex flex-col items-center justify-center py-10 gap-3 text-[#b5b0a6] bg-white border border-[#e5e2d8] rounded-xl">
             <span className="text-4xl">✉️</span>
             <p className="text-sm">No senders yet — add one in Settings</p>
-            <button onClick={() => setTab("settings")} className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors">
+            <a href="/dashboard?tab=settings" className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors">
               Go to Settings
-            </button>
+            </a>
           </div>
         ) : (
             <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
@@ -666,21 +668,6 @@ export default function DashboardPage() {
             <span className="text-xs text-[#9a958e]">{s.label}</span>
             <span className="text-xl font-semibold tabular-nums">{s.value}</span>
           </div>
-        ))}
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-[#e5e2d8]">
-        {(["history", "settings"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-              tab === t ? "border-[#5a9471] text-[#1a1917]" : "border-transparent text-[#9a958e] hover:text-[#3a3830]"
-            }`}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
         ))}
       </div>
 
