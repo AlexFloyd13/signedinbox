@@ -30,13 +30,10 @@ export async function createVerifiedStamp(opts: {
   turnstileToken: string;
   clientType?: string;
   ip?: string;
-  skipTurnstile?: boolean;
 }): Promise<StampResponse> {
-  if (!opts.skipTurnstile) {
-    const turnstileResult = await verifyTurnstileToken(opts.turnstileToken, opts.ip);
-    if (!turnstileResult.success) {
-      throw new Error(`CAPTCHA verification failed: ${turnstileResult.error}`);
-    }
+  const turnstileResult = await verifyTurnstileToken(opts.turnstileToken, opts.ip);
+  if (!turnstileResult.success) {
+    throw new Error(`CAPTCHA verification failed: ${turnstileResult.error}`);
   }
 
   const sender = await getSender(opts.senderId);

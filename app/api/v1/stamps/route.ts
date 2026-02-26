@@ -113,17 +113,15 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return NextResponse.json({ error: 'Invalid request', details: parsed.error.issues }, { status: 400, headers: sec.headers });
 
     const ip = getClientIP(request);
-    // Authenticated users (JWT or API key) skip Turnstile — auth already proves humanity
     const stamp = await createVerifiedStamp({
       senderId: parsed.data.sender_id,
       userId,
       recipientEmail: parsed.data.recipient_email,
       subjectHint: parsed.data.subject_hint,
       contentHash: parsed.data.content_hash,
-      turnstileToken: parsed.data.turnstile_token || 'bypass',
+      turnstileToken: parsed.data.turnstile_token,
       clientType: parsed.data.client_type,
       ip,
-      skipTurnstile: true,
     });
 
     return NextResponse.json(stamp, { status: 201, headers: sec.headers });
