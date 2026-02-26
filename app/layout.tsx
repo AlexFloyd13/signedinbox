@@ -1,5 +1,19 @@
 import type { Metadata } from "next";
+import { Sora, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "SignedInbox — Cryptographically Verified Email Stamps",
@@ -20,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${sora.variable} ${mono.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );

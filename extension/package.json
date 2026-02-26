@@ -2,13 +2,16 @@
   "name": "signedinbox-extension",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "node build.js",
-    "dev": "node build.js --watch"
+    "dev": "node build.js --watch",
+    "icons": "node icons/generate.js"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.310",
     "esbuild": "^0.25.0",
+    "sharp": "^0.34.0",
     "typescript": "^5.0.0"
   }
 }
