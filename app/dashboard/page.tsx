@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { authedFetch } from "@/lib/supabase/authed-fetch";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -67,7 +67,7 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export default function DashboardPage() {
+function DashboardPageInner() {
   const searchParams = useSearchParams();
   const tab = (searchParams.get("tab") ?? "history") as "history" | "settings";
 
@@ -1015,5 +1015,13 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense>
+      <DashboardPageInner />
+    </Suspense>
   );
 }
