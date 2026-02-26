@@ -420,17 +420,26 @@ export default function DashboardPage() {
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Sender *</label>
-                  <select
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] focus:outline-none focus:border-[#5a9471]"
-                    value={selectedSender}
-                    onChange={(e) => setSelectedSender(e.target.value)}
-                  >
-                    {senders.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.display_name} &lt;{s.email}&gt;{!s.verified_email ? " (unverified)" : ""}
-                      </option>
-                    ))}
-                  </select>
+                  {senders.length === 1 ? (
+                    <div className="bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] flex items-center justify-between">
+                      <span>{senders[0].display_name} &lt;{senders[0].email}&gt;</span>
+                      {senders[0].verified_email && (
+                        <span className="text-[11px] text-[#3d6b52] font-medium">✓ Verified</span>
+                      )}
+                    </div>
+                  ) : (
+                    <select
+                      className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] focus:outline-none focus:border-[#5a9471]"
+                      value={selectedSender}
+                      onChange={(e) => setSelectedSender(e.target.value)}
+                    >
+                      {senders.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.display_name} &lt;{s.email}&gt;{!s.verified_email ? " (unverified)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1">
