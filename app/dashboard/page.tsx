@@ -95,10 +95,8 @@ function DashboardPageInner() {
   const [newSenderEmail, setNewSenderEmail] = useState("");
   const [addingSender, setAddingSender] = useState(false);
   const [senderError, setSenderError] = useState<string | null>(null);
-  const [newKeyName, setNewKeyName] = useState("");
   const [addingKey, setAddingKey] = useState(false);
   const [keyError, setKeyError] = useState<string | null>(null);
-  const [newKeyValue, setNewKeyValue] = useState<string | null>(null);
   const [activeIntegration, setActiveIntegration] = useState<string | null>(null);
   const [integrationKeyValue, setIntegrationKeyValue] = useState<string | null>(null);
 
@@ -374,29 +372,6 @@ function DashboardPageInner() {
       setSenderError(e instanceof Error ? e.message : "Failed to add sender");
     } finally {
       setAddingSender(false);
-    }
-  }
-
-  async function addApiKey() {
-    if (!newKeyName.trim()) return;
-    setAddingKey(true);
-    setKeyError(null);
-    setNewKeyValue(null);
-    try {
-      const res = await authedFetch("/api/v1/stamps", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "create-api-key", name: newKeyName.trim() }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create API key");
-      setNewKeyValue(data.api_key);
-      setNewKeyName("");
-      await fetchApiKeys();
-    } catch (e) {
-      setKeyError(e instanceof Error ? e.message : "Failed to create API key");
-    } finally {
-      setAddingKey(false);
     }
   }
 
@@ -895,128 +870,6 @@ function DashboardPageInner() {
               );
             })()}
 
-            {/* Claude MCP */}
-            {(() => {
-              const existing = apiKeys.find((k) => k.name === "Claude MCP");
-              const isActive = activeIntegration === "mcp";
-              const revealed = isActive && integrationKeyValue;
-              const keyForConfig = revealed ? integrationKeyValue! : existing ? `${existing.key_prefix}…` : "YOUR_API_KEY";
-              const mcpConfig = `{\n  "mcpServers": {\n    "signedinbox": {\n      "command": "npx",\n      "args": ["-y", "@signedinbox/mcp"],\n      "env": {\n        "SIGNEDINBOX_API_KEY": "${keyForConfig}"\n      }\n    }\n  }\n}`;
-              return (
-                <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">🤖</div>
-                      <div>
-                        <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Claude MCP</p>
-                        <p className="text-xs text-[#9a958e] mt-0.5">Let Claude stamp emails on your behalf from any MCP-compatible AI client.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {existing && <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#5a9471] border border-[#b8d4c0]">Configured</span>}
-                      <button
-                        onClick={() => { setActiveIntegration(isActive ? null : "mcp"); setIntegrationKeyValue(null); setKeyError(null); }}
-                        className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-[#f5f3ef] transition-colors"
-                      >
-                        {isActive ? "Close" : existing ? "View config" : "Set up"}
-                      </button>
-                    </div>
-                  </div>
-                  {isActive && (
-                    <div className="flex flex-col gap-3 border-t border-[#e5e2d8] pt-3">
-                      {!existing && !revealed && (
-                        <>
-                          <p className="text-xs text-[#9a958e]">Generate an API key, then add the config to your Claude desktop <code className="text-[#5a9471]">claude_desktop_config.json</code>.</p>
-                          <button onClick={() => setupIntegration("Claude MCP")} disabled={addingKey}
-                            className="self-start text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
-                            {addingKey ? "Generating…" : "Generate API key"}
-                          </button>
-                        </>
-                      )}
-                      {(revealed || existing) && (
-                        <div className="flex flex-col gap-2">
-                          {revealed && (
-                            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                              This key won&apos;t be shown again — it&apos;s already embedded in the config below.
-                            </p>
-                          )}
-                          <p className="text-xs text-[#9a958e]">Add to <code className="text-[#5a9471]">~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
-                          <div className="relative">
-                            <pre className="bg-[#f5f3ef] border border-[#e5e2d8] rounded-lg px-3 py-3 text-xs text-[#3a3830] font-mono overflow-x-auto whitespace-pre">{mcpConfig}</pre>
-                            <button onClick={() => copyToClipboard(mcpConfig, "mcp-config")}
-                              className="absolute top-2 right-2 text-xs px-2 py-1 rounded bg-white border border-[#e5e2d8] text-[#6b6560] hover:text-[#1a1917] transition-colors">
-                              {copiedField === "mcp-config" ? "Copied!" : "Copy"}
-                            </button>
-                          </div>
-                          {existing && !revealed && (
-                            <p className="text-xs text-[#b5b0a6]">{existing.last_used_at ? `Last used ${timeAgo(existing.last_used_at)}` : "Never used"} · Created {formatDate(existing.created_at)}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-
-            {/* Developer API */}
-            {(() => {
-              const isActive = activeIntegration === "dev";
-              return (
-                <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">⚙️</div>
-                      <div>
-                        <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Developer API</p>
-                        <p className="text-xs text-[#9a958e] mt-0.5">Create a raw API key for custom scripts or integrations.</p>
-                      </div>
-                    </div>
-                    <button onClick={() => { setActiveIntegration(isActive ? null : "dev"); setNewKeyValue(null); setKeyError(null); }}
-                      className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#3a3830] hover:bg-[#f5f3ef] transition-colors shrink-0">
-                      {isActive ? "Close" : "Manage"}
-                    </button>
-                  </div>
-                  {isActive && (
-                    <div className="flex flex-col gap-3 border-t border-[#e5e2d8] pt-3">
-                      {newKeyValue && (
-                        <div className="flex items-center gap-2 bg-[#f0f7f3] border border-[#b8d4c0] rounded-lg px-3 py-2">
-                          <code className="text-xs text-[#1a1917] font-mono break-all flex-1">{newKeyValue}</code>
-                          <button onClick={() => copyToClipboard(newKeyValue, "new-key")} className="shrink-0 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
-                            {copiedField === "new-key" ? "Copied!" : "Copy"}
-                          </button>
-                        </div>
-                      )}
-                      <div className="flex gap-3">
-                        <input
-                          className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
-                          placeholder="Key name"
-                          value={newKeyName}
-                          onChange={(e) => setNewKeyName(e.target.value)}
-                        />
-                        <button onClick={addApiKey} disabled={!newKeyName.trim() || addingKey}
-                          className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40">
-                          {addingKey ? "Creating…" : "Create"}
-                        </button>
-                      </div>
-                      {apiKeysLoading ? (
-                        <div className="text-center text-[#b5b0a6] text-sm py-2">Loading…</div>
-                      ) : apiKeys.length > 0 && (
-                        <div className="flex flex-col gap-2 border-t border-[#e5e2d8] pt-3">
-                          {apiKeys.map((k) => (
-                            <div key={k.id} className="flex flex-col gap-0.5">
-                              <span className="text-xs text-[#1a1917]">{k.name}</span>
-                              <span className="text-xs text-[#9a958e] font-mono">{k.key_prefix}…</span>
-                              <span className="text-xs text-[#b5b0a6]">{k.last_used_at ? `Last used ${timeAgo(k.last_used_at)}` : "Never used"} · Created {formatDate(k.created_at)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
           </div>
         </div>
       )}
