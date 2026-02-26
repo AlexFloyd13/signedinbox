@@ -632,19 +632,19 @@ function DashboardPageInner() {
                   </div>
 
                   {/* Copy Link — primary action */}
-                  <div className="flex items-center justify-between bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-4 py-3 gap-4">
-                    <div className="flex flex-col gap-0.5 min-w-0">
-                      <span className="text-xs font-medium text-[#3a3830]">Verification link</span>
-                      <span className="text-xs text-[#9a958e] font-mono truncate">{stampResult.stamp_url}</span>
+                  <div className="flex flex-col gap-2 bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-4 py-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-xs font-medium text-[#3a3830]">Verification text</span>
+                      <button
+                        onClick={() => copyToClipboard(stampResult.badge_text, "url")}
+                        className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors"
+                      >
+                        {copiedField === "url" ? "Copied!" : "Copy Link"}
+                      </button>
                     </div>
-                    <button
-                      onClick={() => copyToClipboard(stampResult.stamp_url, "url")}
-                      className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors"
-                    >
-                      {copiedField === "url" ? "Copied!" : "Copy Link"}
-                    </button>
+                    <p className="text-xs text-[#9a958e] leading-relaxed">{stampResult.badge_text}</p>
                   </div>
-                  <p className="text-xs text-[#b5b0a6]">Paste this link at the bottom of your email. Works in Gmail and any email client.</p>
+                  <p className="text-xs text-[#b5b0a6]">Paste at the bottom of your email. Works in Gmail and any email client.</p>
 
                   {/* HTML badge — secondary, for Outlook/signatures */}
                   <div className="flex items-center justify-between bg-white border border-[#e5e2d8] rounded-lg px-3 py-2.5">
