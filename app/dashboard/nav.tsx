@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 export default function DashboardNav() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") ?? "history";
+  const activeTab = searchParams.get("tab") ?? "";
 
   async function handleSignOut() {
     const supabase = createClient();

@@ -430,13 +430,6 @@ function DashboardPageInner() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-serif text-2xl font-bold text-[#1a1917] tracking-tight">signedinbox</h1>
-        <p className="text-[#9a958e] text-sm mt-1">
-          Cryptographic stamps for your emails — prove you&apos;re a real human sender.
-        </p>
-      </div>
-
       {/* Generate Stamp */}
       <div className="flex flex-col gap-4">
         {senders.length === 0 ? (
