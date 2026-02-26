@@ -87,7 +87,31 @@ export async function createVerifiedStamp(opts: {
     hour: 'numeric', minute: '2-digit',
     timeZone: 'UTC', timeZoneName: 'short',
   });
-  const badgeHtml = `<a href="${stampUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#5a9471;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;text-decoration:none;padding:6px 14px;border-radius:20px;line-height:1.5;mso-padding-alt:0;">&#10003;&nbsp;Verified by signedinbox</a>`;
+  const expiryLabel = new Date(exp * 1000).toLocaleString('en-US', {
+    month: 'short', day: 'numeric',
+    timeZone: 'UTC',
+  });
+  const badgeHtml = [
+    '<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" style="width:100%;max-width:480px;" arcsize="25%" fillcolor="#f0f7f3" strokecolor="#b8d4c0" strokeweight="1px"><w:anchorlock/><center><![endif]-->',
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #b8d4c0;background-color:#f0f7f3;border-radius:12px;border-collapse:separate;font-family:Arial,Helvetica,sans-serif;max-width:480px;width:100%;">`,
+    '<tr>',
+    // Green checkmark circle
+    '<td style="width:32px;padding:12px 0 12px 14px;vertical-align:middle;">',
+    '<div style="width:32px;height:32px;border-radius:50%;background-color:#5a9471;text-align:center;line-height:32px;color:#ffffff;font-size:16px;font-weight:bold;">&#10003;</div>',
+    '</td>',
+    // Text block
+    '<td style="padding:12px 8px;vertical-align:middle;">',
+    '<div style="font-size:13px;font-weight:600;color:#1e4533;line-height:1.3;">Verified by signedinbox</div>',
+    `<div style="font-size:11px;color:#5a9471;line-height:1.4;">${sender.email} &middot; Valid until ${expiryLabel}</div>`,
+    '</td>',
+    // Verify button
+    `<td style="padding:12px 14px 12px 0;vertical-align:middle;text-align:right;">`,
+    `<a href="${stampUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;font-size:11px;color:#4d7c63;text-decoration:none;border:1px solid #b8d4c0;border-radius:6px;padding:4px 10px;line-height:1.4;mso-padding-alt:0;">Verify&nbsp;&#8594;</a>`,
+    '</td>',
+    '</tr>',
+    '</table>',
+    '<!--[if mso]></center></v:roundrect><![endif]-->',
+  ].join('');
   const badgeText = `This email was sent by a verified human at ${stampDateLabel}. Click to verify: ${stampUrl}`;
 
   return {

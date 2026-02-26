@@ -123,6 +123,32 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Why it matters */}
+      <section className="border-t border-[#e5e2d8] bg-[#faf9f6] py-20 px-6 sm:px-10">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="font-serif text-3xl font-bold text-[#1a1917] text-center mb-14">
+            Why it matters
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              { stat: "98%", headline: "of emails are ignored", detail: "Average click-through rate is just 2%" },
+              { stat: "79%", headline: "delete marketing emails", detail: "Trust is at an all-time low" },
+              { stat: "41%", headline: "higher click-through", detail: "Verified, personalized emails earn more engagement" },
+              { stat: "53%", headline: "lose trust from spam", detail: "Over half lose trust when emails look suspicious" },
+            ].map(({ stat, headline, detail }) => (
+              <div
+                key={stat}
+                className="bg-white rounded-xl border border-[#e5e2d8] p-6"
+              >
+                <div className="font-serif text-3xl font-bold text-[#5a9471] mb-1">{stat}</div>
+                <div className="text-[15px] font-semibold text-[#1a1917] mb-1">{headline}</div>
+                <div className="text-[13px] text-[#6b6560] leading-relaxed">{detail}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="border-t border-[#e5e2d8] bg-white py-20 px-6 sm:px-10">
         <div className="max-w-3xl mx-auto">
