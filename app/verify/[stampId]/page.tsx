@@ -130,7 +130,7 @@ export default async function VerifyPage({
                   {
                     label: "Created",
                     value: formatDate(stamp.created_at),
-                    tooltip: "When the sender generated this stamp. If this time doesn't match when you received the email, the stamp may have been reused.",
+                    tooltip: "When the sender generated this stamp. If you didn't receive this email close to this time, the stamp may have been copied from an older email and reused.",
                   },
                   {
                     label: "Expires",
