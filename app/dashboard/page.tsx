@@ -78,6 +78,7 @@ function DashboardPageInner() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [subjectHint, setSubjectHint] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [stampResult, setStampResult] = useState<StampResult | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
@@ -601,11 +602,14 @@ function DashboardPageInner() {
                     <label className="text-xs text-[#9a958e]">Human Verification *</label>
                     <Turnstile
                       siteKey={siteKey}
-                      onSuccess={(token) => setTurnstileToken(token)}
-                      onError={() => setTurnstileToken(null)}
-                      onExpire={() => setTurnstileToken(null)}
+                      onSuccess={(token) => { setTurnstileToken(token); setTurnstileError(null); }}
+                      onError={() => { setTurnstileToken(null); setTurnstileError("Verification failed — please refresh the page and try again."); }}
+                      onExpire={() => { setTurnstileToken(null); setTurnstileError("Verification expired — please complete it again."); }}
                       options={{ theme: "light" }}
                     />
+                    {turnstileError && (
+                      <p className="text-xs text-red-500 mt-1">{turnstileError}</p>
+                    )}
                   </div>
                 )}
 
