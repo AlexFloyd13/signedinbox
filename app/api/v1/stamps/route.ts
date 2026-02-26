@@ -5,9 +5,10 @@ import { authenticateUser, AuthError } from '@/lib/auth';
 import { CreateStampSchema, CreateSenderSchema, CreateApiKeySchema, VerifyEmailSchema } from '@/lib/signedinbox/validation';
 import { createVerifiedStamp } from '@/lib/signedinbox/stamps';
 import {
-  getSendersByUser, createSender, listStamps, getStats, listApiKeys,
+  getSendersByUser, getSender, createSender, listStamps, getStats, listApiKeys,
   createApiKeyRecord, getApiKeyByHash, createEmailVerification, verifyEmailCode,
 } from '@/lib/signedinbox/supabase';
+import { sendVerificationEmail } from '@/lib/email';
 
 async function authenticateRequest(req: NextRequest): Promise<{ userId: string }> {
   // Try Supabase JWT first
@@ -33,7 +34,7 @@ async function authenticateRequest(req: NextRequest): Promise<{ userId: string }
 }
 
 export async function POST(request: NextRequest) {
-  const sec = applySecurity(request, { rateLimitType: 'stamps' });
+  const sec = applySecurity(request, { rateLimitType: 'stamps_write' });
   if (sec.blocked) return sec.response!;
 
   try {
@@ -51,8 +52,11 @@ export async function POST(request: NextRequest) {
     if (action === 'send-verification') {
       const senderId = body.sender_id as string;
       if (!senderId) return NextResponse.json({ error: 'sender_id required' }, { status: 400, headers: sec.headers });
-      // TODO: Send via email (Resend/SendGrid) when configured
-      await createEmailVerification(senderId);
+      const sender = await getSender(senderId);
+      if (!sender) return NextResponse.json({ error: 'Sender not found' }, { status: 404, headers: sec.headers });
+      if (sender.user_id !== userId) return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: sec.headers });
+      const { code } = await createEmailVerification(senderId);
+      await sendVerificationEmail(sender.email, code);
       return NextResponse.json({ message: 'Verification code sent' }, { status: 200, headers: sec.headers });
     }
 
@@ -112,7 +116,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const sec = applySecurity(request, { rateLimitType: 'stamps' });
+  const sec = applySecurity(request, { rateLimitType: 'stamps_read' });
   if (sec.blocked) return sec.response!;
 
   try {

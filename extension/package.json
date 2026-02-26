@@ -1,0 +1,14 @@
+{
+  "name": "signedinbox-extension",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js --watch"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.310",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.0.0"
+  }
+}

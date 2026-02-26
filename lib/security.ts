@@ -20,9 +20,11 @@ setInterval(() => {
 
 interface RateLimitConfig { windowMs: number; maxRequests: number }
 const RATE_LIMITS: Record<string, RateLimitConfig> = {
-  default:  { windowMs: 60_000, maxRequests: 100 },
-  stamps:   { windowMs: 60_000, maxRequests: 30 },
-  auth:     { windowMs: 60_000, maxRequests: 10 },
+  default:      { windowMs: 60_000, maxRequests: 100 },
+  stamps_read:  { windowMs: 60_000, maxRequests: 60 },
+  stamps_write: { windowMs: 60_000, maxRequests: 20 },
+  auth:         { windowMs: 60_000, maxRequests: 10 },
+  validation:   { windowMs: 60_000, maxRequests: 60 },
 };
 
 function checkRateLimit(req: NextRequest, type = 'default') {
