@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import DashboardNav from "./nav";
 
 export default function DashboardLayout({
@@ -7,7 +8,9 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-[#f5f4ef] text-[#1a1917]">
-      <DashboardNav />
+      <Suspense fallback={<div className="h-14 border-b border-[#e5e2d8] bg-white" />}>
+        <DashboardNav />
+      </Suspense>
       <main className="max-w-5xl mx-auto px-6 py-8">{children}</main>
     </div>
   );
