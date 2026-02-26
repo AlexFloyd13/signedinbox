@@ -67,7 +67,7 @@ function formatDate(iso: string) {
 }
 
 export default function DashboardPage() {
-  const [tab, setTab] = useState<"stamp" | "history" | "settings">("stamp");
+  const [tab, setTab] = useState<"history" | "settings">("history");
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [senders, setSenders] = useState<Sender[]>([]);
@@ -106,6 +106,15 @@ export default function DashboardPage() {
   const [verificationCodeInput, setVerificationCodeInput] = useState("");
   const [verifyingEmail, setVerifyingEmail] = useState(false);
   const [verifyEmailError, setVerifyEmailError] = useState<string | null>(null);
+
+  const [addEmailOpen, setAddEmailOpen] = useState(false);
+  const [addEmailStep, setAddEmailStep] = useState<"form" | "verify">("form");
+  const [addEmailName, setAddEmailName] = useState("");
+  const [addEmailAddress, setAddEmailAddress] = useState("");
+  const [addEmailSenderId, setAddEmailSenderId] = useState("");
+  const [addEmailCode, setAddEmailCode] = useState("");
+  const [addEmailLoading, setAddEmailLoading] = useState(false);
+  const [addEmailError, setAddEmailError] = useState<string | null>(null);
 
   const fetchSenders = useCallback(async () => {
     try {
@@ -174,6 +183,11 @@ export default function DashboardPage() {
     fetchSenders();
     fetchStats();
   }, [fetchSenders, fetchStats]);
+
+  // In dev mode (no Turnstile configured), auto-apply token so no manual click needed
+  useEffect(() => {
+    if (!siteKey) setTurnstileToken("dev-token");
+  }, [siteKey]);
 
   useEffect(() => {
     if (tab === "history") fetchStamps();
@@ -278,6 +292,62 @@ export default function DashboardPage() {
     finally { setRevoking(null); }
   }
 
+  async function startAddEmail() {
+    if (!addEmailName.trim() || !addEmailAddress.trim()) return;
+    setAddEmailLoading(true);
+    setAddEmailError(null);
+    try {
+      const res = await authedFetch("/api/v1/stamps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "create-sender", display_name: addEmailName.trim(), email: addEmailAddress.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to add email");
+      setAddEmailSenderId(data.sender.id);
+      const vres = await authedFetch("/api/v1/stamps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send-verification", sender_id: data.sender.id }),
+      });
+      if (!vres.ok) throw new Error("Failed to send verification code");
+      setAddEmailStep("verify");
+    } catch (e) {
+      setAddEmailError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setAddEmailLoading(false);
+    }
+  }
+
+  async function confirmAddEmail() {
+    if (addEmailCode.length !== 6 || !addEmailSenderId) return;
+    setAddEmailLoading(true);
+    setAddEmailError(null);
+    try {
+      const res = await authedFetch("/api/v1/stamps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify-email", sender_id: addEmailSenderId, code: addEmailCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Invalid code");
+      const newId = addEmailSenderId;
+      setAddEmailOpen(false);
+      setAddEmailStep("form");
+      setAddEmailName("");
+      setAddEmailAddress("");
+      setAddEmailCode("");
+      setAddEmailSenderId("");
+      setAddEmailError(null);
+      await fetchSenders();
+      setSelectedSender(newId);
+    } catch (e) {
+      setAddEmailError(e instanceof Error ? e.message : "Verification failed");
+    } finally {
+      setAddEmailLoading(false);
+    }
+  }
+
   async function addSender() {
     if (!newSenderName.trim() || !newSenderEmail.trim()) return;
     setAddingSender(true);
@@ -380,7 +450,7 @@ export default function DashboardPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-[#e5e2d8]">
-        {(["stamp", "history", "settings"] as const).map((t) => (
+        {(["history", "settings"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -388,27 +458,26 @@ export default function DashboardPage() {
               tab === t ? "border-[#5a9471] text-[#1a1917]" : "border-transparent text-[#9a958e] hover:text-[#3a3830]"
             }`}
           >
-            {t === "stamp" ? "New Stamp" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Stamp Tab */}
-      {tab === "stamp" && (
-        <div className="flex flex-col gap-4">
-          {senders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-3 text-[#b5b0a6]">
-              <span className="text-4xl">✉️</span>
-              <p className="text-sm">No senders yet — add one in Settings</p>
-              <button onClick={() => setTab("settings")} className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors">
-                Go to Settings
-              </button>
-            </div>
-          ) : (
+      {/* Generate Stamp */}
+      <div className="flex flex-col gap-4">
+        {senders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-3 text-[#b5b0a6] bg-white border border-[#e5e2d8] rounded-xl">
+            <span className="text-4xl">✉️</span>
+            <p className="text-sm">No senders yet — add one in Settings</p>
+            <button onClick={() => setTab("settings")} className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors">
+              Go to Settings
+            </button>
+          </div>
+        ) : (
             <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
               <div>
                 <h2 className="font-serif text-base font-semibold text-[#1a1917]">Generate Verification Stamp</h2>
-                <p className="text-xs text-[#9a958e] mt-1">Complete the CAPTCHA, then paste the badge into your email.</p>
+                <p className="text-xs text-[#9a958e] mt-1">Fill in the details below, then paste the badge into your email.</p>
               </div>
 
               {generateError && (
@@ -418,27 +487,96 @@ export default function DashboardPage() {
               )}
 
               <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2">
                   <label className="text-xs text-[#9a958e]">Sender *</label>
-                  {senders.length === 1 ? (
-                    <div className="bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] flex items-center justify-between">
-                      <span>{senders[0].display_name} &lt;{senders[0].email}&gt;</span>
-                      {senders[0].verified_email && (
-                        <span className="text-[11px] text-[#3d6b52] font-medium">✓ Verified</span>
+                  <select
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] focus:outline-none focus:border-[#5a9471]"
+                    value={selectedSender}
+                    onChange={(e) => setSelectedSender(e.target.value)}
+                  >
+                    {senders.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.display_name} &lt;{s.email}&gt;{!s.verified_email ? " (unverified)" : ""}
+                      </option>
+                    ))}
+                  </select>
+
+                  {!addEmailOpen ? (
+                    <button
+                      onClick={() => { setAddEmailOpen(true); setAddEmailStep("form"); setAddEmailError(null); }}
+                      className="self-start text-[12px] text-[#3d6b52] hover:text-[#2d5040] font-medium transition-colors"
+                    >
+                      + Add verified email
+                    </button>
+                  ) : (
+                    <div className="border border-[#e5e2d8] rounded-xl p-4 flex flex-col gap-3 bg-[#fafaf8]">
+                      {addEmailStep === "form" ? (
+                        <>
+                          <p className="text-[12px] font-medium text-[#3a3830]">Add another email address</p>
+                          <input
+                            className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                            placeholder="Display name"
+                            value={addEmailName}
+                            onChange={(e) => setAddEmailName(e.target.value)}
+                          />
+                          <input
+                            type="email"
+                            className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                            placeholder="email@example.com"
+                            value={addEmailAddress}
+                            onChange={(e) => setAddEmailAddress(e.target.value)}
+                          />
+                          {addEmailError && <p className="text-[12px] text-red-600">{addEmailError}</p>}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={startAddEmail}
+                              disabled={!addEmailName.trim() || !addEmailAddress.trim() || addEmailLoading}
+                              className="flex-1 bg-[#3d6b52] hover:bg-[#2d5040] disabled:opacity-50 text-white rounded-lg py-2 text-[13px] font-medium transition-colors"
+                            >
+                              {addEmailLoading ? "Sending…" : "Send verification code"}
+                            </button>
+                            <button
+                              onClick={() => setAddEmailOpen(false)}
+                              className="px-3 py-2 text-[13px] text-[#9a958e] hover:text-[#5a5750] transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-[12px] font-medium text-[#3a3830]">
+                            Enter the 6-digit code sent to <span className="text-[#1a1917]">{addEmailAddress}</span>
+                          </p>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            value={addEmailCode}
+                            onChange={(e) => setAddEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                            placeholder="000000"
+                            autoFocus
+                            className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-[18px] text-[#1a1917] text-center font-mono tracking-[0.3em] placeholder:tracking-normal placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
+                          />
+                          {addEmailError && <p className="text-[12px] text-red-600">{addEmailError}</p>}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={confirmAddEmail}
+                              disabled={addEmailCode.length !== 6 || addEmailLoading}
+                              className="flex-1 bg-[#3d6b52] hover:bg-[#2d5040] disabled:opacity-50 text-white rounded-lg py-2 text-[13px] font-medium transition-colors"
+                            >
+                              {addEmailLoading ? "Verifying…" : "Verify"}
+                            </button>
+                            <button
+                              onClick={() => setAddEmailStep("form")}
+                              className="px-3 py-2 text-[13px] text-[#9a958e] hover:text-[#5a5750] transition-colors"
+                            >
+                              Back
+                            </button>
+                          </div>
+                        </>
                       )}
                     </div>
-                  ) : (
-                    <select
-                      className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] focus:outline-none focus:border-[#5a9471]"
-                      value={selectedSender}
-                      onChange={(e) => setSelectedSender(e.target.value)}
-                    >
-                      {senders.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.display_name} &lt;{s.email}&gt;{!s.verified_email ? " (unverified)" : ""}
-                        </option>
-                      ))}
-                    </select>
                   )}
                 </div>
 
@@ -476,9 +614,9 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs text-[#9a958e]">Human Verification *</label>
-                  {siteKey ? (
+                {siteKey && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-[#9a958e]">Human Verification *</label>
                     <Turnstile
                       siteKey={siteKey}
                       onSuccess={(token) => setTurnstileToken(token)}
@@ -486,15 +624,8 @@ export default function DashboardPage() {
                       onExpire={() => setTurnstileToken(null)}
                       options={{ theme: "light" }}
                     />
-                  ) : (
-                    <div className="text-xs text-[#9a958e] bg-white border border-[#e5e2d8] rounded-lg px-3 py-2">
-                      Turnstile not configured — dev mode
-                      <button className="ml-2 text-[#5a9471] underline" onClick={() => setTurnstileToken("dev-token")}>
-                        Use dev token
-                      </button>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 <div className="flex justify-end">
                   <button
@@ -550,8 +681,7 @@ export default function DashboardPage() {
               )}
             </div>
           )}
-        </div>
-      )}
+      </div>
 
       {/* History Tab */}
       {tab === "history" && (
