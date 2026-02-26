@@ -112,9 +112,24 @@ export default function DashboardPage() {
       const res = await authedFetch("/api/v1/stamps?action=senders");
       if (res.ok) {
         const data = await res.json();
-        setSenders(data.senders ?? []);
-        if (data.senders?.length > 0 && !selectedSender) {
-          setSelectedSender(data.senders[0].id);
+        let sendersList: Sender[] = data.senders ?? [];
+
+        // First visit: auto-add the user's auth email as a verified sender
+        if (sendersList.length === 0) {
+          const claimRes = await authedFetch("/api/v1/stamps", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "claim-auth-email" }),
+          });
+          if (claimRes.ok) {
+            const claimData = await claimRes.json();
+            sendersList = [claimData.sender];
+          }
+        }
+
+        setSenders(sendersList);
+        if (sendersList.length > 0 && !selectedSender) {
+          setSelectedSender(sendersList[0].id);
         }
       }
     } catch { /* ignore */ }
