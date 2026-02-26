@@ -1,16 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-sora, "Sora", sans-serif);
-  --font-mono: var(--font-jetbrains, "JetBrains Mono", monospace);
+  --font-sans: var(--font-dm-sans, "DM Sans", sans-serif);
+  --font-serif: var(--font-lora, "Lora", serif);
 }
 
 body {
-  background-color: #06060f;
-  color: #ede9ff;
-}
-
-.dot-grid {
-  background-image: radial-gradient(circle, rgba(129, 140, 248, 0.065) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-color: #f5f4ef;
+  color: #1a1917;
 }

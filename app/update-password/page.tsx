@@ -1,18 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-
-const Seal = () => (
-  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-    <circle cx="14" cy="14" r="14" fill="#4338ca" />
-    <circle cx="14" cy="14" r="11.5" stroke="rgba(255,255,255,0.18)" strokeWidth="0.8" />
-    <path d="M14 4.5L20.5 13L14 22L7.5 13Z" fill="rgba(255,255,255,0.95)" />
-    <path d="M14 11L14 22" stroke="#3730a3" strokeWidth="2.5" strokeLinecap="round" />
-    <ellipse cx="14" cy="11.5" rx="2.6" ry="1.9" fill="#3730a3" />
-  </svg>
-);
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState("");
@@ -51,71 +42,66 @@ export default function UpdatePasswordPage() {
   }
 
   return (
-    <div className="dot-grid min-h-screen flex flex-col items-center justify-center px-4 py-16">
-      {/* Wordmark */}
-      <div className="flex items-center gap-2.5 mb-8">
-        <Seal />
-        <span className="text-[17px] tracking-tight">
-          <span className="font-semibold text-[#ede9ff]">Signed</span>
-          <span className="font-mono font-normal text-[#818cf8]">Inbox</span>
-        </span>
+    <div className="min-h-screen bg-[#f5f4ef] flex flex-col items-center justify-center px-4">
+      <div className="mb-8 text-center">
+        <Link href="/" className="inline-flex items-center gap-2.5">
+          <svg width="28" height="28" viewBox="0 0 128 128" fill="none">
+            <circle cx="64" cy="64" r="64" fill="#4338ca" />
+            <circle cx="64" cy="64" r="55" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+            <path d="M64 18 L92 58 L64 96 L36 58 Z" fill="rgba(255,255,255,0.96)" />
+            <path d="M64 46 L64 96" stroke="#3730a3" strokeWidth="5" strokeLinecap="round" />
+            <ellipse cx="64" cy="48" rx="10" ry="7" fill="#3730a3" />
+          </svg>
+          <span className="font-bold text-[16px] text-[#1a1917]">SignedInbox</span>
+        </Link>
       </div>
 
-      {/* Card */}
-      <div className="w-full max-w-[380px] bg-[#0b0b1e] border border-[rgba(129,140,248,0.13)] rounded-xl p-9">
+      <div className="w-full max-w-sm bg-white border border-[#e5e2d8] rounded-2xl p-8 shadow-sm">
         {success ? (
-          <div className="text-center py-4">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-indigo-600/20 border border-indigo-500/30 mb-5">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M3 9l4.5 4.5L15 4.5" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <div className="text-center py-2">
+            <div className="w-12 h-12 rounded-full bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-4">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10l4.5 4.5L16 5" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h1 className="text-[18px] font-semibold text-[#ede9ff] mb-2">Password updated</h1>
-            <p className="text-[13px] text-[#4e4a65]">Redirecting to your dashboard…</p>
+            <h1 className="font-serif text-xl font-bold text-[#1a1917] mb-2">Password updated</h1>
+            <p className="text-[14px] text-[#9a958e]">Heading to your dashboard…</p>
           </div>
         ) : (
           <>
-            <div className="mb-7">
-              <h1 className="text-[18px] font-semibold text-[#ede9ff] leading-tight">New password</h1>
-              <p className="text-[13px] text-[#4e4a65] mt-1">Choose something strong.</p>
-            </div>
+            <h1 className="font-serif text-2xl font-bold text-[#1a1917] mb-1">New password</h1>
+            <p className="text-[14px] text-[#9a958e] mb-7">Choose something you&apos;ll remember.</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.1em] uppercase text-[#818cf8]/60 mb-1.5">
-                  New Password
-                </label>
+                <label className="block text-[13px] font-medium text-[#3a3830] mb-1.5">New password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full bg-[#080816] border border-[rgba(129,140,248,0.12)] focus:border-[#818cf8] rounded-md px-3.5 py-2.5 text-sm text-[#ede9ff] outline-none transition-colors"
+                  className="w-full border border-[#e5e2d8] focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
                 />
               </div>
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.1em] uppercase text-[#818cf8]/60 mb-1.5">
-                  Confirm Password
-                </label>
+                <label className="block text-[13px] font-medium text-[#3a3830] mb-1.5">Confirm password</label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full bg-[#080816] border border-[rgba(129,140,248,0.12)] focus:border-[#818cf8] rounded-md px-3.5 py-2.5 text-sm text-[#ede9ff] outline-none transition-colors"
+                  className="w-full border border-[#e5e2d8] focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
                 />
               </div>
 
-              {error && (
-                <p className="text-[12px] text-red-400/90 font-mono">{error}</p>
-              )}
+              {error && <p className="text-[13px] text-red-600">{error}</p>}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-md py-2.5 text-[13px] font-medium tracking-wide transition-colors"
+                className="w-full bg-[#4338ca] hover:bg-[#3730a3] disabled:opacity-50 text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors"
               >
                 {loading ? "Updating…" : "Update password"}
               </button>

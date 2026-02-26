@@ -14,32 +14,28 @@ export default function DashboardNav() {
   }
 
   return (
-    <nav className="flex items-center justify-between px-6 h-14 border-b border-[rgba(129,140,248,0.08)]">
+    <nav className="flex items-center justify-between px-6 h-14 border-b border-white/8 bg-[#0f0f14]">
       <Link href="/dashboard" className="flex items-center gap-2">
-        <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="14" fill="#4338ca" />
-          <circle cx="14" cy="14" r="11.5" stroke="rgba(255,255,255,0.18)" strokeWidth="0.8" />
-          <path d="M14 4.5L20.5 13L14 22L7.5 13Z" fill="rgba(255,255,255,0.95)" />
-          <path d="M14 11L14 22" stroke="#3730a3" strokeWidth="2.5" strokeLinecap="round" />
-          <ellipse cx="14" cy="11.5" rx="2.6" ry="1.9" fill="#3730a3" />
+        <svg width="22" height="22" viewBox="0 0 128 128" fill="none">
+          <circle cx="64" cy="64" r="64" fill="#4338ca" />
+          <circle cx="64" cy="64" r="55" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+          <path d="M64 18 L92 58 L64 96 L36 58 Z" fill="rgba(255,255,255,0.96)" />
+          <path d="M64 46 L64 96" stroke="#3730a3" strokeWidth="5" strokeLinecap="round" />
+          <ellipse cx="64" cy="48" rx="10" ry="7" fill="#3730a3" />
         </svg>
-        <span className="text-[15px] tracking-tight">
-          <span className="font-semibold text-[#ede9ff]">Signed</span>
-          <span className="font-mono font-normal text-[#818cf8]">Inbox</span>
-        </span>
+        <span className="font-bold text-[15px] text-white">SignedInbox</span>
       </Link>
 
       <div className="flex items-center gap-1">
         <Link
           href="/"
-          className="text-[12px] font-mono text-[#4e4a65] hover:text-[#ede9ff] transition-colors px-3 py-1.5 rounded"
+          className="text-[13px] text-zinc-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
         >
           Home
         </Link>
-        <span className="text-[#2a2742] text-xs">·</span>
         <button
           onClick={handleSignOut}
-          className="text-[12px] font-mono text-[#4e4a65] hover:text-[#ede9ff] transition-colors px-3 py-1.5 rounded"
+          className="text-[13px] text-zinc-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
         >
           Sign out
         </button>

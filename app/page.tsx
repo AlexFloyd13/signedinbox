@@ -1,34 +1,35 @@
 import Link from "next/link";
 
+const SealIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 128 128" fill="none">
+    <circle cx="64" cy="64" r="64" fill="#4338ca" />
+    <circle cx="64" cy="64" r="55" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+    <path d="M64 18 L92 58 L64 96 L36 58 Z" fill="rgba(255,255,255,0.96)" />
+    <path d="M64 46 L64 96" stroke="#3730a3" strokeWidth="5" strokeLinecap="round" />
+    <ellipse cx="64" cy="48" rx="10" ry="7" fill="#3730a3" />
+  </svg>
+);
+
 export default function Home() {
   return (
-    <div className="dot-grid min-h-screen flex flex-col text-[#ede9ff]">
+    <div className="min-h-screen bg-[#f5f4ef] text-[#1a1917] flex flex-col">
 
       {/* Nav */}
-      <header className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-[rgba(129,140,248,0.08)]">
-        <div className="flex items-center gap-2">
-          <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="14" fill="#4338ca" />
-            <circle cx="14" cy="14" r="11.5" stroke="rgba(255,255,255,0.18)" strokeWidth="0.8" />
-            <path d="M14 4.5L20.5 13L14 22L7.5 13Z" fill="rgba(255,255,255,0.95)" />
-            <path d="M14 11L14 22" stroke="#3730a3" strokeWidth="2.5" strokeLinecap="round" />
-            <ellipse cx="14" cy="11.5" rx="2.6" ry="1.9" fill="#3730a3" />
-          </svg>
-          <span className="text-[16px] tracking-tight">
-            <span className="font-semibold text-[#ede9ff]">Signed</span>
-            <span className="font-mono font-normal text-[#818cf8]">Inbox</span>
-          </span>
+      <header className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-[#e5e2d8]">
+        <div className="flex items-center gap-2.5">
+          <SealIcon size={26} />
+          <span className="font-bold text-[15px] tracking-tight text-[#1a1917]">SignedInbox</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="text-[12px] font-mono text-[#4e4a65] hover:text-[#ede9ff] transition-colors px-3 py-1.5"
+            className="text-[14px] text-[#6b6560] hover:text-[#1a1917] transition-colors px-4 py-2 rounded-lg hover:bg-[#eae8e2]"
           >
             Sign in
           </Link>
           <Link
             href="/signup"
-            className="text-[12px] font-mono bg-indigo-600/20 hover:bg-indigo-600/40 text-[#818cf8] border border-indigo-500/25 rounded-md px-3 py-1.5 transition-colors"
+            className="text-[14px] font-medium bg-[#4338ca] text-white px-4 py-2 rounded-lg hover:bg-[#3730a3] transition-colors"
           >
             Get started
           </Link>
@@ -36,181 +37,150 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col lg:flex-row items-center max-w-6xl mx-auto w-full px-6 sm:px-10 pt-20 pb-24 gap-16">
+      <main className="flex-1 flex flex-col items-center text-center px-6 pt-20 pb-24">
 
-        {/* Left — copy */}
-        <div className="flex-1 flex flex-col gap-8 lg:max-w-[520px]">
-          <div className="inline-flex items-center gap-2 self-start">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            <span className="font-mono text-[11px] tracking-[0.1em] uppercase text-[#818cf8]/70">
-              Open source · Ed25519 · Free
-            </span>
-          </div>
-
-          <h1 className="text-5xl sm:text-6xl font-bold leading-[1.05] tracking-tight text-[#f0eeff]">
-            Every email,<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">
-              signed.
-            </span>
-          </h1>
-
-          <p className="text-[16px] text-[#6b6484] leading-relaxed max-w-md">
-            Attach a cryptographic proof to every email you send. Anyone can verify
-            it&apos;s genuinely from you — no account, no app, just a link.
-          </p>
-
-          <div className="flex items-center gap-3 flex-wrap">
-            <Link
-              href="/signup"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium px-5 py-2.5 rounded-lg transition-colors tracking-wide"
-            >
-              Create free account
-            </Link>
-            <Link
-              href="/login"
-              className="text-[14px] text-[#4e4a65] hover:text-[#818cf8] transition-colors font-mono"
-            >
-              Sign in →
-            </Link>
-          </div>
-
-          {/* Trust chips */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            {["Ed25519 signed", "Turnstile-attested", "Timestamp bound", "Self-hostable"].map(label => (
-              <span
-                key={label}
-                className="font-mono text-[10px] tracking-[0.08em] uppercase text-[#4e4a65] border border-[rgba(129,140,248,0.1)] rounded px-2.5 py-1"
-              >
-                {label}
-              </span>
-            ))}
-          </div>
+        <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-medium px-3 py-1.5 rounded-full mb-8">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+          Open source · Free forever
         </div>
 
-        {/* Right — product mockup */}
-        <div className="flex-shrink-0 w-full lg:w-[400px]">
-          {/* Fake email client */}
-          <div className="bg-[#0b0b1e] border border-[rgba(129,140,248,0.14)] rounded-xl overflow-hidden shadow-2xl shadow-indigo-950/60">
-            {/* Email chrome */}
-            <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[rgba(129,140,248,0.08)] bg-[#090918]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#2a2742]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#2a2742]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#2a2742]" />
-              <span className="ml-3 font-mono text-[10px] text-[#3a3655]">New Message</span>
-            </div>
+        <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-[#1a1917] leading-[1.08] tracking-tight max-w-2xl mb-6">
+          Prove it&apos;s really you.
+        </h1>
 
-            {/* Header fields */}
-            <div className="px-5 py-3 border-b border-[rgba(129,140,248,0.06)] space-y-2">
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-[10px] text-[#3a3655] w-8">To</span>
-                <span className="text-[12px] text-[#6b6484]">recruiter@company.com</span>
+        <p className="text-[17px] text-[#6b6560] max-w-md leading-relaxed mb-10">
+          Attach a verified stamp to any email you send.
+          Anyone can check it&apos;s authentic — no app or account needed.
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center gap-3 mb-16">
+          <Link
+            href="/signup"
+            className="bg-[#4338ca] hover:bg-[#3730a3] text-white text-[15px] font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center"
+          >
+            Create free account
+          </Link>
+          <Link
+            href="/login"
+            className="text-[15px] text-[#6b6560] hover:text-[#1a1917] transition-colors"
+          >
+            Already have an account? Sign in →
+          </Link>
+        </div>
+
+        {/* Product mockup */}
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl border border-[#e5e2d8] shadow-sm overflow-hidden text-left">
+            {/* Email chrome bar */}
+            <div className="flex items-center gap-1.5 px-4 py-3 bg-[#faf9f6] border-b border-[#e5e2d8]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#f43f5e]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />
+              <span className="ml-3 text-[11px] text-[#b5b0a6]">New Message — Gmail</span>
+            </div>
+            {/* To / Subject */}
+            <div className="px-5 py-3 border-b border-[#f0ede6] space-y-1.5">
+              <div className="flex gap-3 text-[13px]">
+                <span className="text-[#b5b0a6] w-8 shrink-0">To</span>
+                <span className="text-[#6b6560]">hiring@company.com</span>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-[10px] text-[#3a3655] w-8">Re</span>
-                <span className="text-[12px] text-[#6b6484]">Senior Engineer role — Alex Floyd</span>
+              <div className="flex gap-3 text-[13px]">
+                <span className="text-[#b5b0a6] w-8 shrink-0">Re</span>
+                <span className="text-[#6b6560]">Following up — Alex Floyd</span>
               </div>
             </div>
-
-            {/* Body */}
+            {/* Body placeholder lines */}
             <div className="px-5 py-4 space-y-2.5">
-              <div className="h-2 bg-[rgba(129,140,248,0.05)] rounded-full w-full" />
-              <div className="h-2 bg-[rgba(129,140,248,0.05)] rounded-full w-[85%]" />
-              <div className="h-2 bg-[rgba(129,140,248,0.05)] rounded-full w-[70%]" />
-              <div className="h-2 bg-[rgba(129,140,248,0.05)] rounded-full w-[90%]" />
-              <div className="h-2 bg-[rgba(129,140,248,0.05)] rounded-full w-[55%]" />
+              <div className="h-2 bg-[#f0ede6] rounded-full w-full" />
+              <div className="h-2 bg-[#f0ede6] rounded-full w-[82%]" />
+              <div className="h-2 bg-[#f0ede6] rounded-full w-[68%]" />
             </div>
-
-            {/* Stamp badge — the product */}
-            <div className="mx-5 mb-5 rounded-lg border border-indigo-500/20 bg-indigo-950/30 p-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-indigo-700/60 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+            {/* The stamp badge */}
+            <div className="mx-5 mb-5 rounded-xl border border-indigo-100 bg-indigo-50 p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center shrink-0">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M2 7l3.5 3.5L12 2.5" stroke="#a5b4fc" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2 7l3.5 3.5L12 2.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="min-w-0">
-                <div className="text-[12px] font-medium text-indigo-100">Verified by SignedInbox</div>
-                <div className="font-mono text-[10px] text-indigo-300/50 truncate">
-                  Ed25519 · alex@floyd.dev · 26 Feb 2026
-                </div>
+                <div className="text-[13px] font-semibold text-indigo-900">Verified by SignedInbox</div>
+                <div className="text-[11px] text-indigo-500 truncate">alex@floyd.dev · Stamp valid until Mar 28</div>
               </div>
-              <div className="ml-auto flex-shrink-0">
-                <span className="font-mono text-[9px] text-indigo-400/50 border border-indigo-500/15 rounded px-1.5 py-0.5 whitespace-nowrap">
-                  verify →
-                </span>
-              </div>
+              <span className="text-[11px] text-indigo-400 shrink-0 border border-indigo-200 rounded-md px-2 py-0.5 ml-auto">
+                Verify →
+              </span>
             </div>
           </div>
-
-          {/* Caption */}
-          <p className="font-mono text-[10px] text-[#3a3655] text-center mt-3 tracking-wide">
-            What recipients see when you stamp an email
+          <p className="text-[12px] text-[#b5b0a6] text-center mt-3">
+            What your recipient sees when you stamp an email
           </p>
         </div>
       </main>
 
       {/* How it works */}
-      <section className="border-t border-[rgba(129,140,248,0.08)] py-20 px-6 sm:px-10">
-        <div className="max-w-4xl mx-auto">
-          <p className="font-mono text-[11px] tracking-[0.12em] uppercase text-[#818cf8]/50 text-center mb-12">
+      <section className="border-t border-[#e5e2d8] bg-white py-20 px-6 sm:px-10">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="font-serif text-3xl font-bold text-[#1a1917] text-center mb-14">
             How it works
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {[
               {
-                n: "01",
-                title: "Register a sender",
-                body: "Add your email address and verify it with a one-time code. Your identity is tied to an Ed25519 key pair.",
+                n: "1",
+                title: "Verify your email",
+                body: "Add your email address and confirm it with a quick code. Takes about 30 seconds.",
               },
               {
-                n: "02",
-                title: "Stamp your email",
-                body: "Pass a Cloudflare Turnstile CAPTCHA — proving you're human. A cryptographic stamp is generated and signed.",
+                n: "2",
+                title: "Stamp before you send",
+                body: "Click once in Gmail. We run a quick human check to keep stamps trustworthy, then generate your badge.",
               },
               {
-                n: "03",
-                title: "Recipient verifies",
-                body: "They click the badge link. The server checks the signature, expiry, and revocation status in real time.",
+                n: "3",
+                title: "They click to confirm",
+                body: "Your recipient sees a badge in the email and can verify it's genuinely from you — right in their browser.",
               },
             ].map(({ n, title, body }) => (
               <div key={n} className="flex flex-col gap-3">
-                <span className="font-mono text-[11px] text-[#818cf8]/40 tracking-widest">{n}</span>
-                <h3 className="text-[15px] font-semibold text-[#ede9ff]">{title}</h3>
-                <p className="text-[13px] text-[#4e4a65] leading-relaxed">{body}</p>
+                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-[14px] font-bold flex items-center justify-center">
+                  {n}
+                </div>
+                <h3 className="font-semibold text-[16px] text-[#1a1917]">{title}</h3>
+                <p className="text-[14px] text-[#6b6560] leading-relaxed">{body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="border-t border-[rgba(129,140,248,0.08)] py-20 px-6 text-center">
-        <p className="font-mono text-[11px] tracking-[0.12em] uppercase text-[#818cf8]/50 mb-4">
-          Free · Open source · MIT licensed
-        </p>
-        <h2 className="text-3xl font-bold text-[#f0eeff] mb-8">
-          Start signing today.
+      {/* Bottom CTA */}
+      <section className="py-20 px-6 text-center border-t border-[#e5e2d8]">
+        <h2 className="font-serif text-4xl font-bold text-[#1a1917] mb-4">
+          Ready to start?
         </h2>
-        <Link
-          href="/signup"
-          className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium px-6 py-3 rounded-lg transition-colors tracking-wide"
-        >
-          Create free account
-        </Link>
+        <p className="text-[15px] text-[#6b6560] mb-8">Free, open source, and takes two minutes to set up.</p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/signup"
+            className="bg-[#4338ca] hover:bg-[#3730a3] text-white text-[15px] font-medium px-7 py-3 rounded-xl transition-colors"
+          >
+            Create free account
+          </Link>
+          <Link
+            href="/login"
+            className="text-[15px] text-[#6b6560] hover:text-[#1a1917] transition-colors"
+          >
+            Sign in →
+          </Link>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[rgba(129,140,248,0.06)] py-6 px-6 sm:px-10 flex items-center justify-between">
-        <span className="font-mono text-[10px] text-[#2e2b42] tracking-wide">
-          © 2026 SignedInbox
-        </span>
+      <footer className="border-t border-[#e5e2d8] py-6 px-6 sm:px-10 flex items-center justify-between">
+        <span className="text-[12px] text-[#b5b0a6]">© 2026 SignedInbox · MIT licensed</span>
         <div className="flex items-center gap-4">
-          <Link href="/login" className="font-mono text-[10px] text-[#3a3655] hover:text-[#818cf8] transition-colors">
-            Sign in
-          </Link>
-          <Link href="/signup" className="font-mono text-[10px] text-[#3a3655] hover:text-[#818cf8] transition-colors">
-            Sign up
-          </Link>
+          <Link href="/login" className="text-[12px] text-[#b5b0a6] hover:text-[#1a1917] transition-colors">Sign in</Link>
+          <Link href="/signup" className="text-[12px] text-[#b5b0a6] hover:text-[#1a1917] transition-colors">Sign up</Link>
         </div>
       </footer>
 

@@ -1,27 +1,26 @@
 import type { Metadata } from "next";
-import { Sora, JetBrains_Mono } from "next/font/google";
+import { Lora, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const sora = Sora({
+const lora = Lora({
   subsets: ["latin"],
-  variable: "--font-sora",
+  variable: "--font-lora",
   display: "swap",
 });
 
-const mono = JetBrains_Mono({
-  weight: ["400", "500"],
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-jetbrains",
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "SignedInbox — Cryptographically Verified Email Stamps",
-  description: "Prove you're a real human sender. SignedInbox stamps your emails with an Ed25519 digital signature — independently verifiable by any recipient.",
+  title: "SignedInbox — Verified Email Stamps",
+  description: "Attach a verified stamp to any email you send. Recipients confirm it's really from you in one click — no app needed.",
   metadataBase: new URL("https://signedinbox.com"),
   openGraph: {
     title: "SignedInbox",
-    description: "Cryptographically verified email identity stamps",
+    description: "Verified email stamps — prove every email is really from you",
     url: "https://signedinbox.com",
     siteName: "SignedInbox",
     type: "website",
@@ -34,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${sora.variable} ${mono.variable}`}>
+    <html lang="en" className={`${lora.variable} ${dmSans.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );
