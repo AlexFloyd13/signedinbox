@@ -45,7 +45,7 @@ export default function SignupPage() {
             <defs>
               <linearGradient id="suBg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stopColor="#6b9e7e" />
-                <stop offset="100%" stopColor="#2d5040" />
+                <stop offset="100%" stopColor="#477857" />
               </linearGradient>
               <linearGradient id="suNib" x1="64" y1="25" x2="64" y2="113" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stopColor="rgba(255,255,255,0.98)" />
@@ -55,8 +55,8 @@ export default function SignupPage() {
             <circle cx="64" cy="64" r="64" fill="url(#suBg)" />
             <circle cx="64" cy="64" r="55" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
             <path d="M64 25 L92 69 L64 113 L36 69 Z" fill="url(#suNib)" />
-            <path d="M64 49 L64 113" stroke="#2d5040" strokeWidth="5" strokeLinecap="round" />
-            <ellipse cx="64" cy="51" rx="10" ry="7" fill="#2d5040" />
+            <path d="M64 49 L64 113" stroke="#477857" strokeWidth="5" strokeLinecap="round" />
+            <ellipse cx="64" cy="51" rx="10" ry="7" fill="#477857" />
             <path d="M44 83 Q54 91 64 93 Q74 91 84 83" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
           </svg>
           <span className="font-bold text-[16px] text-[#1a1917]">SignedInbox</span>
@@ -76,7 +76,7 @@ export default function SignupPage() {
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full border border-[#e5e2d8] focus:border-[#3d6b52] rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] placeholder:text-[#c5c0b8] outline-none transition-colors bg-white"
+              className="w-full border border-[#e5e2d8] focus:border-[#5a9471] rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] placeholder:text-[#c5c0b8] outline-none transition-colors bg-white"
             />
           </div>
           <div>
@@ -87,7 +87,7 @@ export default function SignupPage() {
               onChange={e => setPassword(e.target.value)}
               required
               minLength={8}
-              className="w-full border border-[#e5e2d8] focus:border-[#3d6b52] rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
+              className="w-full border border-[#e5e2d8] focus:border-[#5a9471] rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
             />
           </div>
           <div>
@@ -98,7 +98,7 @@ export default function SignupPage() {
               onChange={e => setConfirmPassword(e.target.value)}
               required
               minLength={8}
-              className="w-full border border-[#e5e2d8] focus:border-[#3d6b52] rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
+              className="w-full border border-[#e5e2d8] focus:border-[#5a9471] rounded-lg px-3.5 py-2.5 text-[14px] text-[#1a1917] outline-none transition-colors bg-white"
             />
           </div>
 
@@ -107,7 +107,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#3d6b52] hover:bg-[#2d5040] disabled:opacity-50 text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors mt-1"
+            className="w-full bg-[#5a9471] hover:bg-[#477857] disabled:opacity-50 text-white rounded-lg py-2.5 text-[14px] font-medium transition-colors mt-1"
           >
             {loading ? "Creating account…" : "Create account"}
           </button>
@@ -115,7 +115,7 @@ export default function SignupPage() {
 
         <div className="mt-6 pt-5 border-t border-[#f0ede6] text-center text-[13px] text-[#9a958e]">
           Already have an account?{" "}
-          <Link href="/login" className="text-[#3d6b52] hover:text-[#2d5040] font-medium transition-colors">
+          <Link href="/login" className="text-[#5a9471] hover:text-[#477857] font-medium transition-colors">
             Sign in
           </Link>
         </div>

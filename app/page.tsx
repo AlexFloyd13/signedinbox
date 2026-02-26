@@ -5,7 +5,7 @@ const SealIcon = ({ size = 24 }: { size?: number }) => (
     <defs>
       <linearGradient id="sealBg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#6b9e7e" />
-        <stop offset="100%" stopColor="#2d5040" />
+        <stop offset="100%" stopColor="#477857" />
       </linearGradient>
       <linearGradient id="sealNib" x1="64" y1="25" x2="64" y2="113" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="rgba(255,255,255,0.98)" />
@@ -15,8 +15,8 @@ const SealIcon = ({ size = 24 }: { size?: number }) => (
     <circle cx="64" cy="64" r="64" fill="url(#sealBg)" />
     <circle cx="64" cy="64" r="55" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
     <path d="M64 25 L92 69 L64 113 L36 69 Z" fill="url(#sealNib)" />
-    <path d="M64 49 L64 113" stroke="#2d5040" strokeWidth="5" strokeLinecap="round" />
-    <ellipse cx="64" cy="51" rx="10" ry="7" fill="#2d5040" />
+    <path d="M64 49 L64 113" stroke="#477857" strokeWidth="5" strokeLinecap="round" />
+    <ellipse cx="64" cy="51" rx="10" ry="7" fill="#477857" />
     <path d="M44 83 Q54 91 64 93 Q74 91 84 83" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
   </svg>
 );
@@ -40,7 +40,7 @@ export default function Home() {
           </Link>
           <Link
             href="/signup"
-            className="text-[14px] font-medium bg-[#3d6b52] text-white px-4 py-2 rounded-lg hover:bg-[#2d5040] transition-colors"
+            className="text-[14px] font-medium bg-[#5a9471] text-white px-4 py-2 rounded-lg hover:bg-[#477857] transition-colors"
           >
             Get started
           </Link>
@@ -62,7 +62,7 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row items-center gap-3 mb-16">
           <Link
             href="/signup"
-            className="bg-[#3d6b52] hover:bg-[#2d5040] text-white text-[15px] font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center"
+            className="bg-[#5a9471] hover:bg-[#477857] text-white text-[15px] font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center"
           >
             Create free account
           </Link>
@@ -103,14 +103,14 @@ export default function Home() {
             </div>
             {/* The stamp badge */}
             <div className="mx-5 mb-5 rounded-xl border border-[#b8d4c0] bg-[#f0f7f3] p-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#3d6b52] flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#5a9471] flex items-center justify-center shrink-0">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M2 7l3.5 3.5L12 2.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="min-w-0">
                 <div className="text-[13px] font-semibold text-[#1e4533]">Verified by SignedInbox</div>
-                <div className="text-[11px] text-[#3d6b52] truncate">alex@floyd.dev · Stamp valid until Mar 28</div>
+                <div className="text-[11px] text-[#5a9471] truncate">alex@floyd.dev · Stamp valid until Mar 28</div>
               </div>
               <span className="text-[11px] text-[#4d7c63] shrink-0 border border-[#b8d4c0] rounded-md px-2 py-0.5 ml-auto">
                 Verify →
@@ -148,7 +148,7 @@ export default function Home() {
               },
             ].map(({ n, title, body }) => (
               <div key={n} className="flex flex-col gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#3d6b52] text-white text-[14px] font-bold flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[#5a9471] text-white text-[14px] font-bold flex items-center justify-center">
                   {n}
                 </div>
                 <h3 className="font-semibold text-[16px] text-[#1a1917]">{title}</h3>
@@ -182,7 +182,7 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/signup"
-            className="bg-[#3d6b52] hover:bg-[#2d5040] text-white text-[15px] font-medium px-7 py-3 rounded-xl transition-colors"
+            className="bg-[#5a9471] hover:bg-[#477857] text-white text-[15px] font-medium px-7 py-3 rounded-xl transition-colors"
           >
             Create free account
           </Link>

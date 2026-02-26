@@ -347,7 +347,7 @@ export default function DashboardPage() {
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-              tab === t ? "border-[#3d6b52] text-white" : "border-transparent text-[#9a958e] hover:text-[#3a3830]"
+              tab === t ? "border-[#5a9471] text-white" : "border-transparent text-[#9a958e] hover:text-[#3a3830]"
             }`}
           >
             {t === "stamp" ? "New Stamp" : t.charAt(0).toUpperCase() + t.slice(1)}
@@ -362,7 +362,7 @@ export default function DashboardPage() {
             <div className="flex flex-col items-center justify-center py-16 gap-3 text-[#b5b0a6]">
               <span className="text-4xl">✉️</span>
               <p className="text-sm">No senders yet — add one in Settings</p>
-              <button onClick={() => setTab("settings")} className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors">
+              <button onClick={() => setTab("settings")} className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors">
                 Go to Settings
               </button>
             </div>
@@ -383,7 +383,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Sender *</label>
                   <select
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#3d6b52]"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#5a9471]"
                     value={selectedSender}
                     onChange={(e) => setSelectedSender(e.target.value)}
                   >
@@ -398,7 +398,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Recipient Email (optional)</label>
                   <input
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                     placeholder="recipient@example.com"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
@@ -408,7 +408,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Subject Hint (optional)</label>
                   <input
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                     placeholder="e.g. Job application, Invoice #1234"
                     maxLength={100}
                     value={subjectHint}
@@ -419,7 +419,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs text-[#9a958e]">Email Body (optional — cryptographically binds stamp to this content)</label>
                   <textarea
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52] min-h-[80px] resize-y"
+                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471] min-h-[80px] resize-y"
                     placeholder="Paste your email body text to bind this stamp to the exact content…"
                     value={emailBodyText}
                     onChange={(e) => setEmailBodyText(e.target.value)}
@@ -442,7 +442,7 @@ export default function DashboardPage() {
                   ) : (
                     <div className="text-xs text-[#9a958e] bg-white border border-[#e5e2d8] rounded-lg px-3 py-2">
                       Turnstile not configured — dev mode
-                      <button className="ml-2 text-[#3d6b52] underline" onClick={() => setTurnstileToken("dev-token")}>
+                      <button className="ml-2 text-[#5a9471] underline" onClick={() => setTurnstileToken("dev-token")}>
                         Use dev token
                       </button>
                     </div>
@@ -453,7 +453,7 @@ export default function DashboardPage() {
                   <button
                     onClick={generateStamp}
                     disabled={!selectedSender || (!turnstileToken && !!siteKey) || generating}
-                    className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
+                    className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
                   >
                     {generating ? "Generating…" : "Generate Stamp"}
                   </button>
@@ -463,7 +463,7 @@ export default function DashboardPage() {
               {stampResult && (
                 <div className="border-t border-[#e5e2d8] pt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[#3d6b52] bg-[#f0f7f3] border-[#b8d4c0] px-2 py-0.5 rounded-full text-xs border">✓ Stamp Created</span>
+                    <span className="text-[#5a9471] bg-[#f0f7f3] border-[#b8d4c0] px-2 py-0.5 rounded-full text-xs border">✓ Stamp Created</span>
                     <span className="text-xs text-[#9a958e]">Expires {formatDate(stampResult.expires_at)}</span>
                     {localContentHash && (
                       <span className="text-xs text-[#9a958e] font-mono">Content hash: {localContentHash.slice(0, 16)}…</span>
@@ -494,7 +494,7 @@ export default function DashboardPage() {
                       href={stampResult.stamp_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", borderRadius: "6px", background: "#3d6b52", color: "#fff", fontSize: "12px", fontFamily: "system-ui, sans-serif", textDecoration: "none" }}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", borderRadius: "6px", background: "#5a9471", color: "#fff", fontSize: "12px", fontFamily: "system-ui, sans-serif", textDecoration: "none" }}
                     >
                       ✍ SignedInbox Verified
                     </a>
@@ -529,7 +529,7 @@ export default function DashboardPage() {
                       ) : new Date(stamp.expires_at) < new Date() ? (
                         <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#6b6560] bg-zinc-400/10 border-zinc-400/20">Expired</span>
                       ) : (
-                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#3d6b52] bg-[#f0f7f3] border-[#b8d4c0]">Valid</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#5a9471] bg-[#f0f7f3] border-[#b8d4c0]">Valid</span>
                       )}
                       <span className="text-xs text-[#b5b0a6]">{stamp.client_type}</span>
                     </div>
@@ -567,13 +567,13 @@ export default function DashboardPage() {
             )}
             <div className="grid grid-cols-2 gap-3">
               <input
-                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
+                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                 placeholder="Display name *"
                 value={newSenderName}
                 onChange={(e) => setNewSenderName(e.target.value)}
               />
               <input
-                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
+                className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                 placeholder="email@example.com *"
                 type="email"
                 value={newSenderEmail}
@@ -584,7 +584,7 @@ export default function DashboardPage() {
               <button
                 onClick={addSender}
                 disabled={!newSenderName.trim() || !newSenderEmail.trim() || addingSender}
-                className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
+                className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
               >
                 {addingSender ? "Adding…" : "Add Sender"}
               </button>
@@ -598,7 +598,7 @@ export default function DashboardPage() {
                         <div className="flex items-center gap-2">
                           <span className="text-[#1a1917] text-sm">{s.display_name}</span>
                           {s.verified_email ? (
-                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#3d6b52] border border-[#b8d4c0]">✓ Verified</span>
+                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#f0f7f3] text-[#5a9471] border border-[#b8d4c0]">✓ Verified</span>
                           ) : (
                             <span className="text-xs px-1.5 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">Unverified</span>
                           )}
@@ -622,7 +622,7 @@ export default function DashboardPage() {
                         )}
                         <div className="flex gap-2">
                           <input
-                            className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
+                            className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                             placeholder="Enter 6-digit code"
                             maxLength={6}
                             value={verificationCodeInput}
@@ -631,7 +631,7 @@ export default function DashboardPage() {
                           <button
                             onClick={() => submitVerificationCode(s.id)}
                             disabled={verificationCodeInput.length !== 6 || verifyingEmail}
-                            className="text-sm px-3 py-1.5 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
+                            className="text-sm px-3 py-1.5 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
                           >
                             {verifyingEmail ? "…" : "Confirm"}
                           </button>
@@ -654,14 +654,14 @@ export default function DashboardPage() {
           <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-4">
             <div>
               <h2 className="text-sm font-semibold text-[#1a1917]">API Keys</h2>
-              <p className="text-xs text-[#9a958e] mt-1">For programmatic access. Keys are prefixed with <code className="text-[#3d6b52]">si_live_</code> and shown once.</p>
+              <p className="text-xs text-[#9a958e] mt-1">For programmatic access. Keys are prefixed with <code className="text-[#5a9471]">si_live_</code> and shown once.</p>
             </div>
             {keyError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm text-red-400">{keyError}</div>
             )}
             {newKeyValue && (
               <div className="bg-[#f0f7f3] border border-[#b8d4c0] rounded-lg px-4 py-3 flex flex-col gap-2">
-                <p className="text-xs text-[#3d6b52] font-medium">Key created — copy it now, it won&apos;t be shown again</p>
+                <p className="text-xs text-[#5a9471] font-medium">Key created — copy it now, it won&apos;t be shown again</p>
                 <div className="flex items-center gap-2">
                   <code className="text-xs text-white font-mono break-all flex-1">{newKeyValue}</code>
                   <button onClick={() => copyToClipboard(newKeyValue, "new-key")} className="shrink-0 text-xs text-[#6b6560] hover:text-white transition-colors">
@@ -672,7 +672,7 @@ export default function DashboardPage() {
             )}
             <div className="flex gap-3">
               <input
-                className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#3d6b52]"
+                className="flex-1 bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-white placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471]"
                 placeholder="Key name (e.g. Chrome Extension)"
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
@@ -680,7 +680,7 @@ export default function DashboardPage() {
               <button
                 onClick={addApiKey}
                 disabled={!newKeyName.trim() || addingKey}
-                className="text-sm px-4 py-2 rounded-lg bg-[#3d6b52] text-[#1a1917] font-medium hover:bg-[#2d5040] transition-colors disabled:opacity-40"
+                className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-[#1a1917] font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
               >
                 {addingKey ? "Creating…" : "Create Key"}
               </button>
