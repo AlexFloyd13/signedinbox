@@ -32,7 +32,7 @@ export default function SignupPage() {
     if (error) {
       setError(error.message);
     } else {
-      router.push("/dashboard");
+      router.push("/onboard");
     }
     setLoading(false);
   }
