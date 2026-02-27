@@ -440,6 +440,19 @@ export default function DashboardPage() {
     } catch { /* ignore */ }
   }
 
+  async function copyBadgeAsRichText(html: string, fallbackText: string, field: string) {
+    try {
+      const htmlBlob = new Blob([html], { type: "text/html" });
+      const textBlob = new Blob([fallbackText], { type: "text/plain" });
+      await navigator.clipboard.write([new ClipboardItem({ "text/html": htmlBlob, "text/plain": textBlob })]);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      // Fallback for browsers that don't support ClipboardItem
+      await copyToClipboard(fallbackText, field);
+    }
+  }
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -691,29 +704,26 @@ export default function DashboardPage() {
                     <span className="text-xs text-[#9a958e]">Expires {formatDate(stampResult.expires_at)}</span>
                   </div>
 
-                  {/* Copy Link — primary action */}
-                  <div className="flex flex-col gap-2 bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-4 py-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-xs font-medium text-[#3a3830]">Verification text</span>
-                      <button
-                        onClick={() => copyToClipboard(stampResult.badge_text, "url")}
-                        className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors"
-                      >
-                        {copiedField === "url" ? "Copied!" : "Copy Link"}
-                      </button>
-                    </div>
-                    <p className="text-xs text-[#9a958e] leading-relaxed">{stampResult.badge_text}</p>
+                  {/* Visual badge preview + copy as rich HTML */}
+                  <div className="flex flex-col gap-2">
+                    <div className="bg-white border border-[#e5e2d8] rounded-lg p-4 overflow-hidden" dangerouslySetInnerHTML={{ __html: stampResult.badge_html }} />
+                    <button
+                      onClick={() => copyBadgeAsRichText(stampResult.badge_html, stampResult.badge_text, "badge")}
+                      className="w-full text-sm px-4 py-2.5 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors"
+                    >
+                      {copiedField === "badge" ? "Copied! Paste into your email." : "Copy Badge"}
+                    </button>
+                    <p className="text-xs text-[#b5b0a6]">Paste at the bottom of your email. Works in Gmail, Outlook, and Apple Mail.</p>
                   </div>
-                  <p className="text-xs text-[#b5b0a6]">Paste at the bottom of your email. Works in Gmail and any email client.</p>
 
-                  {/* HTML badge — secondary, for Outlook/signatures */}
-                  <div className="flex items-center justify-between bg-white border border-[#e5e2d8] rounded-lg px-3 py-2.5">
+                  {/* Plain text fallback */}
+                  <div className="flex items-center justify-between bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-3 py-2.5">
                     <div className="flex flex-col gap-0.5 min-w-0">
-                      <span className="text-xs font-medium text-[#3a3830]">HTML badge</span>
-                      <span className="text-xs text-[#b5b0a6]">For Outlook, Apple Mail, or email signatures</span>
+                      <span className="text-xs font-medium text-[#3a3830]">Plain text link</span>
+                      <span className="text-xs text-[#b5b0a6] truncate">{stampResult.badge_text}</span>
                     </div>
-                    <button onClick={() => copyToClipboard(stampResult.badge_html, "html")} className="shrink-0 ml-3 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
-                      {copiedField === "html" ? "Copied!" : "Copy HTML"}
+                    <button onClick={() => copyToClipboard(stampResult.badge_text, "url")} className="shrink-0 ml-3 text-xs text-[#6b6560] hover:text-[#1a1917] transition-colors">
+                      {copiedField === "url" ? "Copied!" : "Copy"}
                     </button>
                   </div>
                 </div>

@@ -3,7 +3,7 @@
  * Content scripts communicate with this via chrome.runtime.sendMessage.
  */
 
-import { signInWithPassword, refreshSession, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/auth.js';
+import { signInWithPassword, signInWithIdToken, refreshSession, SUPABASE_URL, SUPABASE_ANON_KEY, GOOGLE_CLIENT_ID } from '../lib/auth.js';
 import { getAuth, setAuth, clearAuth, setActiveSenderId } from '../lib/storage.js';
 import { getSenders, claimAuthEmail, createStamp } from '../lib/api.js';
 
@@ -150,11 +150,22 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         }
 
         case 'SIGN_IN_GOOGLE': {
+          // Generate nonce for replay protection
+          const rawNonce = crypto.randomUUID();
+          const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(rawNonce));
+          const hashedNonce = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+
           const redirectUrl = chrome.identity.getRedirectURL('oauth2');
 
-          const authUrl = new URL(`${SUPABASE_URL}/auth/v1/authorize`);
-          authUrl.searchParams.set('provider', 'google');
-          authUrl.searchParams.set('redirect_to', redirectUrl);
+          // Go directly to Google (not through Supabase) so the OAuth screen
+          // shows Google's domain instead of the raw Supabase project URL.
+          const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+          authUrl.searchParams.set('client_id', GOOGLE_CLIENT_ID);
+          authUrl.searchParams.set('response_type', 'id_token');
+          authUrl.searchParams.set('redirect_uri', redirectUrl);
+          authUrl.searchParams.set('scope', 'openid email profile');
+          authUrl.searchParams.set('nonce', hashedNonce);
+          authUrl.searchParams.set('prompt', 'select_account');
 
           const responseUrl: string = await new Promise((resolve, reject) => {
             chrome.identity.launchWebAuthFlow(
@@ -167,33 +178,18 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
             );
           });
 
+          // Extract id_token from the URL fragment
           const hash = new URL(responseUrl).hash.slice(1);
           const params = new URLSearchParams(hash);
-          const accessToken = params.get('access_token');
-          const refreshToken = params.get('refresh_token');
+          const idToken = params.get('id_token');
+          if (!idToken) throw new Error('No ID token received from Google');
 
-          if (!accessToken || !refreshToken) throw new Error('OAuth response missing tokens');
-
-          const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              apikey: SUPABASE_ANON_KEY,
-            },
-          });
-          if (!userRes.ok) throw new Error('Failed to fetch user after OAuth');
-
-          const userData = await userRes.json();
-          const auth = {
-            accessToken,
-            refreshToken,
-            email: userData.email as string,
-            userId: userData.id as string,
-          };
-
+          // Exchange the Google ID token for a Supabase session
+          const auth = await signInWithIdToken(idToken, rawNonce);
           await setAuth(auth);
 
           // Auto-provision verified sender from Google email — no manual verification needed
-          await claimAuthEmail(accessToken).catch(() => null);
+          await claimAuthEmail(auth.accessToken).catch(() => null);
 
           sendResponse({ success: true, email: auth.email });
           break;

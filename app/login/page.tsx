@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 const LOGO_SVG = (
   <svg width="28" height="28" viewBox="0 0 128 128" fill="none">
@@ -61,19 +61,31 @@ export default function LoginPage() {
   async function handleGoogleLogin() {
     setGoogleLoading(true);
     setError("");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: { prompt: "select_account" },
-      },
-    });
-    if (error) {
-      setError(error.message);
+    try {
+      const rawNonce = crypto.randomUUID();
+      const state = crypto.randomUUID();
+      const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawNonce));
+      const hashedNonce = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+      sessionStorage.setItem("google_auth_nonce", rawNonce);
+      sessionStorage.setItem("google_auth_state", state);
+      sessionStorage.setItem("google_auth_redirect", "/dashboard");
+
+      const params = new URLSearchParams({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        redirect_uri: `${window.location.origin}/auth/google/callback`,
+        response_type: "id_token",
+        scope: "openid email profile",
+        nonce: hashedNonce,
+        state,
+        prompt: "select_account",
+      });
+
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+    } catch {
+      setError("Failed to start Google sign-in.");
       setGoogleLoading(false);
     }
-    // On success Supabase redirects the browser — no need to setLoading(false)
   }
 
   return (

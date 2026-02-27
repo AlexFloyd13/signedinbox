@@ -47,6 +47,9 @@ if (!process.env.SUPABASE_ANON_KEY && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 if (!process.env.TURNSTILE_SITE_KEY && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
   process.env.TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 }
+if (!process.env.GOOGLE_CLIENT_ID && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
+  process.env.GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+}
 
 // esbuild replaces these global identifiers at bundle time.
 // Corresponding `declare const` statements in each TS file satisfy the compiler.
@@ -54,6 +57,7 @@ const define = {
   __SUPABASE_URL__: JSON.stringify(process.env.SUPABASE_URL || 'http://localhost:54321'),
   __SUPABASE_ANON_KEY__: JSON.stringify(process.env.SUPABASE_ANON_KEY || ''),
   __TURNSTILE_SITE_KEY__: JSON.stringify(process.env.TURNSTILE_SITE_KEY || ''),
+  __GOOGLE_CLIENT_ID__: JSON.stringify(process.env.GOOGLE_CLIENT_ID || ''),
 };
 
 const sharedOptions = {
