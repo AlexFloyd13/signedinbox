@@ -53,12 +53,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Coming soon banner */}
-      <div className="bg-[#1a1917] text-white text-[13px] text-center py-2 px-4">
-        <span className="text-[#a0c8b0]">Chrome extension</span>
-        {" "}coming soon.
-      </div>
-
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center text-center px-6 pt-20 pb-24">
 
