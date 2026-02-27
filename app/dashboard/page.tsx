@@ -562,38 +562,8 @@ export default function DashboardPage() {
                     </div>
                   )}
 
-                  {/* Mass email — row above bind/generate */}
                   <div>
-                    <div className="flex mb-1.5">
-                      <label className="flex items-center gap-1.5 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={isMassSend}
-                          onChange={(e) => { setIsMassSend(e.target.checked); if (!e.target.checked) setDeclaredRecipientCount(""); }}
-                          className="w-3.5 h-3.5 rounded border-[#d0cdc6] accent-[#9a958e]"
-                        />
-                        <span className="text-xs text-[#b5b0a6]">Mass email</span>
-                        {isMassSend && (
-                          <input
-                            type="number"
-                            min="2"
-                            className="w-20 bg-white border border-[#e5e2d8] rounded-md px-2 py-0.5 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e]"
-                            placeholder="# recipients"
-                            value={declaredRecipientCount}
-                            onChange={(e) => setDeclaredRecipientCount(e.target.value)}
-                          />
-                        )}
-                        <div className="group/tip relative">
-                          <span className="text-[#d0cdc6] cursor-help text-xs">ⓘ</span>
-                          <div className="absolute bottom-full right-0 mb-2 w-72 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
-                            Check this if sending to multiple recipients. Multiple verifications won&apos;t trigger a reuse warning. <span className="text-amber-300 font-medium">Accounts using single-recipient stamps as mass emails without this checked will be flagged.</span>
-                            <div className="absolute top-full right-4 border-4 border-transparent border-t-[#1a1917]" />
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-
-                    {/* Bind toggle + generate on same row */}
+                    {/* Bind toggle left, mass email + generate stacked right */}
                     <div className="flex items-center justify-between gap-2">
                       <button
                         type="button"
@@ -606,13 +576,40 @@ export default function DashboardPage() {
                           <span className="text-[#5a9471] font-medium">✓</span>
                         )}
                       </button>
-                      <button
-                        onClick={generateStamp}
-                        disabled={!selectedSender || (!!siteKey && !turnstileToken) || generating}
-                        className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
-                      >
-                        {generating ? "Generating…" : "Generate Stamp"}
-                      </button>
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <label className="flex items-center gap-1.5 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={isMassSend}
+                            onChange={(e) => { setIsMassSend(e.target.checked); if (!e.target.checked) setDeclaredRecipientCount(""); }}
+                            className="w-3.5 h-3.5 rounded border-[#d0cdc6] accent-[#9a958e]"
+                          />
+                          <span className="text-xs text-[#b5b0a6]">Mass email</span>
+                          <input
+                            type="number"
+                            min="2"
+                            disabled={!isMassSend}
+                            className="w-16 bg-white border border-[#e5e2d8] rounded-md px-2 py-0.5 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e] disabled:opacity-30"
+                            placeholder="# rcpts"
+                            value={declaredRecipientCount}
+                            onChange={(e) => setDeclaredRecipientCount(e.target.value)}
+                          />
+                          <div className="group/tip relative">
+                            <span className="text-[#d0cdc6] cursor-help text-xs">ⓘ</span>
+                            <div className="absolute bottom-full right-0 mb-2 w-72 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+                              Check this if sending to multiple recipients. Multiple verifications won&apos;t trigger a reuse warning. <span className="text-amber-300 font-medium">Accounts using single-recipient stamps as mass emails without this checked will be flagged.</span>
+                              <div className="absolute top-full right-4 border-4 border-transparent border-t-[#1a1917]" />
+                            </div>
+                          </div>
+                        </label>
+                        <button
+                          onClick={generateStamp}
+                          disabled={!selectedSender || (!!siteKey && !turnstileToken) || generating}
+                          className="text-sm px-4 py-2 rounded-lg bg-[#5a9471] text-white font-medium hover:bg-[#477857] transition-colors disabled:opacity-40"
+                        >
+                          {generating ? "Generating…" : "Generate Stamp"}
+                        </button>
+                      </div>
                     </div>
                     {bindExpanded && (
                       <div className="flex flex-col gap-3 pl-4 border-l-2 border-[#e5e2d8] mt-2">
