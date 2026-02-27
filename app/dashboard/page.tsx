@@ -104,6 +104,7 @@ export default function DashboardPage() {
   const [localContentHash, setLocalContentHash] = useState<string | null>(null);
   const [isMassSend, setIsMassSend] = useState(false);
   const [declaredRecipientCount, setDeclaredRecipientCount] = useState("");
+  const [senderDropdownOpen, setSenderDropdownOpen] = useState(false);
 
   const [verifyingCode, setVerifyingCode] = useState<string | null>(null);
   const [verificationCode, setVerificationCode] = useState("");
@@ -432,28 +433,55 @@ export default function DashboardPage() {
               )}
 
               <div className="flex flex-col gap-3">
+
+                {/* Sender — custom dropdown */}
                 <div className="flex flex-col gap-2">
                   <label className="text-xs text-[#9a958e]">Sender *</label>
-                  <select
-                    className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] focus:outline-none focus:border-[#5a9471]"
-                    value={selectedSender}
-                    onChange={(e) => setSelectedSender(e.target.value)}
-                  >
-                    {senders.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.display_name} &lt;{s.email}&gt;{!s.verified_email ? " (unverified)" : ""}
-                      </option>
-                    ))}
-                  </select>
-
-                  {!addEmailOpen ? (
+                  <div className="relative">
                     <button
-                      onClick={() => { setAddEmailOpen(true); setAddEmailStep("form"); setAddEmailError(null); }}
-                      className="self-start text-[12px] text-[#3d6b52] hover:text-[#2d5040] font-medium transition-colors"
+                      type="button"
+                      onClick={() => setSenderDropdownOpen((o) => !o)}
+                      className="w-full flex items-center justify-between bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-left hover:border-[#5a9471] focus:outline-none focus:border-[#5a9471] transition-colors"
                     >
-                      + Add verified email
+                      <span className={selectedSender && senders.find(s => s.id === selectedSender) ? "text-[#1a1917]" : "text-[#c5c0b8]"}>
+                        {(() => {
+                          const s = senders.find(s => s.id === selectedSender);
+                          return s ? `${s.display_name} <${s.email}>` : "Select sender…";
+                        })()}
+                      </span>
+                      <span className={`text-[#9a958e] text-xs ml-2 transition-transform duration-150 ${senderDropdownOpen ? "rotate-180" : ""}`}>▼</span>
                     </button>
-                  ) : (
+
+                    {senderDropdownOpen && (
+                      <>
+                        {/* Backdrop to close on outside click */}
+                        <div className="fixed inset-0 z-10" onClick={() => setSenderDropdownOpen(false)} />
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#e5e2d8] rounded-xl shadow-lg z-20 overflow-hidden">
+                          {senders.map((s) => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              onClick={() => { setSelectedSender(s.id); setSenderDropdownOpen(false); }}
+                              className={`w-full text-left px-4 py-2.5 hover:bg-[#f5f4ef] transition-colors ${selectedSender === s.id ? "bg-[#f0f7f3]" : ""}`}
+                            >
+                              <div className={`text-sm ${selectedSender === s.id ? "text-[#3d6b52] font-medium" : "text-[#1a1917]"}`}>{s.display_name}</div>
+                              <div className="text-xs text-[#9a958e]">{s.email}{!s.verified_email ? " · unverified" : ""}</div>
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => { setSenderDropdownOpen(false); setAddEmailOpen(true); setAddEmailStep("form"); setAddEmailError(null); }}
+                            className="w-full text-left px-4 py-2.5 text-sm text-[#5a9471] font-medium hover:bg-[#f0f7f3] transition-colors border-t border-[#e5e2d8] flex items-center gap-1.5"
+                          >
+                            + Add new sender
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Add email form */}
+                  {addEmailOpen && (
                     <div className="border border-[#e5e2d8] rounded-xl p-4 flex flex-col gap-3 bg-[#fafaf8]">
                       {addEmailStep === "form" ? (
                         <>
@@ -480,12 +508,7 @@ export default function DashboardPage() {
                             >
                               {addEmailLoading ? "Sending…" : "Send verification code"}
                             </button>
-                            <button
-                              onClick={() => setAddEmailOpen(false)}
-                              className="px-3 py-2 text-[13px] text-[#9a958e] hover:text-[#5a5750] transition-colors"
-                            >
-                              Cancel
-                            </button>
+                            <button onClick={() => setAddEmailOpen(false)} className="px-3 py-2 text-[13px] text-[#9a958e] hover:text-[#5a5750] transition-colors">Cancel</button>
                           </div>
                         </>
                       ) : (
@@ -512,12 +535,7 @@ export default function DashboardPage() {
                             >
                               {addEmailLoading ? "Verifying…" : "Verify"}
                             </button>
-                            <button
-                              onClick={() => setAddEmailStep("form")}
-                              className="px-3 py-2 text-[13px] text-[#9a958e] hover:text-[#5a5750] transition-colors"
-                            >
-                              Back
-                            </button>
+                            <button onClick={() => setAddEmailStep("form")} className="px-3 py-2 text-[13px] text-[#9a958e] hover:text-[#5a5750] transition-colors">Back</button>
                           </div>
                         </>
                       )}
@@ -525,7 +543,7 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                {/* Bind to content — collapsed by default */}
+                {/* Bind to content — right below sender */}
                 <div className="flex flex-col gap-2">
                   <button
                     type="button"
@@ -573,6 +591,7 @@ export default function DashboardPage() {
                   )}
                 </div>
 
+                {/* Human verification */}
                 {siteKey && (
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-[#9a958e]">Human Verification *</label>
@@ -589,42 +608,34 @@ export default function DashboardPage() {
                   </div>
                 )}
 
-                {/* Mass send toggle */}
-                <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2.5 cursor-pointer group">
+                {/* Generate — with mass email toggle directly above, right-aligned */}
+                <div className="flex flex-col items-end gap-1.5">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={isMassSend}
                       onChange={(e) => { setIsMassSend(e.target.checked); if (!e.target.checked) setDeclaredRecipientCount(""); }}
-                      className="w-4 h-4 rounded border-[#c5c0b8] accent-[#5a9471]"
+                      className="w-3.5 h-3.5 rounded border-[#d0cdc6] accent-[#9a958e]"
                     />
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-sm text-[#1a1917]">Mass email</span>
-                      <div className="group/tip relative">
-                        <span className="text-[#b5b0a6] cursor-help text-xs">ⓘ</span>
-                        <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
-                          Check this if you&apos;re sending this stamp to multiple recipients. Multiple verifications are expected for mass emails and won&apos;t trigger a reuse warning. <span className="text-amber-300 font-medium">If you use a single-recipient stamp as a mass email without checking this, your sender account will be flagged.</span>
-                          <div className="absolute top-full left-4 border-4 border-transparent border-t-[#1a1917]" />
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                  {isMassSend && (
-                    <div className="flex flex-col gap-1 pl-6">
-                      <label className="text-xs text-[#9a958e]">Number of recipients (optional)</label>
+                    <span className="text-xs text-[#b5b0a6]">Mass email</span>
+                    {isMassSend && (
                       <input
                         type="number"
                         min="2"
-                        className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-[#5a9471] w-40"
-                        placeholder="e.g. 500"
+                        className="w-20 bg-white border border-[#e5e2d8] rounded-md px-2 py-0.5 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e]"
+                        placeholder="# recipients"
                         value={declaredRecipientCount}
                         onChange={(e) => setDeclaredRecipientCount(e.target.value)}
                       />
+                    )}
+                    <div className="group/tip relative">
+                      <span className="text-[#d0cdc6] cursor-help text-xs">ⓘ</span>
+                      <div className="absolute bottom-full right-0 mb-2 w-72 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
+                        Check this if sending to multiple recipients. Multiple verifications won&apos;t trigger a reuse warning. <span className="text-amber-300 font-medium">Accounts using single-recipient stamps as mass emails without this checked will be flagged.</span>
+                        <div className="absolute top-full right-4 border-4 border-transparent border-t-[#1a1917]" />
+                      </div>
                     </div>
-                  )}
-                </div>
-
-                <div className="flex justify-end">
+                  </label>
                   <button
                     onClick={generateStamp}
                     disabled={!selectedSender || (!!siteKey && !turnstileToken) || generating}
@@ -633,6 +644,7 @@ export default function DashboardPage() {
                     {generating ? "Generating…" : "Generate Stamp"}
                   </button>
                 </div>
+
               </div>
 
               {stampResult && (
