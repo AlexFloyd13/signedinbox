@@ -56,7 +56,7 @@ export default function Home() {
       {/* Coming soon banner */}
       <div className="bg-[#1a1917] text-white text-[13px] text-center py-2 px-4">
         <span className="text-[#a0c8b0]">Chrome extension</span>
-        {" "}coming soon — create an account to get early access.
+        {" "}coming soon.
       </div>
 
       {/* Hero */}
