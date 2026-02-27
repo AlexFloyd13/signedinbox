@@ -84,7 +84,10 @@ export default function DashboardPage() {
   const [stamps, setStamps] = useState<Stamp[]>([]);
   const [stampsTotal, setStampsTotal] = useState(0);
   const [stampsLoading, setStampsLoading] = useState(false);
+  const [stampsOpen, setStampsOpen] = useState(false);
+  const [stampsPage, setStampsPage] = useState(0);
   const [revoking, setRevoking] = useState<string | null>(null);
+  const STAMPS_PER_PAGE = 5;
 
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [apiKeysLoading, setApiKeysLoading] = useState(false);
@@ -780,47 +783,85 @@ export default function DashboardPage() {
       </div>
 
       {/* History */}
-      <div className="flex flex-col gap-3">
-        {stampsLoading ? (
-          <div className="flex items-center justify-center py-16 text-[#b5b0a6] text-sm">Loading…</div>
-        ) : stamps.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-2 text-[#b5b0a6]">
-            <span className="text-4xl">✉️</span>
-            <p className="text-sm">No stamps yet</p>
+      <div className="flex flex-col gap-0">
+        <button
+          onClick={() => setStampsOpen((o) => !o)}
+          className="flex items-center justify-between w-full px-1 py-2 text-left group"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-[#1a1917]">Stamps</span>
+            {stampsTotal > 0 && (
+              <span className="text-xs text-[#b5b0a6] tabular-nums">{stampsTotal}</span>
+            )}
           </div>
-        ) : (
-          <>
-            <p className="text-xs text-[#b5b0a6]">{stampsTotal} total stamps</p>
-            {stamps.map((stamp) => (
-              <div key={stamp.id} className="bg-white border border-[#e5e2d8] rounded-xl p-4 flex items-start justify-between gap-4">
-                <div className="flex flex-col gap-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-mono text-[#6b6560]">{stamp.id.slice(0, 8)}…</span>
-                    {stamp.revoked ? (
-                      <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-red-400 bg-red-400/10 border-red-400/20">Revoked</span>
-                    ) : new Date(stamp.expires_at) < new Date() ? (
-                      <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#6b6560] bg-zinc-400/10 border-zinc-400/20">Expired</span>
-                    ) : (
-                      <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#5a9471] bg-[#f0f7f3] border-[#b8d4c0]">Valid</span>
-                    )}
-                    <span className="text-xs text-[#b5b0a6]">{stamp.client_type}</span>
-                  </div>
-                  {stamp.recipient_email && <p className="text-xs text-[#9a958e]">To: {stamp.recipient_email}</p>}
-                  {stamp.subject_hint && <p className="text-xs text-[#9a958e]">Re: {stamp.subject_hint}</p>}
-                  <p className="text-xs text-[#b5b0a6]">Created {timeAgo(stamp.created_at)} · Expires {formatDate(stamp.expires_at)}</p>
-                </div>
-                {!stamp.revoked && new Date(stamp.expires_at) > new Date() && (
-                  <button
-                    onClick={() => revokeStamp(stamp.id)}
-                    disabled={revoking === stamp.id}
-                    className="shrink-0 text-xs px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                  >
-                    {revoking === stamp.id ? "…" : "Revoke"}
-                  </button>
-                )}
+          <span className={`text-[#b5b0a6] text-xs transition-transform duration-200 ${stampsOpen ? "rotate-180" : ""}`}>▼</span>
+        </button>
+
+        {stampsOpen && (
+          <div className="flex flex-col gap-2 pt-1">
+            {stampsLoading ? (
+              <div className="flex items-center justify-center py-10 text-[#b5b0a6] text-sm">Loading…</div>
+            ) : stamps.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 gap-2 text-[#b5b0a6]">
+                <p className="text-sm">No stamps yet</p>
               </div>
-            ))}
-          </>
+            ) : (
+              <>
+                {stamps.slice(stampsPage * STAMPS_PER_PAGE, (stampsPage + 1) * STAMPS_PER_PAGE).map((stamp) => (
+                  <div key={stamp.id} className="bg-white border border-[#e5e2d8] rounded-xl p-4 flex items-start justify-between gap-4">
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-mono text-[#6b6560]">{stamp.id.slice(0, 8)}…</span>
+                        {stamp.revoked ? (
+                          <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-red-400 bg-red-400/10 border-red-400/20">Revoked</span>
+                        ) : new Date(stamp.expires_at) < new Date() ? (
+                          <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#6b6560] bg-zinc-400/10 border-zinc-400/20">Expired</span>
+                        ) : (
+                          <span className="text-xs px-2 py-0.5 rounded-full border font-medium text-[#5a9471] bg-[#f0f7f3] border-[#b8d4c0]">Valid</span>
+                        )}
+                        <span className="text-xs text-[#b5b0a6]">{stamp.client_type}</span>
+                      </div>
+                      {stamp.recipient_email && <p className="text-xs text-[#9a958e]">To: {stamp.recipient_email}</p>}
+                      {stamp.subject_hint && <p className="text-xs text-[#9a958e]">Re: {stamp.subject_hint}</p>}
+                      <p className="text-xs text-[#b5b0a6]">Created {timeAgo(stamp.created_at)} · Expires {formatDate(stamp.expires_at)}</p>
+                    </div>
+                    {!stamp.revoked && new Date(stamp.expires_at) > new Date() && (
+                      <button
+                        onClick={() => revokeStamp(stamp.id)}
+                        disabled={revoking === stamp.id}
+                        className="shrink-0 text-xs px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                      >
+                        {revoking === stamp.id ? "…" : "Revoke"}
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {/* Pagination */}
+                {stampsTotal > STAMPS_PER_PAGE && (
+                  <div className="flex items-center justify-between pt-1">
+                    <button
+                      onClick={() => setStampsPage((p) => Math.max(0, p - 1))}
+                      disabled={stampsPage === 0}
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#6b6560] hover:bg-[#f5f4ef] transition-colors disabled:opacity-30"
+                    >
+                      ← Previous
+                    </button>
+                    <span className="text-xs text-[#b5b0a6] tabular-nums">
+                      {stampsPage * STAMPS_PER_PAGE + 1}–{Math.min((stampsPage + 1) * STAMPS_PER_PAGE, stampsTotal)} of {stampsTotal}
+                    </span>
+                    <button
+                      onClick={() => setStampsPage((p) => p + 1)}
+                      disabled={(stampsPage + 1) * STAMPS_PER_PAGE >= stamps.length}
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[#e5e2d8] text-[#6b6560] hover:bg-[#f5f4ef] transition-colors disabled:opacity-30"
+                    >
+                      Next →
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         )}
       </div>
 
