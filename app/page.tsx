@@ -171,7 +171,7 @@ export default function Home() {
             {[
               {
                 n: "1",
-                title: "Sign in with Google",
+                title: "Sign in",
                 body: "Connect your Gmail account in one click. Your email address is automatically verified — no confirmation code needed.",
               },
               {
