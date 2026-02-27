@@ -92,7 +92,7 @@ function injectStampButton(compose: Element) {
         return;
       }
 
-      injectBadge(compose, response.stamp.badge_html);
+      injectBadge(compose, response.stamp.verify_url, response.stamp.expires_at);
       btn.title = 'Stamped ✓';
       setTimeout(() => { reset(); btn.title = 'Add signedinbox stamp'; }, 3000);
     } catch (err) {
@@ -104,17 +104,41 @@ function injectStampButton(compose: Element) {
   toolbar.appendChild(btn);
 }
 
-function injectBadge(compose: Element, badgeHtml: string) {
+function injectBadge(compose: Element, verifyUrl: string, expiresAt: string) {
   const body = compose.querySelector<HTMLElement>(BODY_SELECTOR);
   if (!body) return;
 
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = badgeHtml;
-  const badge = wrapper.firstElementChild as HTMLElement;
-  if (!badge) return;
+  const expiryLabel = new Date(expiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-  badge.style.display = 'inline-block';
-  badge.style.margin = '8px 0';
+  // Build badge DOM directly — never inject server-provided HTML
+  const badge = document.createElement('div');
+  badge.style.cssText = 'display:inline-block;margin:8px 0;border:1px solid #b8d4c0;background:#f0f7f3;border-radius:12px;font-family:Arial,Helvetica,sans-serif;max-width:480px;width:100%;box-sizing:border-box;padding:12px 14px;display:flex;align-items:center;gap:10px;';
+
+  const check = document.createElement('div');
+  check.style.cssText = 'width:32px;height:32px;border-radius:50%;background:#5a9471;color:#fff;font-size:16px;font-weight:bold;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+  check.textContent = '✓';
+
+  const text = document.createElement('div');
+  text.style.cssText = 'flex:1;min-width:0;';
+  const title = document.createElement('div');
+  title.style.cssText = 'font-size:13px;font-weight:600;color:#1e4533;';
+  title.textContent = 'Verified by signedinbox';
+  const sub = document.createElement('div');
+  sub.style.cssText = 'font-size:11px;color:#5a9471;';
+  sub.textContent = `Valid until ${expiryLabel}`;
+  text.appendChild(title);
+  text.appendChild(sub);
+
+  const link = document.createElement('a');
+  link.href = verifyUrl;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.style.cssText = 'font-size:11px;color:#4d7c63;text-decoration:none;border:1px solid #b8d4c0;border-radius:6px;padding:4px 10px;white-space:nowrap;flex-shrink:0;';
+  link.textContent = 'Verify →';
+
+  badge.appendChild(check);
+  badge.appendChild(text);
+  badge.appendChild(link);
 
   const signature = body.querySelector<HTMLElement>(SIGNATURE_SELECTOR);
   if (signature) {

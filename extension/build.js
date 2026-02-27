@@ -10,7 +10,7 @@
 
 import esbuild from 'esbuild';
 import sharp from 'sharp';
-import { copyFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
+import { copyFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -157,5 +157,12 @@ if (watch) {
   console.log('Watching for changes…');
 } else {
   await Promise.all(entries.map(entry => esbuild.build({ ...sharedOptions, ...entry })));
+  // Remove source maps from production builds
+  if (!isDev) {
+    const { globSync } = await import('glob');
+    for (const f of globSync('dist/**/*.map', { cwd: __dirname })) {
+      rmSync(join(__dirname, f));
+    }
+  }
   console.log('Build complete → dist/');
 }
