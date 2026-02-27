@@ -253,7 +253,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
           const turnstileToken = await getTurnstileToken();
           const stamp = await createStamp(token, senderId, turnstileToken, {
             recipientEmail,
-            subjectHint,
             contentHash,
             isMassSend,
             declaredRecipientCount: isMassSend ? recipientCount : undefined,

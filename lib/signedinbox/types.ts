@@ -13,8 +13,7 @@ export interface SignedInboxStamp {
   id: string;
   sender_id: string;
   user_id: string;
-  recipient_email: string | null;
-  subject_hint: string | null;
+  recipient_email_hash: string | null;
   turnstile_token: string;
   turnstile_valid: boolean;
   signature: string;

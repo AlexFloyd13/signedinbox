@@ -44,7 +44,6 @@ export async function createStamp(
   turnstileToken: string,
   opts: {
     recipientEmail?: string;
-    subjectHint?: string;
     contentHash?: string;
     isMassSend?: boolean;
     declaredRecipientCount?: number;
@@ -61,7 +60,6 @@ export async function createStamp(
       turnstile_token: turnstileToken,
       client_type: 'chrome_extension',
       ...(opts.recipientEmail && { recipient_email: opts.recipientEmail }),
-      ...(opts.subjectHint && { subject_hint: opts.subjectHint }),
       ...(opts.contentHash && { content_hash: opts.contentHash }),
       ...(opts.isMassSend && { is_mass_send: true }),
       ...(opts.declaredRecipientCount && { declared_recipient_count: opts.declaredRecipientCount }),

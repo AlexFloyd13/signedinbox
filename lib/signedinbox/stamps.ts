@@ -26,7 +26,6 @@ export async function createVerifiedStamp(opts: {
   senderId: string;
   userId: string;
   recipientEmail?: string;
-  subjectHint?: string;
   contentHash?: string;
   turnstileToken: string;
   clientType?: string;
@@ -46,6 +45,11 @@ export async function createVerifiedStamp(opts: {
   if (!sender.verified_email) {
     throw new Error('Sender email must be verified before creating stamps. Please verify your email address first.');
   }
+
+  // Hash recipient email server-side — plaintext never stored
+  const recipientEmailHash = opts.recipientEmail
+    ? createHash('sha256').update(opts.recipientEmail.toLowerCase().trim()).digest('hex')
+    : null;
 
   const signingKey = await ensureSigningKey();
 
@@ -68,8 +72,7 @@ export async function createVerifiedStamp(opts: {
     id: stampId,
     sender_id: opts.senderId,
     user_id: opts.userId,
-    recipient_email: opts.recipientEmail || null,
-    subject_hint: opts.subjectHint || null,
+    recipient_email_hash: recipientEmailHash,
     turnstile_token: opts.turnstileToken,
     turnstile_valid: true,
     signature,
@@ -147,9 +150,7 @@ export async function validateStamp(
 
   // Fetch prior count before logging this visit
   const validation_count = await getValidationCount(stampId);
-  const recipient_email_hash = stamp.recipient_email
-    ? createHash('sha256').update(stamp.recipient_email.toLowerCase().trim()).digest('hex')
-    : null;
+  const recipient_email_hash = stamp.recipient_email_hash ?? null;
 
   const stampInfo = {
     id: stamp.id,

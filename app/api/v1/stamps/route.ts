@@ -117,7 +117,6 @@ export async function POST(request: NextRequest) {
       senderId: parsed.data.sender_id,
       userId,
       recipientEmail: parsed.data.recipient_email,
-      subjectHint: parsed.data.subject_hint,
       contentHash: parsed.data.content_hash,
       turnstileToken: parsed.data.turnstile_token,
       clientType: parsed.data.client_type,

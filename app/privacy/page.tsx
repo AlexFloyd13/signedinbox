@@ -81,22 +81,18 @@ export default function PrivacyPage() {
           <div className="bg-white border border-[#e5e2d8] rounded-xl overflow-hidden">
             {[
               {
-                icon: "✉️",
                 title: "Your email body",
                 detail: "The content of your email is never captured, transmitted, or stored. The Chrome extension reads the compose window only to inject the stamp badge — it does not send any body text to our servers.",
               },
               {
-                icon: "👤",
                 title: "Recipient email addresses",
-                detail: "When you stamp an email, the recipient's address is hashed with SHA-256 on your device before anything leaves your browser. We store only an irreversible hash — not the address itself. We cannot read, reverse, or recover it.",
+                detail: "The recipient's address is sent to our servers solely to compute a SHA-256 hash. The plaintext address is immediately discarded — we store only the irreversible hash. We cannot read, reverse, or recover the original address.",
               },
               {
-                icon: "📋",
                 title: "Subject lines",
-                detail: "Same as recipients — the subject line is included in the hash computed locally on your device. The plaintext subject is never sent to our API.",
+                detail: "The subject line is used client-side to compute the content fingerprint that makes your stamp specific to this email. The plaintext subject is never sent to or stored on our servers.",
               },
               {
-                icon: "📎",
                 title: "Attachments or metadata",
                 detail: "We never access attachments, headers, thread history, or any other part of your Gmail account. The extension only interacts with the active compose window.",
               },
@@ -114,15 +110,18 @@ export default function PrivacyPage() {
           <h2 className="text-[11px] font-semibold text-[#b5b0a6] uppercase tracking-wider">How client-side hashing works</h2>
           <div className="bg-white border border-[#e5e2d8] rounded-xl p-6 flex flex-col gap-3">
             <p className="text-[14px] text-[#6b6560] leading-relaxed">
-              When the Chrome extension stamps an email, it computes a SHA-256 fingerprint of the sender, recipient, and subject — entirely inside your browser using the Web Crypto API. Only that fingerprint (a 64-character hex string) is sent to our servers.
+              When the Chrome extension stamps an email, it computes a SHA-256 content fingerprint of the sender, recipient, and subject — entirely inside your browser using the Web Crypto API. That fingerprint is sent to our servers. The recipient address is also sent so we can hash it server-side for verification; the plaintext is then discarded. The subject line is never sent.
             </p>
             <div className="bg-[#f5f4ef] border border-[#e5e2d8] rounded-lg px-4 py-3 font-mono text-[12px] text-[#6b6560]">
-              SHA-256(senderId | recipient@example.com | Subject line)
-              <br />
-              <span className="text-[#b5b0a6]">→ 3f7a9c2e1b4d8f6a… (stored, unreadable)</span>
+              <div>Content fingerprint (computed in browser):</div>
+              <div className="mt-1">SHA-256(senderId | recipient@example.com | Subject line)</div>
+              <div className="text-[#b5b0a6] mt-1">→ 3f7a9c2e1b4d8f6a… (stored)</div>
+              <div className="mt-2">Recipient hash (computed on server, plaintext discarded):</div>
+              <div className="mt-1">SHA-256(recipient@example.com)</div>
+              <div className="text-[#b5b0a6] mt-1">→ a9f2c1e8b3d7… (stored, unreadable)</div>
             </div>
             <p className="text-[14px] text-[#6b6560] leading-relaxed">
-              This hash is embedded in the stamp so recipients can verify the email wasn&apos;t tampered with — without us ever knowing who they are or what the subject said.
+              These hashes let recipients verify the stamp was meant for them — without us ever knowing the subject line or being able to recover the recipient address.
             </p>
           </div>
         </section>

@@ -3,7 +3,6 @@ import { z } from 'zod';
 export const CreateStampSchema = z.object({
   sender_id: z.string().uuid(),
   recipient_email: z.string().email().optional(),
-  subject_hint: z.string().max(100).optional(),
   content_hash: z.string().length(64).regex(/^[0-9a-f]+$/).optional(),
   turnstile_token: z.string().min(1),
   client_type: z.enum(['web', 'chrome_extension', 'api']).optional().default('web'),
