@@ -578,7 +578,7 @@ export default function DashboardPage() {
                       </button>
                       <div className="flex items-center gap-1 shrink-0">
                         {/* Mass email checkbox + # recipients stacked, width driven by label */}
-                        <div className="flex flex-col gap-1 w-fit">
+                        <div className="grid gap-1" style={{ gridTemplateColumns: "min-content" }}>
                           <label className="flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <input
                               type="checkbox"
@@ -599,7 +599,7 @@ export default function DashboardPage() {
                             type="number"
                             min="2"
                             disabled={!isMassSend}
-                            className="w-full min-w-0 bg-white border border-[#e5e2d8] rounded-md px-2 py-1 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e] disabled:opacity-30"
+                            className="min-w-0 bg-white border border-[#e5e2d8] rounded-md px-2 py-1 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e] disabled:opacity-30"
                             placeholder="# recipients"
                             value={declaredRecipientCount}
                             onChange={(e) => setDeclaredRecipientCount(e.target.value)}
