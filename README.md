@@ -1,5 +1,8 @@
 # SignedInbox
 
+![CI](https://github.com/AlexFloyd13/signedinbox/actions/workflows/ci.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 **Cryptographic proof that a human sent your email.**
 
 SignedInbox lets senders attach a tamper-evident digital stamp to emails. Each stamp is signed with Ed25519, gated by a Cloudflare Turnstile CAPTCHA (bot proof), and verifiable by anyone via a public URL — no account required to verify.

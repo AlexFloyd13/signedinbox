@@ -137,10 +137,12 @@ The Chrome Web Store will ask you to justify each permission. Use these:
 |------------|---------------|
 | `activeTab` | Required to inject the Stamp button into the Gmail compose window |
 | `storage` | Stores the user's session token and selected sender ID locally |
+| `identity` | Used to launch the Google OAuth web auth flow for sign-in via `chrome.identity.launchWebAuthFlow` |
 | `offscreen` | Renders the Cloudflare Turnstile CAPTCHA in an offscreen document (service workers cannot render iframes) |
+| `windows` | Opens a fallback Turnstile challenge popup window when the silent offscreen flow cannot complete |
 | `https://mail.google.com/*` | Injects the content script into Gmail |
-| `https://signedinbox.com/api/*` | Calls the signedinbox API to create stamps and fetch senders |
-| `https://challenges.cloudflare.com/*` | Loads the Cloudflare Turnstile CAPTCHA widget |
+| `https://signedinbox.com/*` | Calls the signedinbox API to create stamps, fetch senders, and load the Turnstile iframe |
+| `https://*.supabase.co/*` | Authenticates the user and refreshes session tokens via Supabase Auth REST API |
 
 ---
 
