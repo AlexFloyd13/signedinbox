@@ -87,7 +87,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-sm bg-white border border-[#e5e2d8] rounded-2xl p-8 shadow-sm">
         <h1 className="font-serif text-2xl font-bold text-[#1a1917] mb-1">Sign in</h1>
-        <p className="text-[14px] text-[#9a958e] mb-6">Welcome back.</p>
+        <p className="text-[14px] text-[#9a958e] mb-6">Sign in with Google or <Link href="/signup" className="text-[#5a9471] hover:text-[#477857] transition-colors">create an account</Link> — a Google account is required.</p>
 
         <button
           onClick={handleGoogleLogin}
