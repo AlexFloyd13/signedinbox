@@ -10,7 +10,7 @@
 
 import esbuild from 'esbuild';
 import sharp from 'sharp';
-import { copyFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -131,8 +131,12 @@ mkdirSync('dist/challenge', { recursive: true });
 mkdirSync('dist/popup', { recursive: true });
 mkdirSync('dist/icons', { recursive: true });
 
+// Template manifest.json — replace __SUPABASE_ORIGIN__ with the actual Supabase host
+const supabaseOrigin = new URL(process.env.SUPABASE_URL || 'http://localhost:54321').origin;
+const manifest = readFileSync('manifest.json', 'utf8').replace('__SUPABASE_ORIGIN__', supabaseOrigin);
+writeFileSync('dist/manifest.json', manifest);
+
 const staticFiles = [
-  ['manifest.json', 'dist/manifest.json'],
   ['popup/popup.html', 'dist/popup/popup.html'],
   ['popup/popup.css', 'dist/popup/popup.css'],
   ['content/gmail-content.css', 'dist/content/gmail-content.css'],

@@ -13,7 +13,7 @@
   "host_permissions": [
     "https://mail.google.com/*",
     "https://signedinbox.com/*",
-    "https://gldyvewzkdzfydvneizq.supabase.co/*"
+    "__SUPABASE_ORIGIN__/*"
   ],
   "background": {
     "service_worker": "background/background.js",
