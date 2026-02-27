@@ -187,7 +187,7 @@ export default function Home() {
 
       {/* Honest disclaimer */}
       <section className="border-t border-[#e5e2d8] bg-[#faf9f6] py-14 px-6 sm:px-10">
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-2xl mx-auto text-center flex flex-col gap-4">
           <p className="text-[13px] text-[#9a958e] leading-relaxed">
             <span className="font-semibold text-[#6b6560]">A note on what this is (and isn&apos;t).</span>{" "}
             signedinbox makes it meaningfully harder for bots and impersonators to fake your identity,
@@ -195,6 +195,12 @@ export default function Home() {
             guarantee — determined attackers have workarounds for most verification systems. Think of it
             like a wax seal on an envelope: it doesn&apos;t make the letter invulnerable, but breaking it
             is obvious, and that matters.
+          </p>
+          <p className="text-[13px] text-[#9a958e] leading-relaxed">
+            <span className="font-semibold text-[#6b6560]">Your email content stays on your device.</span>{" "}
+            We never see recipient addresses, subject lines, or email body text. Everything is hashed
+            locally in your browser before anything reaches our servers.{" "}
+            <Link href="/privacy" className="text-[#5a9471] hover:underline">Read our full privacy policy →</Link>
           </p>
         </div>
       </section>
@@ -225,6 +231,7 @@ export default function Home() {
       <footer className="border-t border-[#e5e2d8] py-6 px-6 sm:px-10 flex items-center justify-between">
         <span className="text-[12px] text-[#b5b0a6]">© 2026 signedinbox · MIT licensed</span>
         <div className="flex items-center gap-4">
+          <Link href="/privacy" className="text-[12px] text-[#b5b0a6] hover:text-[#1a1917] transition-colors">Privacy</Link>
           <Link href="/login" className="text-[12px] text-[#b5b0a6] hover:text-[#1a1917] transition-colors">Sign in</Link>
           <Link href="/signup" className="text-[12px] text-[#b5b0a6] hover:text-[#1a1917] transition-colors">Sign up</Link>
         </div>
