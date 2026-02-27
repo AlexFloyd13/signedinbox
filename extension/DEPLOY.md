@@ -18,8 +18,7 @@ Step-by-step instructions for publishing the signedinbox extension.
 Before building, confirm:
 
 - [ ] `manifest.json` version is bumped (e.g. `"version": "1.0.0"`)
-- [ ] All three icon sizes exist: `icons/icon16.png`, `icons/icon48.png`, `icons/icon128.png`
-  - Run `npm run icons` to generate them if missing
+- [ ] `icons/icon.svg` exists (icons are generated automatically during the build)
 - [ ] Turnstile site key in your build env is the **production** key (not a test key)
 - [ ] `SUPABASE_URL` and `SUPABASE_ANON_KEY` point to production Supabase
 

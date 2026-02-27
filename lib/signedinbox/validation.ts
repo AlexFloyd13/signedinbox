@@ -7,6 +7,8 @@ export const CreateStampSchema = z.object({
   content_hash: z.string().length(64).regex(/^[0-9a-f]+$/).optional(),
   turnstile_token: z.string().min(1),
   client_type: z.enum(['web', 'chrome_extension', 'api']).optional().default('web'),
+  is_mass_send: z.boolean().optional().default(false),
+  declared_recipient_count: z.number().int().positive().optional(),
 });
 
 export const CreateSenderSchema = z.object({

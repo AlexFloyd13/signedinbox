@@ -1,7 +1,11 @@
 /** Supabase REST auth — no SDK needed in the extension service worker. */
 
-const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co'; // replaced at build time via env
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'; // replaced at build time via env
+// Injected by esbuild define at build time (see build.js).
+declare const __SUPABASE_URL__: string;
+declare const __SUPABASE_ANON_KEY__: string;
+
+const SUPABASE_URL = __SUPABASE_URL__;
+const SUPABASE_ANON_KEY = __SUPABASE_ANON_KEY__;
 
 export interface AuthResult {
   accessToken: string;

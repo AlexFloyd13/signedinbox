@@ -14,7 +14,10 @@ declare const turnstile: {
   }) => string;
 };
 
-const SITE_KEY = 'YOUR_TURNSTILE_SITE_KEY'; // replaced at build time
+// Injected by esbuild define at build time (see build.js).
+declare const __TURNSTILE_SITE_KEY__: string;
+
+const SITE_KEY = __TURNSTILE_SITE_KEY__;
 
 let resolveToken: ((token: string) => void) | null = null;
 let rejectToken: ((err: Error) => void) | null = null;

@@ -26,6 +26,8 @@ export interface SignedInboxStamp {
   revoked: boolean;
   canonical_payload: string | null;
   content_hash: string | null;
+  is_mass_send: boolean;
+  declared_recipient_count: number | null;
   created_at: string;
 }
 
@@ -85,6 +87,8 @@ export interface StampValidationResult {
     created_at: string;
     expires_at: string;
     content_hash: string | null;
+    is_mass_send: boolean;
+    declared_recipient_count: number | null;
   } | null;
   signature_verified: boolean;
   failure_reason: string | null;

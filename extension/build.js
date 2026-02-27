@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * esbuild bundler for the SignedInbox Chrome extension.
+ * esbuild bundler for the signedinbox Chrome extension.
  *
  * Environment variables (set in .env or CI):
  *   SUPABASE_URL              — e.g. https://abcdef.supabase.co
@@ -9,25 +9,28 @@
  */
 
 import esbuild from 'esbuild';
-import { copyFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import sharp from 'sharp';
+import { copyFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const watch = process.argv.includes('--watch');
 const isDev = process.env.NODE_ENV !== 'production';
 
+// esbuild replaces these global identifiers at bundle time.
+// Corresponding `declare const` statements in each TS file satisfy the compiler.
 const define = {
-  'YOUR_PROJECT.supabase.co': process.env.SUPABASE_URL || 'http://localhost:54321',
-  'YOUR_ANON_KEY': process.env.SUPABASE_ANON_KEY || '',
-  'YOUR_TURNSTILE_SITE_KEY': process.env.TURNSTILE_SITE_KEY || '',
+  __SUPABASE_URL__: JSON.stringify(process.env.SUPABASE_URL || 'http://localhost:54321'),
+  __SUPABASE_ANON_KEY__: JSON.stringify(process.env.SUPABASE_ANON_KEY || ''),
+  __TURNSTILE_SITE_KEY__: JSON.stringify(process.env.TURNSTILE_SITE_KEY || ''),
 };
 
 const sharedOptions = {
   bundle: true,
   sourcemap: isDev,
   minify: !isDev,
-  define: Object.fromEntries(
-    Object.entries(define).map(([k, v]) => [`'${k}'`, JSON.stringify(v)])
-  ),
+  define,
 };
 
 const entries = [
@@ -61,14 +64,28 @@ const entries = [
   },
 ];
 
-// Static file copies
-const staticFiles = [
-  ['manifest.json', 'dist/manifest.json'],
-  ['popup/popup.html', 'dist/popup/popup.html'],
-  ['popup/popup.css', 'dist/popup/popup.css'],
-  ['content/gmail-content.css', 'dist/content/gmail-content.css'],
-  ['offscreen/turnstile.html', 'dist/offscreen/turnstile.html'],
-];
+// ─── Icons ────────────────────────────────────────────────────────────────────
+
+async function generateIcons() {
+  const svgPath = join(__dirname, 'icons/icon.svg');
+  const svg = readFileSync(svgPath);
+  await Promise.all(
+    [16, 48, 128].map(size =>
+      sharp(svg)
+        .resize(size, size)
+        .png()
+        .toFile(join(__dirname, `icons/icon${size}.png`))
+    )
+  );
+}
+
+// Regenerate icons if any are missing
+const iconsMissing = [16, 48, 128].some(
+  s => !existsSync(join(__dirname, `icons/icon${s}.png`))
+);
+if (iconsMissing) await generateIcons();
+
+// ─── Directories + static copies ──────────────────────────────────────────────
 
 mkdirSync('dist/background', { recursive: true });
 mkdirSync('dist/content', { recursive: true });
@@ -76,9 +93,22 @@ mkdirSync('dist/offscreen', { recursive: true });
 mkdirSync('dist/popup', { recursive: true });
 mkdirSync('dist/icons', { recursive: true });
 
+const staticFiles = [
+  ['manifest.json', 'dist/manifest.json'],
+  ['popup/popup.html', 'dist/popup/popup.html'],
+  ['popup/popup.css', 'dist/popup/popup.css'],
+  ['content/gmail-content.css', 'dist/content/gmail-content.css'],
+  ['offscreen/turnstile.html', 'dist/offscreen/turnstile.html'],
+  ['icons/icon16.png', 'dist/icons/icon16.png'],
+  ['icons/icon48.png', 'dist/icons/icon48.png'],
+  ['icons/icon128.png', 'dist/icons/icon128.png'],
+];
+
 for (const [src, dest] of staticFiles) {
-  try { copyFileSync(src, dest); } catch { /* file may not exist yet */ }
+  copyFileSync(src, dest);
 }
+
+// ─── TypeScript bundle ────────────────────────────────────────────────────────
 
 if (watch) {
   const contexts = await Promise.all(

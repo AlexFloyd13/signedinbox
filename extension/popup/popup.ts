@@ -108,7 +108,7 @@ async function renderMain() {
     </div>
     <div class="footer">
       <a href="https://signedinbox.com/dashboard" target="_blank">Dashboard</a>
-      <button id="sign-out-btn" class="btn btn-secondary" style="width:auto;padding:4px 10px;">Sign out</button>
+      <button id="sign-out-btn" class="btn btn-secondary btn-compact">Sign out</button>
     </div>
   `;
 

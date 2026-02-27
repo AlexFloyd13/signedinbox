@@ -23,7 +23,8 @@ extension/
 │   ├── popup.css           Popup styles (signedinbox brand palette)
 │   └── popup.ts            Login view + sender selector
 ├── icons/
-│   └── generate.js         Generates icon PNGs from the SVG source
+│   ├── icon.svg            Source icon (brand SVG)
+│   └── generate.js         Icon generation — called automatically by build.js
 ├── build.js                esbuild bundler script
 ├── manifest.json           Extension manifest (MV3)
 └── tsconfig.json
@@ -43,7 +44,7 @@ extension/
 | `SUPABASE_ANON_KEY` | Supabase anon key |
 | `TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key |
 
-These are baked into the bundle at build time via esbuild `define`. They are not runtime env vars — set them in your shell or CI environment before running `npm run build`.
+These are baked into the bundle at build time. esbuild replaces the `__SUPABASE_URL__`, `__SUPABASE_ANON_KEY__`, and `__TURNSTILE_SITE_KEY__` identifiers with the values of these env vars. Set them in your shell or CI before running `npm run build` — they are **not** read at runtime.
 
 ## Build
 
@@ -65,15 +66,7 @@ TURNSTILE_SITE_KEY=your-site-key \
 npm run build
 ```
 
-Output lands in `dist/`.
-
-## Generate icons
-
-```bash
-npm run icons
-```
-
-Requires the `sharp` package (already in devDependencies). Generates `icons/icon16.png`, `icons/icon48.png`, and `icons/icon128.png` from the SVG source and copies them to `dist/icons/`.
+Output lands in `dist/`. Icons are generated automatically from `icons/icon.svg` if the PNGs are missing.
 
 ## Load in Chrome (development)
 

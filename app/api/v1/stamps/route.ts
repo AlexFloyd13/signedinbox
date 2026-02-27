@@ -122,6 +122,8 @@ export async function POST(request: NextRequest) {
       turnstileToken: parsed.data.turnstile_token,
       clientType: parsed.data.client_type,
       ip,
+      isMassSend: parsed.data.is_mass_send,
+      declaredRecipientCount: parsed.data.declared_recipient_count,
     });
 
     return NextResponse.json(stamp, { status: 201, headers: sec.headers });

@@ -31,6 +31,8 @@ export async function createVerifiedStamp(opts: {
   turnstileToken: string;
   clientType?: string;
   ip?: string;
+  isMassSend?: boolean;
+  declaredRecipientCount?: number;
 }): Promise<StampResponse> {
   const turnstileResult = await verifyTurnstileToken(opts.turnstileToken, opts.ip);
   if (!turnstileResult.success) {
@@ -79,6 +81,8 @@ export async function createVerifiedStamp(opts: {
     revoked: false,
     canonical_payload: canonicalPayload,
     content_hash: opts.contentHash || null,
+    is_mass_send: opts.isMassSend || false,
+    declared_recipient_count: opts.declaredRecipientCount || null,
   });
 
   const stampUrl = `${APP_URL}/verify/${stampId}`;
@@ -155,6 +159,8 @@ export async function validateStamp(
     created_at: stamp.created_at,
     expires_at: stamp.expires_at,
     content_hash: stamp.content_hash,
+    is_mass_send: stamp.is_mass_send,
+    declared_recipient_count: stamp.declared_recipient_count,
   };
 
   if (stamp.revoked) {

@@ -55,6 +55,7 @@ body {
 .btn-primary:disabled { opacity: 0.6; cursor: default; }
 .btn-secondary { background: transparent; color: #9a958e; border: 1px solid #e5e2d8; margin-top: 6px; }
 .btn-secondary:hover { background: #eae8e2; color: #1a1917; }
+.btn-compact { width: auto; padding: 4px 10px; margin-top: 0; }
 
 .error { color: #dc2626; font-size: 11px; margin-top: 4px; }
 .meta { color: #9a958e; font-size: 11px; margin-top: 4px; }
