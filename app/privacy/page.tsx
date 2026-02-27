@@ -39,15 +39,20 @@ export default function PrivacyPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="text-[14px] text-[#6b6560] hover:text-[#1a1917] transition-colors px-4 py-2 rounded-lg hover:bg-[#eae8e2]"
+            className="text-[14px] text-[#6b6560] hover:text-[#1a1917] transition-colors px-4 py-2 rounded-lg hover:bg-[#eae8e2] hidden sm:block"
           >
             Sign in
           </Link>
           <Link
-            href="/signup"
-            className="text-[14px] font-medium bg-[#5a9471] text-white px-4 py-2 rounded-lg hover:bg-[#477857] transition-colors"
+            href="https://chromewebstore.google.com/detail/signedinbox"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[14px] font-medium bg-[#5a9471] text-white px-4 py-2 rounded-lg hover:bg-[#477857] transition-colors flex items-center gap-1.5"
           >
-            Get started
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M20.5 11H19V7a2 2 0 0 0-2-2h-4V3.5A2.5 2.5 0 0 0 10.5 1h0A2.5 2.5 0 0 0 8 3.5V5H4a2 2 0 0 0-2 2v3.8h1.5A2.7 2.7 0 0 1 6.2 13.5h0A2.7 2.7 0 0 1 3.5 16.2H2V20a2 2 0 0 0 2 2h3.8v-1.5a2.7 2.7 0 0 1 2.7-2.7h0a2.7 2.7 0 0 1 2.7 2.7V22H17a2 2 0 0 0 2-2v-4h1.5A2.5 2.5 0 0 0 23 13.5h0a2.5 2.5 0 0 0-2.5-2.5z" />
+            </svg>
+            Get Extension
           </Link>
         </div>
       </header>
@@ -202,7 +207,7 @@ export default function PrivacyPage() {
           <p className="text-[14px] font-semibold text-[#1e4533]">Questions?</p>
           <p className="text-[13px] text-[#5a9471] leading-relaxed">
             Open an issue on GitHub or email{" "}
-            <a href="mailto:hello@signedinbox.com" className="underline">hello@signedinbox.com</a>.
+            <a href="mailto:alex@signedinbox.com" className="underline">alex@signedinbox.com</a>.
           </p>
         </section>
 
