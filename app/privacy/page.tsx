@@ -31,8 +31,6 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[#f5f4ef] text-[#1a1917] flex flex-col">
 
-      <BetaBanner />
-
       {/* Nav */}
       <header className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-[#e5e2d8] bg-white">
         <Link href="/" className="flex items-center gap-2.5">
@@ -54,6 +52,8 @@ export default function PrivacyPage() {
           </Link>
         </div>
       </header>
+
+      <BetaBanner />
 
       <main className="flex-1 px-6 sm:px-10 py-14 max-w-2xl mx-auto w-full flex flex-col gap-10">
 

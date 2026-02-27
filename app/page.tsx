@@ -26,8 +26,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#f5f4ef] text-[#1a1917] flex flex-col">
 
-      <BetaBanner />
-
       {/* Nav */}
       <header className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-[#e5e2d8]">
         <div className="flex items-center gap-2.5">
@@ -55,6 +53,8 @@ export default function Home() {
           </Link>
         </div>
       </header>
+
+      <BetaBanner />
 
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center text-center px-6 pt-20 pb-24">
