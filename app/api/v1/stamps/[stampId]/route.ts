@@ -7,7 +7,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ stampId: string }> }
 ) {
-  const sec = applySecurity(request, { rateLimitType: 'validation' });
+  const sec = await applySecurity(request, { rateLimitType: 'validation' });
   if (sec.blocked) return sec.response!;
 
   try {

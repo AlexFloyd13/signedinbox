@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 export function getClientIP(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
@@ -8,42 +10,64 @@ export function getClientIP(req: NextRequest): string {
   return req.headers.get('x-real-ip') || 'unknown';
 }
 
-// ─── Rate Limiting (in-memory, per-instance) ──────────────────────────────────
-interface RateLimitEntry { count: number; resetAt: number }
-const rateLimitStore = new Map<string, RateLimitEntry>();
+// ─── Rate Limiting (Upstash Redis — shared across all Vercel instances) ────────
+
+type RateLimitResult = { allowed: boolean; remaining: number; resetAt: number; limit: number };
+
+let _limiters: Record<string, Ratelimit> | null = null;
+
+function getLimiters(): Record<string, Ratelimit> | null {
+  if (_limiters) return _limiters;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null; // dev fallback: in-memory below
+  const redis = new Redis({ url, token });
+  _limiters = {
+    default:      new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(100, '60 s'), prefix: 'rl:default' }),
+    stamps_read:  new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60,  '60 s'), prefix: 'rl:stamps_read' }),
+    stamps_write: new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20,  '60 s'), prefix: 'rl:stamps_write' }),
+    auth:         new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10,  '60 s'), prefix: 'rl:auth' }),
+    validation:   new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60,  '60 s'), prefix: 'rl:validation' }),
+  };
+  return _limiters;
+}
+
+// Fallback: simple in-memory store used when Redis is not configured (local dev).
+// Not suitable for production — limits are per-instance only.
+interface MemEntry { count: number; resetAt: number }
+const memStore = new Map<string, MemEntry>();
 setInterval(() => {
   const now = Date.now();
-  for (const [key, entry] of rateLimitStore) {
-    if (entry.resetAt < now) rateLimitStore.delete(key);
-  }
+  for (const [k, e] of memStore) if (e.resetAt < now) memStore.delete(k);
 }, 60_000).unref?.();
-
-interface RateLimitConfig { windowMs: number; maxRequests: number }
-const RATE_LIMITS: Record<string, RateLimitConfig> = {
-  default:      { windowMs: 60_000, maxRequests: 100 },
-  stamps_read:  { windowMs: 60_000, maxRequests: 60 },
-  stamps_write: { windowMs: 60_000, maxRequests: 20 },
-  auth:         { windowMs: 60_000, maxRequests: 10 },
-  validation:   { windowMs: 60_000, maxRequests: 60 },
+const MEM_LIMITS: Record<string, { window: number; max: number }> = {
+  default:      { window: 60_000, max: 100 },
+  stamps_read:  { window: 60_000, max: 60 },
+  stamps_write: { window: 60_000, max: 20 },
+  auth:         { window: 60_000, max: 10 },
+  validation:   { window: 60_000, max: 60 },
 };
-
-function checkRateLimit(req: NextRequest, type = 'default') {
-  const config = RATE_LIMITS[type] ?? RATE_LIMITS.default;
-  const key = `${type}:${getClientIP(req)}`;
+function checkMemLimit(ip: string, type: string): RateLimitResult {
+  const cfg = MEM_LIMITS[type] ?? MEM_LIMITS.default;
+  const key = `${type}:${ip}`;
   const now = Date.now();
-  let entry = rateLimitStore.get(key);
-  if (!entry || entry.resetAt < now) {
-    entry = { count: 1, resetAt: now + config.windowMs };
-    rateLimitStore.set(key, entry);
-    return { allowed: true, remaining: config.maxRequests - 1, resetAt: entry.resetAt, limit: config.maxRequests };
+  let e = memStore.get(key);
+  if (!e || e.resetAt < now) {
+    e = { count: 1, resetAt: now + cfg.window };
+    memStore.set(key, e);
+    return { allowed: true, remaining: cfg.max - 1, resetAt: e.resetAt, limit: cfg.max };
   }
-  entry.count++;
-  return {
-    allowed: entry.count <= config.maxRequests,
-    remaining: Math.max(0, config.maxRequests - entry.count),
-    resetAt: entry.resetAt,
-    limit: config.maxRequests,
-  };
+  e.count++;
+  return { allowed: e.count <= cfg.max, remaining: Math.max(0, cfg.max - e.count), resetAt: e.resetAt, limit: cfg.max };
+}
+
+async function checkRateLimit(req: NextRequest, type = 'default'): Promise<RateLimitResult> {
+  const ip = getClientIP(req);
+  const limiters = getLimiters();
+  if (!limiters) return checkMemLimit(ip, type); // dev fallback
+  const limiter = limiters[type] ?? limiters.default;
+  const { success, remaining, reset, limit } = await limiter.limit(ip);
+  return { allowed: success, remaining, resetAt: reset, limit };
 }
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
@@ -86,11 +110,11 @@ export interface SecurityOptions {
   skipRateLimit?: boolean;
 }
 
-export function applySecurity(req: NextRequest, options: SecurityOptions = {}): {
+export async function applySecurity(req: NextRequest, options: SecurityOptions = {}): Promise<{
   blocked: boolean;
   response?: NextResponse;
   headers: Record<string, string>;
-} {
+}> {
   const { rateLimitType = 'default', skipRateLimit = false } = options;
   const requestId = randomUUID();
   const origin = req.headers.get('origin');
@@ -108,7 +132,7 @@ export function applySecurity(req: NextRequest, options: SecurityOptions = {}): 
   }
 
   if (!skipRateLimit) {
-    const rl = checkRateLimit(req, rateLimitType);
+    const rl = await checkRateLimit(req, rateLimitType);
     hdrs['X-RateLimit-Limit'] = String(rl.limit);
     hdrs['X-RateLimit-Remaining'] = String(rl.remaining);
     hdrs['X-RateLimit-Reset'] = String(Math.ceil(rl.resetAt / 1000));

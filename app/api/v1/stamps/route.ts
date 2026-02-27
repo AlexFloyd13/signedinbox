@@ -45,7 +45,7 @@ function requireJwt(scopes: string[] | null, action: string): void {
 }
 
 export async function POST(request: NextRequest) {
-  const sec = applySecurity(request, { rateLimitType: 'stamps_write' });
+  const sec = await applySecurity(request, { rateLimitType: 'stamps_write' });
   if (sec.blocked) return sec.response!;
 
   try {
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const sec = applySecurity(request, { rateLimitType: 'stamps_read' });
+  const sec = await applySecurity(request, { rateLimitType: 'stamps_read' });
   if (sec.blocked) return sec.response!;
 
   try {
