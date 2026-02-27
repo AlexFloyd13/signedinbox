@@ -35,3 +35,31 @@ yarn-error.log*
 next-env.d.ts
 .vercel
 supabase/.temp/
+
+# playwright / testing
+.playwright-mcp/
+
+# claude code
+.claude/
+
+# extension build artifacts
+extension/dist/
+extension/node_modules/
+extension/*.zip
+
+# misc screenshots
+*.png
+
+# playwright / testing
+.playwright-mcp/
+
+# claude code
+.claude/
+
+# extension build artifacts
+extension/dist/
+extension/node_modules/
+extension/*.zip
+
+# misc screenshots
+*.png

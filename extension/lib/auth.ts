@@ -4,8 +4,8 @@
 declare const __SUPABASE_URL__: string;
 declare const __SUPABASE_ANON_KEY__: string;
 
-const SUPABASE_URL = __SUPABASE_URL__;
-const SUPABASE_ANON_KEY = __SUPABASE_ANON_KEY__;
+export const SUPABASE_URL = __SUPABASE_URL__;
+export const SUPABASE_ANON_KEY = __SUPABASE_ANON_KEY__;
 
 export interface AuthResult {
   accessToken: string;

@@ -8,7 +8,10 @@ export async function sendVerificationEmail(to: string, code: string): Promise<v
   const from = process.env.SENDGRID_FROM_EMAIL;
 
   if (!apiKey || !from) {
-    console.warn('[email] SENDGRID_API_KEY or SENDGRID_FROM_EMAIL not configured — skipping email');
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('SENDGRID_API_KEY or SENDGRID_FROM_EMAIL not configured — email sending is required in production');
+    }
+    console.warn('[email] SENDGRID_API_KEY or SENDGRID_FROM_EMAIL not configured — skipping email (dev mode)');
     return;
   }
 

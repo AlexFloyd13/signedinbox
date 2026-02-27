@@ -14,7 +14,7 @@ export interface SignedInboxStamp {
   sender_id: string;
   user_id: string;
   recipient_email_hash: string | null;
-  turnstile_token: string;
+  turnstile_token: string | null;
   turnstile_valid: boolean;
   signature: string;
   public_key_id: string;
@@ -74,6 +74,7 @@ export interface StampResponse {
   expires_at: string;
   created_at: string;
   content_hash: string | null;
+  sender_email_masked: string;
 }
 
 export interface StampValidationResult {

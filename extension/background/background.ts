@@ -238,10 +238,18 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
             await setActiveSenderId(senderId);
           }
 
+          // Hash recipient email client-side — plaintext never sent to the server
+          const { recipientEmail, subjectHint, recipientCount = 1 } = message;
+          let recipientEmailHash: string | undefined;
+          if (recipientEmail) {
+            const normalised = recipientEmail.toLowerCase().trim();
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalised));
+            recipientEmailHash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+          }
+
           // Compute content hash client-side — API never sees plaintext
           // Hash: SHA-256(senderId | recipientEmail | subject)
           let contentHash: string | undefined;
-          const { recipientEmail, subjectHint, recipientCount = 1 } = message;
           if (recipientEmail && subjectHint) {
             const input = `${senderId}|${recipientEmail.toLowerCase()}|${subjectHint}`;
             const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
@@ -252,7 +260,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
           const turnstileToken = await getTurnstileToken();
           const stamp = await createStamp(token, senderId, turnstileToken, {
-            recipientEmail,
+            recipientEmailHash,
             contentHash,
             isMassSend,
             declaredRecipientCount: isMassSend ? recipientCount : undefined,

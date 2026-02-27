@@ -71,3 +71,37 @@ body {
 .footer a { font-size: 11px; color: #5a9471; text-decoration: none; }
 .footer a:hover { text-decoration: underline; color: #477857; }
 .footer-user { font-size: 11px; color: #9a958e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e5e2d8;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: #fff;
+  color: #1a1917;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-google:hover { background: #f5f4ef; border-color: #c5c0b8; }
+.btn-google:disabled { opacity: 0.6; cursor: default; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 4px;
+  color: #c5c0b8;
+  font-size: 11px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e2d8;
+}

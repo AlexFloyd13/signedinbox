@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { createHash } from 'crypto';
+import { createHash, randomInt } from 'crypto';
 import type { SignedInboxSender, SignedInboxStamp, SignedInboxApiKey, SigningKey } from './types';
 
 let supabaseAdmin: SupabaseClient | null = null;
@@ -55,7 +55,7 @@ export async function markSenderVerified(senderId: string): Promise<void> {
 
 export async function createEmailVerification(senderId: string): Promise<{ code: string }> {
   const db = getSupabaseAdmin();
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const code = randomInt(100000, 1000000).toString();
   const tokenHash = createHash('sha256').update(code).digest('hex');
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
@@ -238,6 +238,31 @@ export async function revokeApiKey(keyId: string, userId: string): Promise<boole
   const { error } = await db.from('signedinbox_api_keys').update({ revoked: true }).eq('id', keyId).eq('user_id', userId);
   if (error) throw error;
   return true;
+}
+
+// ─── Account ─────────────────────────────────────────────────────────────────
+
+export async function deleteUserAccount(userId: string): Promise<void> {
+  const db = getSupabaseAdmin();
+  // Delete in dependency order
+  await db.from('signedinbox_api_keys').delete().eq('user_id', userId);
+  // Get stamp IDs first (for validations cascade)
+  const { data: stamps } = await db.from('signedinbox_stamps').select('id').eq('user_id', userId);
+  const stampIds = (stamps || []).map((s: { id: string }) => s.id);
+  if (stampIds.length > 0) {
+    await db.from('signedinbox_validations').delete().in('stamp_id', stampIds);
+  }
+  await db.from('signedinbox_stamps').delete().eq('user_id', userId);
+  // Get sender IDs for email verifications
+  const { data: senders } = await db.from('signedinbox_senders').select('id').eq('user_id', userId);
+  const senderIds = (senders || []).map((s: { id: string }) => s.id);
+  if (senderIds.length > 0) {
+    await db.from('signedinbox_email_verifications').delete().in('sender_id', senderIds);
+  }
+  await db.from('signedinbox_senders').delete().eq('user_id', userId);
+  // Finally delete the auth user
+  const { error } = await db.auth.admin.deleteUser(userId);
+  if (error) throw error;
 }
 
 // ─── Stats ───────────────────────────────────────────────────────────────────

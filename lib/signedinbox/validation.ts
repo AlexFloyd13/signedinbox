@@ -2,6 +2,9 @@ import { z } from 'zod';
 
 export const CreateStampSchema = z.object({
   sender_id: z.string().uuid(),
+  // Prefer recipient_email_hash (SHA-256 hex, hashed client-side) over recipient_email.
+  // The server accepts both for backward compatibility but never stores plaintext email.
+  recipient_email_hash: z.string().length(64).regex(/^[0-9a-f]+$/).optional(),
   recipient_email: z.string().email().optional(),
   content_hash: z.string().length(64).regex(/^[0-9a-f]+$/).optional(),
   turnstile_token: z.string().min(1),

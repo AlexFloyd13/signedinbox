@@ -1,26 +1,32 @@
 .si-stamp-btn {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-weight: 500;
-  color: #5a9471;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  margin: 0 2px;
   background: transparent;
-  border: 1px solid #e5e2d8;
-  border-radius: 6px;
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s;
+  vertical-align: bottom;
+  line-height: 0;
+  transition: opacity 0.15s, background 0.15s;
 }
 
 .si-stamp-btn:hover {
-  background: #d4ebe0;
-  border-color: #5a9471;
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .si-stamp-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.35;
   cursor: default;
+}
+
+.si-stamp-btn svg {
+  display: block;
+  width: 25px;
+  height: 25px;
 }

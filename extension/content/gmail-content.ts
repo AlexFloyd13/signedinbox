@@ -92,7 +92,7 @@ function injectStampButton(compose: Element) {
         return;
       }
 
-      injectBadge(compose, response.stamp.verify_url, response.stamp.expires_at);
+      injectBadge(compose, response.stamp.stamp_url, response.stamp.expires_at, response.stamp.sender_email_masked);
       btn.title = 'Stamped ✓';
       setTimeout(() => { reset(); btn.title = 'Add signedinbox stamp'; }, 3000);
     } catch (err) {
@@ -104,7 +104,7 @@ function injectStampButton(compose: Element) {
   toolbar.appendChild(btn);
 }
 
-function injectBadge(compose: Element, verifyUrl: string, expiresAt: string) {
+function injectBadge(compose: Element, verifyUrl: string, expiresAt: string, senderEmailMasked?: string) {
   const body = compose.querySelector<HTMLElement>(BODY_SELECTOR);
   if (!body) return;
 
@@ -125,7 +125,9 @@ function injectBadge(compose: Element, verifyUrl: string, expiresAt: string) {
   title.textContent = 'Verified by signedinbox';
   const sub = document.createElement('div');
   sub.style.cssText = 'font-size:11px;color:#5a9471;';
-  sub.textContent = `Valid until ${expiryLabel}`;
+  sub.textContent = senderEmailMasked
+    ? `${senderEmailMasked} · Valid until ${expiryLabel}`
+    : `Valid until ${expiryLabel}`;
   text.appendChild(title);
   text.appendChild(sub);
 

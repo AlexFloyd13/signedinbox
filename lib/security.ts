@@ -76,6 +76,7 @@ function securityHeaders(requestId: string): Record<string, string> {
     'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
     'Cache-Control': 'no-store, no-cache, must-revalidate, private',
     'Pragma': 'no-cache',
+    'Vary': 'Origin',
   };
 }
 

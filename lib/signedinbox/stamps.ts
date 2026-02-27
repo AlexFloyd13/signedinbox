@@ -26,6 +26,7 @@ export async function createVerifiedStamp(opts: {
   senderId: string;
   userId: string;
   recipientEmail?: string;
+  recipientEmailHash?: string;
   contentHash?: string;
   turnstileToken: string;
   clientType?: string;
@@ -46,10 +47,12 @@ export async function createVerifiedStamp(opts: {
     throw new Error('Sender email must be verified before creating stamps. Please verify your email address first.');
   }
 
-  // Hash recipient email server-side — plaintext never stored
-  const recipientEmailHash = opts.recipientEmail
-    ? createHash('sha256').update(opts.recipientEmail.toLowerCase().trim()).digest('hex')
-    : null;
+  // Use pre-computed hash if provided (preferred — keeps plaintext off server),
+  // otherwise hash server-side. Plaintext is never stored either way.
+  const recipientEmailHash = opts.recipientEmailHash
+    ?? (opts.recipientEmail
+      ? createHash('sha256').update(opts.recipientEmail.toLowerCase().trim()).digest('hex')
+      : null);
 
   const signingKey = await ensureSigningKey();
 
@@ -59,10 +62,14 @@ export async function createVerifiedStamp(opts: {
   const expiresAt = new Date(exp * 1000).toISOString();
   const createdAt = new Date(now * 1000).toISOString();
 
+  // For the payload rcpt field, derive the email hash from whichever source we have.
+  // If only a pre-hashed value is available, we use it directly (same 16-char truncation).
+  const recipientEmailForPayload = opts.recipientEmail || null;
   const payload = buildStampPayload(
     stampId, opts.userId, sender.email,
-    opts.recipientEmail || null, now, exp,
+    recipientEmailForPayload, now, exp,
     opts.contentHash || null,
+    recipientEmailHash,
   );
 
   const signature = signStamp(payload, signingKey);
@@ -73,7 +80,7 @@ export async function createVerifiedStamp(opts: {
     sender_id: opts.senderId,
     user_id: opts.userId,
     recipient_email_hash: recipientEmailHash,
-    turnstile_token: opts.turnstileToken,
+    turnstile_token: null,
     turnstile_valid: true,
     signature,
     public_key_id: signingKey.key_id,
@@ -130,6 +137,7 @@ export async function createVerifiedStamp(opts: {
     expires_at: expiresAt,
     created_at: createdAt,
     content_hash: opts.contentHash || null,
+    sender_email_masked: maskEmail(sender.email),
   };
 }
 

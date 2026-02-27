@@ -57,15 +57,23 @@ export function buildStampPayload(
   createdAt: number,
   expiresAt: number,
   contentHash?: string | null,
+  recipientEmailHash?: string | null,
 ): StampPayload {
+  let rcpt: string;
+  if (recipientEmailHash) {
+    // Use the first 16 chars of the pre-computed SHA-256 hash (same as computing fresh)
+    rcpt = recipientEmailHash.slice(0, 16);
+  } else if (recipientEmail) {
+    rcpt = createHash('sha256').update(recipientEmail).digest('hex').slice(0, 16);
+  } else {
+    rcpt = 'any';
+  }
   return {
     v: 1,
     sid: stampId,
     sender: createHash('sha256').update(userId).digest('hex').slice(0, 16),
     email: createHash('sha256').update(senderEmail).digest('hex').slice(0, 16),
-    rcpt: recipientEmail
-      ? createHash('sha256').update(recipientEmail).digest('hex').slice(0, 16)
-      : 'any',
+    rcpt,
     ch: contentHash || 'unbound',
     ts: createdAt,
     exp: expiresAt,

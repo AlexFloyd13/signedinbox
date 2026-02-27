@@ -193,6 +193,45 @@ export default function PrivacyPage() {
           </div>
         </section>
 
+        {/* Chrome extension local storage */}
+        <section className="flex flex-col gap-4">
+          <h2 className="text-[11px] font-semibold text-[#b5b0a6] uppercase tracking-wider">Chrome extension — local storage</h2>
+          <div className="bg-white border border-[#e5e2d8] rounded-xl p-6 flex flex-col gap-3">
+            <p className="text-[14px] text-[#6b6560] leading-relaxed">
+              The signedinbox Chrome extension stores two things locally in your browser using <code className="text-[12px] bg-[#f5f4ef] px-1.5 py-0.5 rounded text-[#1a1917]">chrome.storage.local</code>:
+            </p>
+            <ul className="flex flex-col gap-2 pl-1">
+              {[
+                { title: "Session token", detail: "A Supabase authentication token that keeps you signed in between browser sessions. It is never shared with third parties." },
+                { title: "Selected sender ID", detail: "The ID of the sender identity you have chosen to stamp emails with. This is a reference to data already stored on our servers under your account." },
+              ].map(({ title, detail }) => (
+                <li key={title} className="flex gap-3">
+                  <span className="text-[#5a9471] font-bold shrink-0 mt-0.5">·</span>
+                  <p className="text-[13px] text-[#6b6560] leading-relaxed"><span className="font-semibold text-[#1a1917]">{title}</span> — {detail}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="text-[14px] text-[#6b6560] leading-relaxed">
+              This data stays on your device and is cleared when you sign out of the extension or uninstall it.
+            </p>
+          </div>
+        </section>
+
+        {/* Data deletion */}
+        <section className="flex flex-col gap-4">
+          <h2 className="text-[11px] font-semibold text-[#b5b0a6] uppercase tracking-wider">Deleting your data</h2>
+          <div className="bg-white border border-[#e5e2d8] rounded-xl p-6 flex flex-col gap-3">
+            <p className="text-[14px] text-[#6b6560] leading-relaxed">
+              To delete your account and all associated data, email{" "}
+              <a href="mailto:alex@signedinbox.com" className="text-[#5a9471] hover:underline">alex@signedinbox.com</a>{" "}
+              with the subject line <em>Delete my account</em>. We will permanently remove your account email, display name, sender identities, and all stamp records within 7 days.
+            </p>
+            <p className="text-[14px] text-[#6b6560] leading-relaxed">
+              Stamps that have already been delivered to recipients will become unverifiable once your account is deleted, as the signing key will be revoked.
+            </p>
+          </div>
+        </section>
+
         {/* Contact */}
         <section className="bg-[#f0f7f3] border border-[#b8d4c0] rounded-xl p-6 flex flex-col gap-2">
           <p className="text-[14px] font-semibold text-[#1e4533]">Questions?</p>

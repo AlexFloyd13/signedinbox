@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { authedFetch } from "@/lib/supabase/authed-fetch";
+import { createClient } from "@/lib/supabase/client";
 import { Turnstile } from "@marsidev/react-turnstile";
 
 interface Sender {
@@ -67,6 +69,7 @@ function formatDate(iso: string) {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [senders, setSenders] = useState<Sender[]>([]);
@@ -99,6 +102,11 @@ export default function DashboardPage() {
   const [keyError, setKeyError] = useState<string | null>(null);
   const [activeIntegration, setActiveIntegration] = useState<string | null>(null);
   const [integrationKeyValue, setIntegrationKeyValue] = useState<string | null>(null);
+
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [emailBodyText, setEmailBodyText] = useState("");
   const [localContentHash, setLocalContentHash] = useState<string | null>(null);
@@ -406,6 +414,21 @@ export default function DashboardPage() {
       setKeyError(e instanceof Error ? e.message : "Failed to create key");
     } finally {
       setAddingKey(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await authedFetch('/api/v1/account', { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete account');
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/');
+    } catch {
+      setDeleteError('Something went wrong. Please try again or contact support.');
+      setDeleting(false);
     }
   }
 
@@ -952,6 +975,58 @@ export default function DashboardPage() {
           </div>
         );
       })()}
+
+      {/* Account */}
+      <div className="bg-white border border-[#e5e2d8] rounded-xl p-4 flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#f5f3ef] border border-[#e5e2d8] flex items-center justify-center text-lg shrink-0">⚙️</div>
+            <p className="font-serif text-[15px] font-semibold text-[#1a1917]">Account</p>
+          </div>
+        </div>
+        <div className="border-t border-[#e5e2d8] pt-3 flex flex-col gap-3">
+          {!deleteConfirm ? (
+            <button
+              onClick={() => setDeleteConfirm(true)}
+              className="self-start text-sm px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+            >
+              Delete account
+            </button>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-[#3a3830]">
+                This will permanently delete your account, all senders, stamps, and API keys. <span className="font-medium text-[#1a1917]">This cannot be undone.</span>
+              </p>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#9a958e]">Type <span className="font-mono font-medium text-[#3a3830]">delete</span> to confirm</label>
+                <input
+                  className="bg-white border border-[#e5e2d8] rounded-lg px-3 py-2 text-sm text-[#1a1917] placeholder:text-[#c5c0b8] focus:outline-none focus:border-red-400 max-w-xs"
+                  placeholder="delete"
+                  value={deleteInput}
+                  onChange={(e) => setDeleteInput(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              {deleteError && <p className="text-xs text-red-600">{deleteError}</p>}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleteInput !== "delete" || deleting}
+                  className="text-sm px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors disabled:opacity-40"
+                >
+                  {deleting ? "Deleting…" : "Delete my account"}
+                </button>
+                <button
+                  onClick={() => { setDeleteConfirm(false); setDeleteInput(""); setDeleteError(null); }}
+                  className="text-sm px-3 py-2 text-[#9a958e] hover:text-[#5a5750] transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -104,7 +104,7 @@ export default function Home() {
               </div>
               <div className="flex gap-3 text-[13px]">
                 <span className="text-[#b5b0a6] w-8 shrink-0">Re</span>
-                <span className="text-[#6b6560]">Following up — Alex Floyd</span>
+                <span className="text-[#6b6560]">Following up — Jane Smith</span>
               </div>
             </div>
             {/* Body placeholder lines */}
@@ -122,7 +122,7 @@ export default function Home() {
               </div>
               <div className="min-w-0">
                 <div className="text-[13px] font-semibold text-[#1e4533]">Verified by signedinbox</div>
-                <div className="text-[11px] text-[#5a9471] truncate">alex@floyd.dev · Stamp valid until Mar 28</div>
+                <div className="text-[11px] text-[#5a9471] truncate">you@example.com · Stamp valid until Mar 28</div>
               </div>
               <span className="text-[11px] text-[#4d7c63] shrink-0 border border-[#b8d4c0] rounded-md px-2 py-0.5 ml-auto">
                 Verify →

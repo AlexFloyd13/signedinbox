@@ -9,10 +9,13 @@ export interface Sender {
 }
 
 export interface StampResponse {
-  id: string;
+  stamp_id: string;
+  stamp_url: string;
   badge_html: string;
-  verify_url: string;
+  badge_text: string;
   expires_at: string;
+  sender_email_masked: string;
+  content_hash: string | null;
 }
 
 export async function getSenders(accessToken: string): Promise<Sender[]> {
@@ -43,7 +46,7 @@ export async function createStamp(
   senderId: string,
   turnstileToken: string,
   opts: {
-    recipientEmail?: string;
+    recipientEmailHash?: string;
     contentHash?: string;
     isMassSend?: boolean;
     declaredRecipientCount?: number;
@@ -59,7 +62,8 @@ export async function createStamp(
       sender_id: senderId,
       turnstile_token: turnstileToken,
       client_type: 'chrome_extension',
-      ...(opts.recipientEmail && { recipient_email: opts.recipientEmail }),
+      // Send the pre-computed hash — plaintext email never leaves the browser
+      ...(opts.recipientEmailHash && { recipient_email_hash: opts.recipientEmailHash }),
       ...(opts.contentHash && { content_hash: opts.contentHash }),
       ...(opts.isMassSend && { is_mass_send: true }),
       ...(opts.declaredRecipientCount && { declared_recipient_count: opts.declaredRecipientCount }),

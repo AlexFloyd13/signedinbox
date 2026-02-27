@@ -10,12 +10,12 @@ import {
 } from '@/lib/signedinbox/supabase';
 import { sendVerificationEmail } from '@/lib/email';
 
-async function authenticateRequest(req: NextRequest): Promise<{ userId: string }> {
-  // Try Supabase JWT first
+async function authenticateRequest(req: NextRequest): Promise<{ userId: string; scopes: string[] | null }> {
+  // Try Supabase JWT first — unrestricted (null scopes = full access)
   const user = await authenticateUser(req);
-  if (user) return { userId: user.id };
+  if (user) return { userId: user.id, scopes: null };
 
-  // Try SignedInbox API key
+  // Try SignedInbox API key — restricted to declared scopes
   const authHeader = req.headers.get('authorization');
   if (authHeader?.startsWith('Bearer si_')) {
     const apiKey = authHeader.slice(7);
@@ -26,11 +26,22 @@ async function authenticateRequest(req: NextRequest): Promise<{ userId: string }
     const keyHash = createHmac('sha256', secret).update(apiKey).digest('hex');
     const apiKeyRecord = await getApiKeyByHash(keyHash);
     if (apiKeyRecord) {
-      return { userId: apiKeyRecord.user_id };
+      return { userId: apiKeyRecord.user_id, scopes: apiKeyRecord.scopes };
     }
   }
 
   throw new AuthError('Authentication required');
+}
+
+/** Enforce a required scope for API key callers. JWT callers always pass. */
+function requireScope(scopes: string[] | null, scope: string): void {
+  if (scopes === null) return; // JWT = unrestricted
+  if (!scopes.includes(scope)) throw new AuthError(`Insufficient permissions. Required scope: ${scope}`, 403);
+}
+
+/** Require the caller to be a JWT user, not an API key. */
+function requireJwt(scopes: string[] | null, action: string): void {
+  if (scopes !== null) throw new AuthError(`Action '${action}' requires direct authentication, not an API key`, 403);
 }
 
 export async function POST(request: NextRequest) {
@@ -38,11 +49,12 @@ export async function POST(request: NextRequest) {
   if (sec.blocked) return sec.response!;
 
   try {
-    const { userId } = await authenticateRequest(request);
+    const { userId, scopes } = await authenticateRequest(request);
     const body = await request.json();
     const action = body.action;
 
     if (action === 'create-sender') {
+      requireJwt(scopes, 'create-sender');
       const parsed = CreateSenderSchema.safeParse(body);
       if (!parsed.success) return NextResponse.json({ error: 'Invalid request', details: parsed.error.issues }, { status: 400, headers: sec.headers });
       const sender = await createSender(userId, parsed.data.display_name, parsed.data.email);
@@ -51,6 +63,7 @@ export async function POST(request: NextRequest) {
 
     if (action === 'claim-auth-email') {
       // Requires Supabase JWT — email is already verified by auth provider
+      requireJwt(scopes, 'claim-auth-email');
       const authUser = await authenticateUser(request);
       if (!authUser?.email) return NextResponse.json({ error: 'Supabase JWT required' }, { status: 401, headers: sec.headers });
 
@@ -69,6 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'send-verification') {
+      requireJwt(scopes, 'send-verification');
       const senderId = body.sender_id as string;
       if (!senderId) return NextResponse.json({ error: 'sender_id required' }, { status: 400, headers: sec.headers });
       const sender = await getSender(senderId);
@@ -80,14 +94,19 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'verify-email') {
+      requireJwt(scopes, 'verify-email');
       const parsed = VerifyEmailSchema.safeParse(body);
       if (!parsed.success) return NextResponse.json({ error: 'Invalid request', details: parsed.error.issues }, { status: 400, headers: sec.headers });
+      // Verify the sender belongs to the authenticated user before accepting the code
+      const sender = await getSender(parsed.data.sender_id);
+      if (!sender || sender.user_id !== userId) return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: sec.headers });
       const verified = await verifyEmailCode(parsed.data.sender_id, parsed.data.code);
       if (!verified) return NextResponse.json({ error: 'Invalid or expired verification code' }, { status: 400, headers: sec.headers });
       return NextResponse.json({ success: true }, { headers: sec.headers });
     }
 
     if (action === 'create-api-key') {
+      requireJwt(scopes, 'create-api-key');
       const parsed = CreateApiKeySchema.safeParse(body);
       if (!parsed.success) return NextResponse.json({ error: 'Invalid request', details: parsed.error.issues }, { status: 400, headers: sec.headers });
       const secret = process.env.API_KEY_HASH_SECRET;
@@ -95,12 +114,13 @@ export async function POST(request: NextRequest) {
       const rawKey = `si_live_${randomBytes(32).toString('base64url')}`;
       const keyHash = createHmac('sha256', secret).update(rawKey).digest('hex');
       const keyPrefix = rawKey.slice(0, 16);
-      const scopes = parsed.data.scopes || ['stamp:create', 'stamp:validate'];
-      const record = await createApiKeyRecord(userId, parsed.data.name, keyHash, keyPrefix, scopes);
-      return NextResponse.json({ id: record.id, name: record.name, api_key: rawKey, key_prefix: keyPrefix, scopes, created_at: record.created_at }, { status: 201, headers: sec.headers });
+      const keyScopes = parsed.data.scopes || ['stamp:create', 'stamp:validate'];
+      const record = await createApiKeyRecord(userId, parsed.data.name, keyHash, keyPrefix, keyScopes);
+      return NextResponse.json({ id: record.id, name: record.name, api_key: rawKey, key_prefix: keyPrefix, scopes: keyScopes, created_at: record.created_at }, { status: 201, headers: sec.headers });
     }
 
     if (action === 'revoke') {
+      requireScope(scopes, 'stamp:revoke');
       const stampId = body.stamp_id as string;
       if (!stampId) return NextResponse.json({ error: 'stamp_id required' }, { status: 400, headers: sec.headers });
       const { revokeStamp } = await import('@/lib/signedinbox/supabase');
@@ -109,6 +129,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Default: create stamp
+    requireScope(scopes, 'stamp:create');
     const parsed = CreateStampSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: 'Invalid request', details: parsed.error.issues }, { status: 400, headers: sec.headers });
 
@@ -117,6 +138,7 @@ export async function POST(request: NextRequest) {
       senderId: parsed.data.sender_id,
       userId,
       recipientEmail: parsed.data.recipient_email,
+      recipientEmailHash: parsed.data.recipient_email_hash,
       contentHash: parsed.data.content_hash,
       turnstileToken: parsed.data.turnstile_token,
       clientType: parsed.data.client_type,
@@ -140,28 +162,31 @@ export async function GET(request: NextRequest) {
   if (sec.blocked) return sec.response!;
 
   try {
-    const { userId } = await authenticateRequest(request);
+    const { userId, scopes } = await authenticateRequest(request);
     const sp = request.nextUrl.searchParams;
 
     if (sp.get('action') === 'stats') {
-      const days = parseInt(sp.get('days') || '30', 10);
+      requireJwt(scopes, 'stats');
+      const days = Math.min(Math.max(parseInt(sp.get('days') || '30', 10), 1), 365);
       const stats = await getStats(userId, days);
       return NextResponse.json(stats, { headers: sec.headers });
     }
 
     if (sp.get('action') === 'senders') {
+      requireJwt(scopes, 'senders');
       const senders = await getSendersByUser(userId);
       return NextResponse.json({ senders }, { headers: sec.headers });
     }
 
     if (sp.get('action') === 'api-keys') {
+      requireJwt(scopes, 'api-keys');
       const keys = await listApiKeys(userId);
       const safeKeys = keys.map(({ key_hash, ...rest }) => rest);
       return NextResponse.json({ keys: safeKeys }, { headers: sec.headers });
     }
 
-    const limit = Math.min(parseInt(sp.get('limit') || '50', 10), 100);
-    const offset = parseInt(sp.get('offset') || '0', 10);
+    const limit = Math.min(Math.max(parseInt(sp.get('limit') || '50', 10), 1), 100);
+    const offset = Math.max(parseInt(sp.get('offset') || '0', 10), 0);
     const { stamps, total } = await listStamps(userId, limit, offset);
     return NextResponse.json({ stamps, total }, { headers: sec.headers });
   } catch (err) {
