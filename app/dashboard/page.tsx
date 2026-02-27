@@ -106,11 +106,11 @@ export default function DashboardPage() {
   const [declaredRecipientCount, setDeclaredRecipientCount] = useState("");
   const [senderDropdownOpen, setSenderDropdownOpen] = useState(false);
   const massEmailLabelRef = useRef<HTMLLabelElement>(null);
-  const recipientsInputRef = useRef<HTMLInputElement>(null);
+  const [recipientsWidth, setRecipientsWidth] = useState<number | undefined>(undefined);
 
   useLayoutEffect(() => {
-    if (massEmailLabelRef.current && recipientsInputRef.current) {
-      recipientsInputRef.current.style.width = massEmailLabelRef.current.offsetWidth + "px";
+    if (massEmailLabelRef.current) {
+      setRecipientsWidth(massEmailLabelRef.current.offsetWidth);
     }
   }, [senders]);
 
@@ -604,10 +604,10 @@ export default function DashboardPage() {
                             </span>
                           </label>
                           <input
-                            ref={recipientsInputRef}
                             type="number"
                             min="2"
                             disabled={!isMassSend}
+                            style={recipientsWidth !== undefined ? { width: recipientsWidth } : undefined}
                             className="bg-white border border-[#e5e2d8] rounded-md px-2 py-1 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e] disabled:opacity-30"
                             placeholder="# recipients"
                             value={declaredRecipientCount}
