@@ -576,10 +576,10 @@ export default function DashboardPage() {
                           <span className="text-[#5a9471] font-medium">✓</span>
                         )}
                       </button>
-                      <div className="flex items-center gap-2 shrink-0">
-                        {/* Mass email checkbox + # recipients stacked */}
-                        <div className="flex flex-col gap-1">
-                          <label className="flex items-center gap-1.5 cursor-pointer">
+                      <div className="flex items-center gap-1 shrink-0">
+                        {/* Mass email checkbox + # recipients stacked, width driven by label */}
+                        <div className="flex flex-col gap-1 w-fit">
+                          <label className="flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <input
                               type="checkbox"
                               checked={isMassSend}
