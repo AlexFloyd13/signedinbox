@@ -434,9 +434,9 @@ export default function DashboardPage() {
 
               <div className="flex flex-col gap-3">
 
-                {/* Sender — custom dropdown */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-[#9a958e]">Sender *</label>
+                {/* Sender — custom dropdown + bind toggle snug below */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-[#9a958e] mb-1">Sender *</label>
                   <div className="relative">
                     <button
                       type="button"
@@ -541,14 +541,12 @@ export default function DashboardPage() {
                       )}
                     </div>
                   )}
-                </div>
 
-                {/* Bind to content — right below sender */}
-                <div className="flex flex-col gap-2">
+                  {/* Bind toggle — snug right below dropdown */}
                   <button
                     type="button"
                     onClick={() => setBindExpanded(!bindExpanded)}
-                    className="flex items-center gap-1.5 text-xs text-[#9a958e] hover:text-[#3a3830] transition-colors self-start"
+                    className="flex items-center gap-1.5 text-xs text-[#9a958e] hover:text-[#3a3830] transition-colors self-start pt-1"
                   >
                     <span className={`transition-transform ${bindExpanded ? "rotate-90" : ""}`}>▶</span>
                     Bind to email content
@@ -557,7 +555,7 @@ export default function DashboardPage() {
                     )}
                   </button>
                   {bindExpanded && (
-                    <div className="flex flex-col gap-3 pl-4 border-l-2 border-[#e5e2d8]">
+                    <div className="flex flex-col gap-3 pl-4 border-l-2 border-[#e5e2d8] mt-1">
                       <p className="text-xs text-[#b5b0a6]">Cryptographically ties this stamp to the specific email — recipient, subject, and body. Recipients can verify the content hasn&apos;t been altered.</p>
                       <div className="flex flex-col gap-1">
                         <label className="text-xs text-[#9a958e]">Recipient email</label>
@@ -591,25 +589,26 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                {/* Human verification */}
-                {siteKey && (
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-[#9a958e]">Human Verification *</label>
-                    <Turnstile
-                      siteKey={siteKey}
-                      onSuccess={(token) => { setTurnstileToken(token); setTurnstileError(null); }}
-                      onError={() => { setTurnstileToken(null); setTurnstileError("Verification failed — please refresh the page and try again."); }}
-                      onExpire={() => { setTurnstileToken(null); setTurnstileError("Verification expired — please complete it again."); }}
-                      options={{ theme: "light" }}
-                    />
-                    {turnstileError && (
-                      <p className="text-xs text-red-500 mt-1">{turnstileError}</p>
-                    )}
-                  </div>
-                )}
+                {/* Human verification + generate (tight group) */}
+                <div className="flex flex-col gap-2">
+                  {siteKey && (
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-[#9a958e]">Human Verification *</label>
+                      <Turnstile
+                        siteKey={siteKey}
+                        onSuccess={(token) => { setTurnstileToken(token); setTurnstileError(null); }}
+                        onError={() => { setTurnstileToken(null); setTurnstileError("Verification failed — please refresh the page and try again."); }}
+                        onExpire={() => { setTurnstileToken(null); setTurnstileError("Verification expired — please complete it again."); }}
+                        options={{ theme: "light" }}
+                      />
+                      {turnstileError && (
+                        <p className="text-xs text-red-500 mt-1">{turnstileError}</p>
+                      )}
+                    </div>
+                  )}
 
-                {/* Generate — with mass email toggle directly above, right-aligned */}
-                <div className="flex flex-col items-end gap-1.5">
+                  {/* Generate — with mass email toggle directly above, right-aligned */}
+                  <div className="flex flex-col items-end gap-1.5">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -643,6 +642,7 @@ export default function DashboardPage() {
                   >
                     {generating ? "Generating…" : "Generate Stamp"}
                   </button>
+                  </div>
                 </div>
 
               </div>
