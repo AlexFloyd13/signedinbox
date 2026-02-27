@@ -78,10 +78,17 @@ const entries = [
     format: 'iife',
     platform: 'browser',
   },
-  // Offscreen Turnstile handler — IIFE
+  // Offscreen silent Turnstile handler — IIFE
   {
     entryPoints: ['offscreen/turnstile.ts'],
     outfile: 'dist/offscreen/turnstile.js',
+    format: 'iife',
+    platform: 'browser',
+  },
+  // Challenge popup fallback — IIFE
+  {
+    entryPoints: ['challenge/challenge.ts'],
+    outfile: 'dist/challenge/challenge.js',
     format: 'iife',
     platform: 'browser',
   },
@@ -120,6 +127,7 @@ if (iconsMissing) await generateIcons();
 mkdirSync('dist/background', { recursive: true });
 mkdirSync('dist/content', { recursive: true });
 mkdirSync('dist/offscreen', { recursive: true });
+mkdirSync('dist/challenge', { recursive: true });
 mkdirSync('dist/popup', { recursive: true });
 mkdirSync('dist/icons', { recursive: true });
 
@@ -129,6 +137,7 @@ const staticFiles = [
   ['popup/popup.css', 'dist/popup/popup.css'],
   ['content/gmail-content.css', 'dist/content/gmail-content.css'],
   ['offscreen/turnstile.html', 'dist/offscreen/turnstile.html'],
+  ['challenge/challenge.html', 'dist/challenge/challenge.html'],
   ['icons/icon16.png', 'dist/icons/icon16.png'],
   ['icons/icon48.png', 'dist/icons/icon48.png'],
   ['icons/icon128.png', 'dist/icons/icon128.png'],

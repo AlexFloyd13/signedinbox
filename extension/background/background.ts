@@ -8,6 +8,9 @@ import { getAuth, setAuth, clearAuth, setActiveSenderId } from '../lib/storage.j
 import { getSenders, claimAuthEmail, createStamp } from '../lib/api.js';
 
 // ─── Offscreen document ───────────────────────────────────────────────────────
+// Pre-warmed at startup so Turnstile is ready before the user clicks.
+// Token comes back in ~200ms once warm. Only falls back to visible popup
+// if Cloudflare requires a human interaction challenge (very rare).
 
 async function ensureOffscreenDocument() {
   const existing = await chrome.offscreen.hasDocument?.().catch(() => false);
@@ -15,20 +18,104 @@ async function ensureOffscreenDocument() {
     await chrome.offscreen.createDocument({
       url: 'offscreen/turnstile.html',
       reasons: ['IFRAME_SCRIPTING'],
-      justification: 'Render Cloudflare Turnstile CAPTCHA for stamp creation',
+      justification: 'Silently verify Cloudflare Turnstile for stamp creation',
     });
   }
 }
 
-async function getTurnstileToken(): Promise<string> {
+// Pre-warm: load the offscreen iframe in the background so it's ready immediately
+ensureOffscreenDocument().catch(() => {});
+
+// Set by getTurnstileTokenSilent; fired by the TURNSTILE_NEEDS_INTERACTION handler
+let _needsInteractionCallback: (() => void) | null = null;
+
+async function getTurnstileTokenSilent(): Promise<string> {
   await ensureOffscreenDocument();
   return new Promise((resolve, reject) => {
+    // Safety net for genuine network failures — not used for interaction detection
+    const absoluteTimer = setTimeout(() => {
+      _needsInteractionCallback = null;
+      reject(new Error('Verification timed out'));
+    }, 5_000);
+
+    _needsInteractionCallback = () => {
+      clearTimeout(absoluteTimer);
+      _needsInteractionCallback = null;
+      reject(new Error('Interactive challenge required'));
+    };
+
     chrome.runtime.sendMessage({ type: 'GET_TURNSTILE_TOKEN' }, response => {
+      clearTimeout(absoluteTimer);
+      _needsInteractionCallback = null;
       if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message));
       if (response?.error) return reject(new Error(response.error));
       resolve(response.token);
     });
   });
+}
+
+// ─── Challenge popup (fallback for interactive challenges only) ───────────────
+
+let _challengeResolve: ((token: string) => void) | null = null;
+let _challengeReject: ((err: Error) => void) | null = null;
+let _challengeWindowId: number | null = null;
+
+async function getTurnstileTokenPopup(): Promise<string> {
+  if (_challengeWindowId !== null) {
+    await chrome.windows.remove(_challengeWindowId).catch(() => {});
+    _challengeWindowId = null;
+  }
+
+  return new Promise((resolve, reject) => {
+    _challengeResolve = resolve;
+    _challengeReject = reject;
+
+    chrome.windows.create({
+      url: chrome.runtime.getURL('challenge/challenge.html'),
+      type: 'popup',
+      width: 360,
+      height: 160,
+      focused: true,
+    }).then(win => {
+      _challengeWindowId = win?.id ?? null;
+
+      const onRemoved = (removedId: number) => {
+        if (removedId !== _challengeWindowId) return;
+        chrome.windows.onRemoved.removeListener(onRemoved);
+        _challengeWindowId = null;
+        if (_challengeReject) {
+          _challengeReject(new Error('Verification cancelled'));
+          _challengeResolve = null;
+          _challengeReject = null;
+        }
+      };
+      chrome.windows.onRemoved.addListener(onRemoved);
+
+      setTimeout(() => {
+        if (_challengeReject) {
+          _challengeReject(new Error('Verification timed out'));
+          _challengeResolve = null;
+          _challengeReject = null;
+          if (_challengeWindowId !== null) {
+            chrome.windows.remove(_challengeWindowId).catch(() => {});
+            _challengeWindowId = null;
+          }
+        }
+      }, 120_000);
+    });
+  });
+}
+
+// ─── Hybrid ───────────────────────────────────────────────────────────────────
+
+async function getTurnstileToken(): Promise<string> {
+  try {
+    return await getTurnstileTokenSilent();
+  } catch {
+    // Only reaches here if Cloudflare explicitly signals it needs interaction,
+    // or on a genuine network failure — never on a mere cold-start delay
+    return await getTurnstileTokenPopup();
+  }
 }
 
 // ─── Auth helpers ─────────────────────────────────────────────────────────────
@@ -157,6 +244,27 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
             subjectHint: message.subjectHint,
           });
           sendResponse({ stamp });
+          break;
+        }
+
+        case 'TURNSTILE_NEEDS_INTERACTION': {
+          _needsInteractionCallback?.();
+          sendResponse({ success: true });
+          break;
+        }
+
+        case 'CHALLENGE_COMPLETE': {
+          if (message.error) {
+            _challengeReject?.(new Error(message.error));
+            _challengeResolve = null;
+            _challengeReject = null;
+          } else {
+            _challengeResolve?.(message.token);
+            _challengeResolve = null;
+            _challengeReject = null;
+          }
+          _challengeWindowId = null;
+          sendResponse({ success: true });
           break;
         }
 

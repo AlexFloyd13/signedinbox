@@ -3,7 +3,8 @@
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 
-const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+// Prefer the extension-specific managed widget key; fall back to the main key
+const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY_EXTENSION || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function TurnstileFramePage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,11 @@ export default function TurnstileFramePage() {
       sitekey: SITE_KEY,
       callback: (token: string) => {
         window.parent.postMessage({ type: "TURNSTILE_TOKEN", token }, "*");
+      },
+      "before-interactive-callback": () => {
+        // Cloudflare needs a human checkbox — signal the extension immediately
+        // so it can open a visible popup rather than waiting on a hidden challenge
+        window.parent.postMessage({ type: "TURNSTILE_NEEDS_INTERACTION" }, "*");
       },
       "error-callback": (err: unknown) => {
         window.parent.postMessage({ type: "TURNSTILE_ERROR", error: String(err) }, "*");

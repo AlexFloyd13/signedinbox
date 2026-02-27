@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>signedinbox — verify</title>
+  <style>
+    body { margin: 0; padding: 12px 16px; background: #f5f4ef; font-family: system-ui, sans-serif; display: flex; flex-direction: column; gap: 8px; }
+    .header { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #3a3830; }
+    .sub { font-size: 11px; color: #9a958e; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg width="16" height="16" viewBox="0 0 128 128" fill="none"><circle cx="64" cy="64" r="64" fill="#5a9471"/><path d="M64 25 L92 69 L64 113 L36 69 Z" fill="#ffffff"/><path d="M64 49 L64 113" stroke="#477857" stroke-width="5" stroke-linecap="round"/></svg>
+    Verifying…
+  </div>
+  <p class="sub">Complete the check, then the stamp will be created automatically.</p>
+  <iframe id="turnstile-frame" src="https://signedinbox.com/turnstile-frame" style="border:none;width:300px;height:65px"></iframe>
+  <script src="challenge.js"></script>
+</body>
+</html>

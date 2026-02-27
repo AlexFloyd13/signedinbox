@@ -6,8 +6,9 @@
   "permissions": [
     "activeTab",
     "storage",
+    "identity",
     "offscreen",
-    "identity"
+    "windows"
   ],
   "host_permissions": [
     "https://mail.google.com/*",
