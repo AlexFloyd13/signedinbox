@@ -24,6 +24,20 @@ export async function getSenders(accessToken: string): Promise<Sender[]> {
   return data.senders;
 }
 
+export async function claimAuthEmail(accessToken: string): Promise<Sender | null> {
+  const res = await fetch(`${API_BASE}/stamps`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ action: 'claim-auth-email' }),
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.sender ?? null;
+}
+
 export async function createStamp(
   accessToken: string,
   senderId: string,

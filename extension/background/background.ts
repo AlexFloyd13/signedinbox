@@ -3,9 +3,9 @@
  * Content scripts communicate with this via chrome.runtime.sendMessage.
  */
 
-import { signInWithPassword, refreshSession } from '../lib/auth.js';
-import { getAuth, setAuth, clearAuth } from '../lib/storage.js';
-import { getSenders, createStamp } from '../lib/api.js';
+import { signInWithPassword, refreshSession, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/auth.js';
+import { getAuth, setAuth, clearAuth, setActiveSenderId } from '../lib/storage.js';
+import { getSenders, claimAuthEmail, createStamp } from '../lib/api.js';
 
 // ─── Offscreen document ───────────────────────────────────────────────────────
 
@@ -62,6 +62,56 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
           break;
         }
 
+        case 'SIGN_IN_GOOGLE': {
+          const redirectUrl = chrome.identity.getRedirectURL('oauth2');
+
+          const authUrl = new URL(`${SUPABASE_URL}/auth/v1/authorize`);
+          authUrl.searchParams.set('provider', 'google');
+          authUrl.searchParams.set('redirect_to', redirectUrl);
+
+          const responseUrl: string = await new Promise((resolve, reject) => {
+            chrome.identity.launchWebAuthFlow(
+              { url: authUrl.toString(), interactive: true },
+              (url) => {
+                if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message));
+                if (!url) return reject(new Error('OAuth cancelled'));
+                resolve(url);
+              }
+            );
+          });
+
+          const hash = new URL(responseUrl).hash.slice(1);
+          const params = new URLSearchParams(hash);
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+
+          if (!accessToken || !refreshToken) throw new Error('OAuth response missing tokens');
+
+          const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              apikey: SUPABASE_ANON_KEY,
+            },
+          });
+          if (!userRes.ok) throw new Error('Failed to fetch user after OAuth');
+
+          const userData = await userRes.json();
+          const auth = {
+            accessToken,
+            refreshToken,
+            email: userData.email as string,
+            userId: userData.id as string,
+          };
+
+          await setAuth(auth);
+
+          // Auto-provision verified sender from Google email — no manual verification needed
+          await claimAuthEmail(accessToken).catch(() => null);
+
+          sendResponse({ success: true, email: auth.email });
+          break;
+        }
+
         case 'SIGN_OUT': {
           await clearAuth();
           sendResponse({ success: true });
@@ -76,15 +126,33 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
         case 'GET_SENDERS': {
           const token = await getValidToken();
-          const senders = await getSenders(token);
+          let senders = await getSenders(token);
+          // If no senders yet, auto-claim the signed-in email as a verified sender
+          if (senders.length === 0) {
+            const claimed = await claimAuthEmail(token).catch(() => null);
+            if (claimed) senders = [claimed];
+          }
           sendResponse({ senders });
           break;
         }
 
         case 'CREATE_STAMP': {
           const token = await getValidToken();
+
+          // Auto-resolve sender if none selected in popup
+          let senderId: string = message.senderId;
+          if (!senderId) {
+            const senders = await getSenders(token);
+            const verified = senders.filter(s => s.verified_email);
+            if (verified.length === 0) {
+              throw new Error('No verified senders found. Visit signedinbox.com/dashboard to verify your email.');
+            }
+            senderId = verified[0].id;
+            await setActiveSenderId(senderId);
+          }
+
           const turnstileToken = await getTurnstileToken();
-          const stamp = await createStamp(token, message.senderId, turnstileToken, {
+          const stamp = await createStamp(token, senderId, turnstileToken, {
             recipientEmail: message.recipientEmail,
             subjectHint: message.subjectHint,
           });
