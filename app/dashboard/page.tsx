@@ -587,13 +587,13 @@ export default function DashboardPage() {
                               className="w-3.5 h-3.5 rounded border-[#d0cdc6] accent-[#9a958e]"
                             />
                             <span className="text-xs text-[#b5b0a6]">Mass email</span>
-                            <div className="group/tip relative">
+                            <span className="group/tip relative">
                               <span className="text-[#d0cdc6] cursor-help text-xs">ⓘ</span>
                               <div className="absolute bottom-full right-0 mb-2 w-72 bg-[#1a1917] text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10 leading-relaxed">
                                 Check this if sending to multiple recipients. Multiple verifications won&apos;t trigger a reuse warning. <span className="text-amber-300 font-medium">Accounts using single-recipient stamps as mass emails without this checked will be flagged.</span>
                                 <div className="absolute top-full right-4 border-4 border-transparent border-t-[#1a1917]" />
                               </div>
-                            </div>
+                            </span>
                           </label>
                           <input
                             type="number"
