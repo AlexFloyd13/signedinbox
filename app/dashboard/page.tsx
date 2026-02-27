@@ -576,7 +576,7 @@ export default function DashboardPage() {
                           <span className="text-[#5a9471] font-medium">✓</span>
                         )}
                       </button>
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
                         <label className="flex items-center gap-1.5 cursor-pointer">
                           <input
                             type="checkbox"
