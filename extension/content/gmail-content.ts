@@ -28,48 +28,76 @@ function injectStampButton(compose: Element) {
   const toolbar = compose.querySelector(TOOLBAR_SELECTOR);
   if (!toolbar) return;
 
+  // Guard against double injection when multiple selectors match the same toolbar
+  if (toolbar.querySelector('.si-stamp-btn')) return;
+
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'si-stamp-btn';
   btn.title = 'Add signedinbox stamp';
-  btn.textContent = '✍️ Stamp';
+  btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="64" cy="64" r="64" fill="#5a9471"/>
+    <circle cx="64" cy="64" r="55" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+    <path d="M64 25 L92 69 L64 113 L36 69 Z" fill="#ffffff"/>
+    <path d="M64 49 L64 113" stroke="#477857" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="64" cy="51" rx="10" ry="7" fill="#477857"/>
+    <path d="M44 83 Q54 91 64 93 Q74 91 84 83" stroke="rgba(255,255,255,0.22)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>`;
 
   btn.addEventListener('click', async () => {
     btn.disabled = true;
-    btn.textContent = '⏳ Stamping...';
+    btn.style.opacity = '0.4';
+
+    const reset = () => {
+      btn.disabled = false;
+      btn.style.opacity = '';
+    };
+
+    // Extension context becomes invalid after a reload — chrome APIs go undefined
+    if (!chrome?.runtime?.id) {
+      alert('signedinbox: Extension was reloaded — please refresh this Gmail tab.');
+      reset();
+      return;
+    }
 
     try {
       const senderId = await getActiveSenderId();
-      if (!senderId) {
-        alert('signedinbox: No sender selected. Open the extension popup to select one.');
-        return;
+      const subjectInput = compose.querySelector<HTMLInputElement>(SUBJECT_SELECTOR);
+
+      // Collect all recipient chips across TO, CC, and BCC fields.
+      // Gmail renders each chip with a span[email] attribute.
+      const chips = Array.from(compose.querySelectorAll<HTMLElement>('span[email]'));
+      const recipientEmails = chips.map(c => c.getAttribute('email')).filter(Boolean) as string[];
+
+      // Fall back to the raw TO input value if no chips found (e.g. mid-typing)
+      if (recipientEmails.length === 0) {
+        const toInput = compose.querySelector<HTMLInputElement>(TO_FIELD_SELECTOR);
+        if (toInput?.value) recipientEmails.push(toInput.value.trim());
       }
 
-      const toInput = compose.querySelector<HTMLInputElement>(TO_FIELD_SELECTOR);
-      const subjectInput = compose.querySelector<HTMLInputElement>(SUBJECT_SELECTOR);
+      const primaryRecipient = recipientEmails[0];
+      const recipientCount = recipientEmails.length;
 
       const response = await chrome.runtime.sendMessage({
         type: 'CREATE_STAMP',
         senderId,
-        recipientEmail: toInput?.value || undefined,
+        recipientEmail: primaryRecipient,
         subjectHint: subjectInput?.value || undefined,
+        recipientCount,
       });
 
       if (response.error) {
-        alert(`signedinbox error: ${response.error}`);
+        alert(`signedinbox: ${response.error}`);
+        reset();
         return;
       }
 
       injectBadge(compose, response.stamp.badge_html);
-      btn.textContent = '✅ Stamped';
-      setTimeout(() => {
-        btn.textContent = '✍️ Stamp';
-        btn.disabled = false;
-      }, 3000);
+      btn.title = 'Stamped ✓';
+      setTimeout(() => { reset(); btn.title = 'Add signedinbox stamp'; }, 3000);
     } catch (err) {
       alert(`signedinbox: ${err instanceof Error ? err.message : String(err)}`);
-      btn.textContent = '✍️ Stamp';
-      btn.disabled = false;
+      reset();
     }
   });
 

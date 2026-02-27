@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { validateStamp } from "@/lib/signedinbox/stamps";
-import FurtherVerify from "./further-verify";
 import RecipientVerify from "./recipient-verify";
 
 export default async function VerifyPage({
@@ -128,7 +127,7 @@ export default async function VerifyPage({
                   },
                   {
                     label: "Content binding",
-                    value: contentHash ? "✓ Bound to email content" : "⚠ Not content-bound",
+                    value: contentHash ? "✓ Sender and Recipient Verified" : "⚠ Not content-bound",
                     colored: contentHash ? "text-[#5a9471]" : "text-amber-600",
                   },
                   ...(isMassSend ? [{
@@ -195,9 +194,6 @@ export default async function VerifyPage({
 
           {/* Recipient verification — only shown if sender specified a recipient */}
           {recipientEmailHash && <RecipientVerify recipientEmailHash={recipientEmailHash} />}
-
-          {/* Further verify — only shown if content-bound */}
-          {contentHash && <FurtherVerify contentHash={contentHash} />}
 
           {/* Independent verification */}
           <div className="bg-white border border-[#e5e2d8] rounded-xl p-5 flex flex-col gap-2">

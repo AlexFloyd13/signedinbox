@@ -42,7 +42,13 @@ export async function createStamp(
   accessToken: string,
   senderId: string,
   turnstileToken: string,
-  opts: { recipientEmail?: string; subjectHint?: string; contentHash?: string } = {}
+  opts: {
+    recipientEmail?: string;
+    subjectHint?: string;
+    contentHash?: string;
+    isMassSend?: boolean;
+    declaredRecipientCount?: number;
+  } = {}
 ): Promise<StampResponse> {
   const res = await fetch(`${API_BASE}/stamps`, {
     method: 'POST',
@@ -57,6 +63,8 @@ export async function createStamp(
       ...(opts.recipientEmail && { recipient_email: opts.recipientEmail }),
       ...(opts.subjectHint && { subject_hint: opts.subjectHint }),
       ...(opts.contentHash && { content_hash: opts.contentHash }),
+      ...(opts.isMassSend && { is_mass_send: true }),
+      ...(opts.declaredRecipientCount && { declared_recipient_count: opts.declaredRecipientCount }),
     }),
   });
 
