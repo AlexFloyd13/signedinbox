@@ -112,7 +112,7 @@ export default function DashboardPage() {
     if (massEmailLabelRef.current && recipientsInputRef.current) {
       recipientsInputRef.current.style.width = massEmailLabelRef.current.offsetWidth + "px";
     }
-  }, []);
+  }, [senders]);
 
   const [verifyingCode, setVerifyingCode] = useState<string | null>(null);
   const [verificationCode, setVerificationCode] = useState("");
