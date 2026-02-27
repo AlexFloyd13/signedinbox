@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { authedFetch } from "@/lib/supabase/authed-fetch";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -105,6 +105,14 @@ export default function DashboardPage() {
   const [isMassSend, setIsMassSend] = useState(false);
   const [declaredRecipientCount, setDeclaredRecipientCount] = useState("");
   const [senderDropdownOpen, setSenderDropdownOpen] = useState(false);
+  const massEmailLabelRef = useRef<HTMLLabelElement>(null);
+  const recipientsInputRef = useRef<HTMLInputElement>(null);
+
+  useLayoutEffect(() => {
+    if (massEmailLabelRef.current && recipientsInputRef.current) {
+      recipientsInputRef.current.style.width = massEmailLabelRef.current.offsetWidth + "px";
+    }
+  }, []);
 
   const [verifyingCode, setVerifyingCode] = useState<string | null>(null);
   const [verificationCode, setVerificationCode] = useState("");
@@ -578,8 +586,8 @@ export default function DashboardPage() {
                       </button>
                       <div className="flex items-center gap-1 shrink-0">
                         {/* Mass email checkbox + # recipients stacked, width driven by label */}
-                        <div className="grid gap-1" style={{ gridTemplateColumns: "min-content" }}>
-                          <label className="flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                        <div className="flex flex-col gap-1">
+                          <label ref={massEmailLabelRef} className="flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <input
                               type="checkbox"
                               checked={isMassSend}
@@ -596,10 +604,11 @@ export default function DashboardPage() {
                             </span>
                           </label>
                           <input
+                            ref={recipientsInputRef}
                             type="number"
                             min="2"
                             disabled={!isMassSend}
-                            className="min-w-0 bg-white border border-[#e5e2d8] rounded-md px-2 py-1 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e] disabled:opacity-30"
+                            className="bg-white border border-[#e5e2d8] rounded-md px-2 py-1 text-xs text-[#9a958e] placeholder:text-[#d0cdc6] focus:outline-none focus:border-[#9a958e] disabled:opacity-30"
                             placeholder="# recipients"
                             value={declaredRecipientCount}
                             onChange={(e) => setDeclaredRecipientCount(e.target.value)}
