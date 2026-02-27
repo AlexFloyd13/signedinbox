@@ -564,7 +564,7 @@ export default function DashboardPage() {
 
                   {/* Mass email — row above bind/generate */}
                   <div>
-                    <div className="flex justify-end mb-1.5">
+                    <div className="flex mb-1.5">
                       <label className="flex items-center gap-1.5 cursor-pointer">
                         <input
                           type="checkbox"
