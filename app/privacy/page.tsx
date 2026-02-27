@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BetaBanner from "@/components/BetaBanner";
 
 const SealIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 128 128" fill="none">
@@ -29,6 +30,8 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[#f5f4ef] text-[#1a1917] flex flex-col">
+
+      <BetaBanner />
 
       {/* Nav */}
       <header className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-[#e5e2d8] bg-white">
@@ -222,12 +225,13 @@ export default function PrivacyPage() {
           <h2 className="text-[11px] font-semibold text-[#b5b0a6] uppercase tracking-wider">Deleting your data</h2>
           <div className="bg-white border border-[#e5e2d8] rounded-xl p-6 flex flex-col gap-3">
             <p className="text-[14px] text-[#6b6560] leading-relaxed">
-              To delete your account and all associated data, email{" "}
-              <a href="mailto:alex@signedinbox.com" className="text-[#5a9471] hover:underline">alex@signedinbox.com</a>{" "}
-              with the subject line <em>Delete my account</em>. We will permanently remove your account email, display name, sender identities, and all stamp records within 7 days.
+              You can delete your account and all associated data at any time from the{" "}
+              <Link href="/dashboard" className="text-[#5a9471] hover:underline">dashboard</Link>
+              {" "}— scroll to the Account section and click <em>Delete account</em>. This permanently removes your account email, display name, sender identities, stamps, and API keys immediately.
             </p>
             <p className="text-[14px] text-[#6b6560] leading-relaxed">
-              Stamps that have already been delivered to recipients will become unverifiable once your account is deleted, as the signing key will be revoked.
+              Stamps that have already been delivered to recipients will become unverifiable once your account is deleted. If you need help, email{" "}
+              <a href="mailto:alex@signedinbox.com" className="text-[#5a9471] hover:underline">alex@signedinbox.com</a>.
             </p>
           </div>
         </section>

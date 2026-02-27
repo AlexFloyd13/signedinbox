@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BetaBanner from "@/components/BetaBanner";
 
 const SealIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 128 128" fill="none">
@@ -24,6 +25,8 @@ const SealIcon = ({ size = 24 }: { size?: number }) => (
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#f5f4ef] text-[#1a1917] flex flex-col">
+
+      <BetaBanner />
 
       {/* Nav */}
       <header className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-[#e5e2d8]">
