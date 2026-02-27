@@ -39,8 +39,10 @@ export async function createStamp(
     body: JSON.stringify({
       sender_id: senderId,
       turnstile_token: turnstileToken,
-      client_type: 'chrome-extension',
-      ...opts,
+      client_type: 'chrome_extension',
+      ...(opts.recipientEmail && { recipient_email: opts.recipientEmail }),
+      ...(opts.subjectHint && { subject_hint: opts.subjectHint }),
+      ...(opts.contentHash && { content_hash: opts.contentHash }),
     }),
   });
 

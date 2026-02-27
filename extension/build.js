@@ -11,12 +11,42 @@
 import esbuild from 'esbuild';
 import sharp from 'sharp';
 import { copyFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const watch = process.argv.includes('--watch');
 const isDev = process.env.NODE_ENV !== 'production';
+
+// Load env vars from .env files (simple parser, no dotenv dependency).
+// Checks local .env first, then parent directory .env.local.
+function loadEnvFile(filePath) {
+  if (!existsSync(filePath)) return;
+  const lines = readFileSync(filePath, 'utf8').split('\n');
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const eq = line.indexOf('=');
+    if (eq === -1) continue;
+    const key = line.slice(0, eq).trim();
+    let val = line.slice(eq + 1).trim();
+    // Strip surrounding quotes and trailing \n artifacts from Vercel CLI
+    val = val.replace(/^["']|["']$/g, '').replace(/\\n$/, '').trim();
+    if (!(key in process.env)) process.env[key] = val;
+  }
+}
+
+// Load order: local .env → parent .env.local (lower priority loses)
+loadEnvFile(join(__dirname, '.env'));
+loadEnvFile(resolve(__dirname, '../.env.local'));
+
+// Normalize NEXT_PUBLIC_* variants to the names build.js expects
+if (!process.env.SUPABASE_ANON_KEY && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  process.env.SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+}
+if (!process.env.TURNSTILE_SITE_KEY && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
+  process.env.TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+}
 
 // esbuild replaces these global identifiers at bundle time.
 // Corresponding `declare const` statements in each TS file satisfy the compiler.
