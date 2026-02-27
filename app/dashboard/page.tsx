@@ -573,6 +573,22 @@ export default function DashboardPage() {
                   )}
                 </div>
 
+                {siteKey && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-[#9a958e]">Human Verification *</label>
+                    <Turnstile
+                      siteKey={siteKey}
+                      onSuccess={(token) => { setTurnstileToken(token); setTurnstileError(null); }}
+                      onError={() => { setTurnstileToken(null); setTurnstileError("Verification failed — please refresh the page and try again."); }}
+                      onExpire={() => { setTurnstileToken(null); setTurnstileError("Verification expired — please complete it again."); }}
+                      options={{ theme: "light" }}
+                    />
+                    {turnstileError && (
+                      <p className="text-xs text-red-500 mt-1">{turnstileError}</p>
+                    )}
+                  </div>
+                )}
+
                 {/* Mass send toggle */}
                 <div className="flex flex-col gap-2">
                   <label className="flex items-center gap-2.5 cursor-pointer group">
@@ -607,22 +623,6 @@ export default function DashboardPage() {
                     </div>
                   )}
                 </div>
-
-                {siteKey && (
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-[#9a958e]">Human Verification *</label>
-                    <Turnstile
-                      siteKey={siteKey}
-                      onSuccess={(token) => { setTurnstileToken(token); setTurnstileError(null); }}
-                      onError={() => { setTurnstileToken(null); setTurnstileError("Verification failed — please refresh the page and try again."); }}
-                      onExpire={() => { setTurnstileToken(null); setTurnstileError("Verification expired — please complete it again."); }}
-                      options={{ theme: "light" }}
-                    />
-                    {turnstileError && (
-                      <p className="text-xs text-red-500 mt-1">{turnstileError}</p>
-                    )}
-                  </div>
-                )}
 
                 <div className="flex justify-end">
                   <button
