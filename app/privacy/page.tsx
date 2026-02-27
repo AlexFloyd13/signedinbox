@@ -70,7 +70,7 @@ export default function PrivacyPage() {
               signedinbox is a small tool that lets people prove a real human sent an email — not a bot, not a spoofed address, not an AI bulk sender. When you stamp an email, a cryptographic badge is embedded that anyone can verify in a browser. No app required, no account needed to verify.
             </p>
             <p className="text-[14px] text-[#6b6560] leading-relaxed">
-              It&apos;s built by a solo developer who got tired of email trust being completely broken. The code is MIT licensed and <a href="https://github.com/AlexFloyd13/signedinbox" target="_blank" rel="noopener noreferrer" className="text-[#5a9471] hover:underline">open source</a>.
+              The code is MIT licensed and <a href="https://github.com/AlexFloyd13/signedinbox" target="_blank" rel="noopener noreferrer" className="text-[#5a9471] hover:underline">open source</a>.
             </p>
           </div>
         </section>
@@ -100,13 +100,10 @@ export default function PrivacyPage() {
                 title: "Attachments or metadata",
                 detail: "We never access attachments, headers, thread history, or any other part of your Gmail account. The extension only interacts with the active compose window.",
               },
-            ].map(({ icon, title, detail }, i, arr) => (
-              <div key={title} className={`flex gap-4 p-5 ${i < arr.length - 1 ? "border-b border-[#f0ede6]" : ""}`}>
-                <span className="text-xl shrink-0 mt-0.5">{icon}</span>
-                <div className="flex flex-col gap-1">
-                  <p className="text-[14px] font-semibold text-[#1a1917]">{title}</p>
-                  <p className="text-[13px] text-[#6b6560] leading-relaxed">{detail}</p>
-                </div>
+            ].map(({ title, detail }, i, arr) => (
+              <div key={title} className={`p-5 ${i < arr.length - 1 ? "border-b border-[#f0ede6]" : ""}`}>
+                <p className="text-[14px] font-semibold text-[#1a1917] mb-1">{title}</p>
+                <p className="text-[13px] text-[#6b6560] leading-relaxed">{detail}</p>
               </div>
             ))}
           </div>
